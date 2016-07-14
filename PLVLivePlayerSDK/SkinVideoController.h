@@ -10,7 +10,7 @@
 #import <PLVChannel/PLVChannel.h>
 
 @import MediaPlayer;
-typedef void(^PvPlayerGoBackBlock)(void);
+typedef void(^PLVPlayerGoBackBlock)(void);
 
 typedef NS_ENUM(NSUInteger, SkinVideoLiveType) {
     SkinVideoLiveTypeContinuing,                                                                // 不断流直播类型(电视直播类型)
@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, SkinVideoLiveType) {
 @property (nonatomic, strong) PLVChannel* channel;                                              // 频道信息(强引用，防止被提前释放)
 @property (nonatomic, assign) CGRect frame;                                                     // 播放控制器的frame
 @property (nonatomic, copy) void(^dimissCompleteBlock)(void);                                   // dismiss播放器控制器回调block
-@property (nonatomic, copy) PvPlayerGoBackBlock  goBackBlock;                                   // 使用此属性或者调用setParentViewController:方法设置俯视图
+@property (nonatomic, copy) PLVPlayerGoBackBlock  goBackBlock;                                   // 使用此属性或者调用setParentViewController:方法设置俯视图
 
 
 /* -------- 初始化方法 -------- */
@@ -35,7 +35,7 @@ typedef NS_ENUM(NSUInteger, SkinVideoLiveType) {
 - (void)dismiss;
 - (void)setHeadTitle:(NSString*)headtitle;                                                      // 设置视频标题信息
 - (void)setNavigationController:(UINavigationController*)navigationController;                  // 设置导航控制器
-- (void)setParentViewController:(UIViewController*)viewController;                              // 设置父视图
+- (void)setParentViewController:(UIViewController*)viewController;                              // 设置父控制器
 
 // 额外参数，用来跟踪出错用户
 - (void)setParam1:(NSString*)param1;

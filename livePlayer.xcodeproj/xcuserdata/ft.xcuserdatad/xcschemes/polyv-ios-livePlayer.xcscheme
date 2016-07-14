@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "670912F71D34883800192BAC"
-               BuildableName = "polyv-iOS-livePlayer.temp_caseinsensitive_rename.app"
+               BuildableName = "livePlayer.temp_caseinsensitive_rename.app"
                BlueprintName = "polyv-ios-livePlayer"
-               ReferencedContainer = "container:polyv-iOS-livePlayer.xcodeproj">
+               ReferencedContainer = "container:livePlayer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "670913101D34883800192BAC"
-               BuildableName = "polyv-iOS-livePlayer.temp_caseinsensitive_rename.xctest"
+               BuildableName = "livePlayer.temp_caseinsensitive_rename.xctest"
                BlueprintName = "polyv-ios-livePlayerTests"
-               ReferencedContainer = "container:polyv-iOS-livePlayer.xcodeproj">
+               ReferencedContainer = "container:livePlayer.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -43,9 +43,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "670912F71D34883800192BAC"
-            BuildableName = "polyv-iOS-livePlayer.temp_caseinsensitive_rename.app"
+            BuildableName = "livePlayer.temp_caseinsensitive_rename.app"
             BlueprintName = "polyv-ios-livePlayer"
-            ReferencedContainer = "container:polyv-iOS-livePlayer.xcodeproj">
+            ReferencedContainer = "container:livePlayer.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -66,9 +66,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "670912F71D34883800192BAC"
-            BuildableName = "polyv-iOS-livePlayer.temp_caseinsensitive_rename.app"
+            BuildableName = "livePlayer.temp_caseinsensitive_rename.app"
             BlueprintName = "polyv-ios-livePlayer"
-            ReferencedContainer = "container:polyv-iOS-livePlayer.xcodeproj">
+            ReferencedContainer = "container:livePlayer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -85,9 +85,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "670912F71D34883800192BAC"
-            BuildableName = "polyv-iOS-livePlayer.temp_caseinsensitive_rename.app"
+            BuildableName = "livePlayer.temp_caseinsensitive_rename.app"
             BlueprintName = "polyv-ios-livePlayer"
-            ReferencedContainer = "container:polyv-iOS-livePlayer.xcodeproj">
+            ReferencedContainer = "container:livePlayer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

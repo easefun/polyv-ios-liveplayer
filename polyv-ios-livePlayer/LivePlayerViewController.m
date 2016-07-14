@@ -35,9 +35,14 @@
     [super viewDidLoad];
     
     CGFloat width = self.view.bounds.size.width;
-    self.videoPlayer = [[SkinVideoController alloc] initWithFrame:CGRectMake(0, 0, width, width*(3.0/4.0))];
+    self.videoPlayer = [[SkinVideoController alloc] initWithFrame:CGRectMake(0, 0, width, width*(3.0/4.0)) videoLiveType:SkinVideoLiveTypeContinuing];
     [self.view addSubview:self.videoPlayer.view];
-    [self.videoPlayer setParentViewController:self];
+    [self.videoPlayer setParentViewController:self];        // 设置ParentViewController:或实现goBackBlock属相方法
+
+    //__weak typeof(self) weakSelf = self;
+    //self.videoPlayer.goBackBlock = ^(){
+     //   [weakSelf dismissViewControllerAnimated:YES completion:nil];
+    //};
     
     // 加载直播频道信息
     [PLVChannel loadVideoUrl:self.channel.userId channelId:self.channel.channelId completion:^(PLVChannel*channel){
