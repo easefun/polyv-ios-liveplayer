@@ -131,3 +131,5 @@ self.videoPlayer.channel = channel;
     }];
 
   ```
+  
+  > 以上配置可参考demo中的代码实现
