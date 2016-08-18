@@ -24,7 +24,7 @@ typedef NS_ENUM(NSUInteger, SkinVideoLiveType) {
 @property (nonatomic, strong) PLVChannel* channel;                                              // 频道信息(强引用，防止被提前释放)
 @property (nonatomic, assign) CGRect frame;                                                     // 播放控制器的frame
 @property (nonatomic, copy) void(^dimissCompleteBlock)(void);                                   // dismiss播放器控制器回调block
-@property (nonatomic, copy) PLVPlayerGoBackBlock  goBackBlock;                                   // 使用此属性或者调用setParentViewController:方法设置俯视图
+@property (nonatomic, copy) PLVPlayerGoBackBlock  goBackBlock;                                  // 使用此属性或者调用setParentViewController:方法设置父视图
 
 
 /* -------- 初始化方法 -------- */

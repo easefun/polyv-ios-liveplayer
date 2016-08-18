@@ -49,6 +49,7 @@ static const NSTimeInterval pVideoTimeout = 15;
     BOOL _secondLoadTimeSent;
     
     BOOL _isManualRotateScreen;
+    BOOL _isReportedErrorMsg;
 }
 
 
@@ -257,6 +258,7 @@ static const NSTimeInterval pVideoTimeout = 15;
         NSString *urlStr = [NSString stringWithFormat:@"http://api.live.polyv.net/live_status/query?stream=%@",self.channel.stream];
         NSString *state = [NSString stringWithContentsOfURL:[NSURL URLWithString:urlStr] encoding:NSUTF8StringEncoding error:&error];
         if (!error && [state isEqualToString:@"end\n"]) {       // 字符串中有个"\n"
+            NSLog(@"直播结束");
             return;     // 直播停止,不在执行后面的方法
         }
     }
@@ -333,8 +335,11 @@ static const NSTimeInterval pVideoTimeout = 15;
         [self stop];
         [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(play) userInfo:nil repeats:NO];
 
-        [PLVReportManager reportError:_pid uid:self.channel.userId channelId:self.channel.channelId error:errorstring param1:self.param1 param2:@"" param3:@"" param4:@"" param5:@"polyv_liveplayer_ios_sdk"];
 
+        if (!_isReportedErrorMsg) {
+            _isReportedErrorMsg = YES;
+           [PLVReportManager reportError:_pid uid:self.channel.userId channelId:self.channel.channelId error:errorstring param1:self.param1 param2:@"" param3:@"" param4:@"" param5:@"polyv_liveplayer_ios_sdk"];
+        }
     }
     
     
@@ -395,7 +400,7 @@ static const NSTimeInterval pVideoTimeout = 15;
     self.videoControl.settingView.hidden = !self.videoControl.settingView.isHidden;
     
     if (!self.videoControl.settingView.subviews.count) {
-        [self setPLVVideoScalingModeView:@[@"画面比例",@"默认",@"填充屏幕",@"等比例填充"]];
+        [self setPLVVideoScalingModeView:@[@"画面比例",@"等比例适应",@"填充屏幕",@"等比例填充"]];
     }
 }
 
@@ -422,7 +427,7 @@ static const NSTimeInterval pVideoTimeout = 15;
 - (void)changeScalingMode:(UIButton *)button {
     switch (button.tag) {
         case 201:
-            [self setScalingMode:MPMovieScalingModeAspectFit];      // 等比例适应
+            [self setScalingMode:MPMovieScalingModeAspectFit];      // 等比例适应(默认)，一边接触到屏幕边缘
             break;
         case 202:
             [self setScalingMode:MPMovieScalingModeFill];           // 填充屏幕
