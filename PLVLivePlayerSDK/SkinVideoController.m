@@ -49,7 +49,7 @@ static const NSTimeInterval pVideoTimeout = 15;
     BOOL _secondLoadTimeSent;
     
     BOOL _isManualRotateScreen;
-    BOOL _isReportedErrorMsg;
+    BOOL _hasReportedErrorMsg;
 }
 
 
@@ -336,8 +336,8 @@ static const NSTimeInterval pVideoTimeout = 15;
         [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(play) userInfo:nil repeats:NO];
 
 
-        if (!_isReportedErrorMsg) {
-            _isReportedErrorMsg = YES;
+        if (!_hasReportedErrorMsg) {
+            _hasReportedErrorMsg = YES;
            [PLVReportManager reportError:_pid uid:self.channel.userId channelId:self.channel.channelId error:errorstring param1:self.param1 param2:@"" param3:@"" param4:@"" param5:@"polyv_liveplayer_ios_sdk"];
         }
     }
