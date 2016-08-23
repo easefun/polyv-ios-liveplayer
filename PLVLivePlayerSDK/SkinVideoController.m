@@ -50,6 +50,7 @@ static const NSTimeInterval pVideoTimeout = 15;
     
     BOOL _isManualRotateScreen;
     BOOL _hasReportedErrorMsg;
+    BOOL _isClickPlayButton;
 }
 
 
@@ -249,24 +250,23 @@ static const NSTimeInterval pVideoTimeout = 15;
 
 - (void)onMPMoviePlayerLoadStateDidChangeNotification
 {
-    
     //NSLog(@"%@--%ld",NSStringFromSelector(_cmd),self.loadState);
 
-    if (_videoLiveType == SkinVideoLiveTypeWillStop) {
-        
+    if (self.videoLiveType & SkinVideoLiveTypeWillStop) {
         NSError *error = nil;
         NSString *urlStr = [NSString stringWithFormat:@"http://api.live.polyv.net/live_status/query?stream=%@",self.channel.stream];
-        NSString *state = [NSString stringWithContentsOfURL:[NSURL URLWithString:urlStr] encoding:NSUTF8StringEncoding error:&error];
-        if (!error && [state isEqualToString:@"end\n"]) {       // 字符串中有个"\n"
-            NSLog(@"直播结束");
-            return;     // 直播停止,不在执行后面的方法
+        NSString *stateStr = [NSString stringWithContentsOfURL:[NSURL URLWithString:urlStr] encoding:NSUTF8StringEncoding error:&error];
+        NSString *state = [stateStr stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]; //忽略首位空白字符和换行字符
+        if (!error && [state isEqualToString:@"end"]) {     // 推流直播结束,则跳出方法
+            NSLog(@"-- live end");
+            return;
         }
     }
     
-    if (self.loadState & MPMovieLoadStateStalled) {         //
+    if (self.loadState & MPMovieLoadStateStalled) {         // 暂停状态，缓冲数据不够
         //NSLog(@"onMPMoviePlayerLoadStateDidChangeNotification stalled");
-        //开始二次缓冲计时
-        if (!_secondLoadTimeSent && _firstLoadTimeSent) {
+        // 开始二次缓冲计时(且非用户触发play事件)
+        if (!_secondLoadTimeSent && _firstLoadTimeSent && !_isClickPlayButton) {
             NSLog(@"二次缓冲计时开始");
             _secondLoadStartTime = [NSDate date];
         }
@@ -277,18 +277,24 @@ static const NSTimeInterval pVideoTimeout = 15;
         
         [self.videoControl.indicatorView startAnimating];
     }
-    if (self.loadState & MPMovieLoadStatePlaythroughOK) {
+    
+    if (self.loadState & MPMovieLoadStatePlaythroughOK) {   // 充足的缓冲可供播放使用
         //NSLog(@"onMPMoviePlayerLoadStateDidChangeNotification playthrough ok");
         if (_stallTimer) {
             [_stallTimer invalidate];
         }
         [self.videoControl.indicatorView stopAnimating];
-        //send first load time cost report
+        
+        if (_isClickPlayButton) {       // 用户触发play事件时,跳出此逻辑
+            _isClickPlayButton = NO;
+            return;
+        }
+        
+        // send first load time cost report
         if (!_firstLoadTimeSent) {
             _firstLoadTimeSent = YES;
             double diffTime = [[NSDate date] timeIntervalSinceDate:_firstLoadStartTime];
             [PLVReportManager reportLoading:_pid uid:self.channel.userId channelId:self.channel.channelId time:diffTime * 1000 param1:@"" param2:@"" param3:@"" param4:@"" param5:@"polyv_liveplayer_ios_sdk"];
-            
         }
         
         if (!_secondLoadTimeSent && _secondLoadStartTime) {
@@ -297,18 +303,18 @@ static const NSTimeInterval pVideoTimeout = 15;
             double diffTime = [[NSDate date] timeIntervalSinceDate:_secondLoadStartTime];
             [PLVReportManager reportBuffer:_pid uid:self.channel.userId channelId:self.channel.channelId time:diffTime * 1000 param1:@"" param2:@"" param3:@"" param4:@"" param5:@"polyv_liveplayer_ios_sdk"];
         }
-        
     }
   
 }
 
 - (void)onMPMoviePlayerReadyForDisplayDidChangeNotification
 {
-     //NSLog(@"%@",NSStringFromSelector(_cmd));
-}
--(void)onMPMoviePlayerPlaybackDidFinishNotification:(NSNotification *)notification{
     
-        //NSLog(@"%@",NSStringFromSelector(_cmd));
+}
+
+-(void)onMPMoviePlayerPlaybackDidFinishNotification:(NSNotification *)notification
+{
+    //NSLog(@"%@",NSStringFromSelector(_cmd));
     self.videoControl.progressSlider.value = self.duration;
     double totalTime = floor(self.duration);
     [self setTimeLabelValues:totalTime totalTime:totalTime];
@@ -379,6 +385,7 @@ static const NSTimeInterval pVideoTimeout = 15;
 - (void)playButtonClick
 {
     [self play];
+    _isClickPlayButton = YES;
     self.videoControl.playButton.hidden = YES;
     self.videoControl.pauseButton.hidden = NO;
 }
