@@ -121,6 +121,7 @@ static const NSTimeInterval pVideoTimeout = 15;
 
 - (void)setContentURL:(NSURL *)contentURL
 {
+    [self stop];
     _pid = [PLVReportManager getPid];
     [self.videoControl.indicatorView startAnimating];
     [super setContentURL:contentURL];
@@ -365,6 +366,7 @@ static const NSTimeInterval pVideoTimeout = 15;
         
     }else{
         
+        [self stop];
         [self clearTimer];          // 清除timer,解决循环引用导致的内存无法释放的问题
         
         if (self.goBackBlock) {
