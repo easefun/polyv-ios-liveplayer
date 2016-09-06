@@ -11,7 +11,7 @@
 #import <PLVChannel/PLVReportManager.h>
 
 static const CGFloat pVideoPlayerControllerAnimationTimeinterval = 0.3f;
-static const NSTimeInterval pVideoTimeout = 15;
+static const NSTimeInterval pVideoTimeout = 12;
 #define TITLECOLOR [UIColor colorWithWhite:0.8 alpha:1]
 
 @interface SkinVideoController ()
@@ -53,12 +53,16 @@ static const NSTimeInterval pVideoTimeout = 15;
     BOOL _isClickPlayButton;
 }
 
-
+- (void)removeObserverAndTime {
+    [self cancelObserver];
+    [self clearTimer];
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+}
 
 
 - (void)dealloc
 {
-    //NSLog(@"%s",__FUNCTION__);
+    DLog("%s",__FUNCTION__);
     [self cancelObserver];
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
@@ -88,6 +92,7 @@ static const NSTimeInterval pVideoTimeout = 15;
         self.view.layer.contents = (id)image.CGImage;
 
         self.controlStyle = MPMovieControlStyleNone;
+        [self setMovieSourceType:MPMovieSourceTypeStreaming];   // 设置movie元类型为流媒体
         [self.view addSubview:self.videoControl];
         
         //[self.view addSubview:self.backgroundView];
@@ -229,12 +234,11 @@ static const NSTimeInterval pVideoTimeout = 15;
         [self.videoControl.indicatorView stopAnimating];
         [self startDurationTimer];
         [self.videoControl autoFadeOutControlBar];
-        //NSLog(@"onMPMoviePlayerPlaybackStateDidChangeNotification playing");
-
+        DLog("onMPMoviePlayerPlaybackStateDidChangeNotification playing")
         
         
     } else {
-       //NSLog(@"onMPMoviePlayerPlaybackStateDidChangeNotification stoped");
+        DLog("onMPMoviePlayerPlaybackStateDidChangeNotification playbackState:%ld",self.playbackState);
 
         self.videoControl.pauseButton.hidden = YES;
         self.videoControl.playButton.hidden = NO;
@@ -251,7 +255,7 @@ static const NSTimeInterval pVideoTimeout = 15;
 
 - (void)onMPMoviePlayerLoadStateDidChangeNotification
 {
-    //NSLog(@"%@--%ld",NSStringFromSelector(_cmd),self.loadState);
+    DLog("%@-loadState:%ld",NSStringFromSelector(_cmd),self.loadState)
 
     if (self.videoLiveType & SkinVideoLiveTypeWillStop) {
         NSError *error = nil;
@@ -259,16 +263,16 @@ static const NSTimeInterval pVideoTimeout = 15;
         NSString *stateStr = [NSString stringWithContentsOfURL:[NSURL URLWithString:urlStr] encoding:NSUTF8StringEncoding error:&error];
         NSString *state = [stateStr stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]; //忽略首位空白字符和换行字符
         if (!error && [state isEqualToString:@"end"]) {     // 推流直播结束,则跳出方法
-            NSLog(@"-- live end");
+            DLog("-- live end");
             return;
         }
     }
     
     if (self.loadState & MPMovieLoadStateStalled) {         // 暂停状态，缓冲数据不够
-        //NSLog(@"onMPMoviePlayerLoadStateDidChangeNotification stalled");
+        DLog("onMPMoviePlayerLoadStateDidChangeNotification stalled");
         // 开始二次缓冲计时(且非用户触发play事件)
         if (!_secondLoadTimeSent && _firstLoadTimeSent && !_isClickPlayButton) {
-            NSLog(@"二次缓冲计时开始");
+            DLog("二次缓冲计时开始");
             _secondLoadStartTime = [NSDate date];
         }
         if (_stallTimer) {
@@ -280,7 +284,7 @@ static const NSTimeInterval pVideoTimeout = 15;
     }
     
     if (self.loadState & MPMovieLoadStatePlaythroughOK) {   // 充足的缓冲可供播放使用
-        //NSLog(@"onMPMoviePlayerLoadStateDidChangeNotification playthrough ok");
+        DLog("onMPMoviePlayerLoadStateDidChangeNotification playthrough ok");
         if (_stallTimer) {
             [_stallTimer invalidate];
         }
@@ -300,7 +304,7 @@ static const NSTimeInterval pVideoTimeout = 15;
         
         if (!_secondLoadTimeSent && _secondLoadStartTime) {
             _secondLoadTimeSent = YES;
-            NSLog(@"二次缓冲发送");
+            DLog("二次缓冲发送");
             double diffTime = [[NSDate date] timeIntervalSinceDate:_secondLoadStartTime];
             [PLVReportManager reportBuffer:_pid uid:self.channel.userId channelId:self.channel.channelId time:diffTime * 1000 param1:@"" param2:@"" param3:@"" param4:@"" param5:@"polyv_liveplayer_ios_sdk"];
         }
@@ -315,7 +319,6 @@ static const NSTimeInterval pVideoTimeout = 15;
 
 -(void)onMPMoviePlayerPlaybackDidFinishNotification:(NSNotification *)notification
 {
-    //NSLog(@"%@",NSStringFromSelector(_cmd));
     self.videoControl.progressSlider.value = self.duration;
     double totalTime = floor(self.duration);
     [self setTimeLabelValues:totalTime totalTime:totalTime];
@@ -323,6 +326,7 @@ static const NSTimeInterval pVideoTimeout = 15;
     NSDictionary *notificationUserInfo = [notification userInfo];
     NSNumber *resultValue = [notificationUserInfo objectForKey:MPMoviePlayerPlaybackDidFinishReasonUserInfoKey];
     MPMovieFinishReason reason = [resultValue intValue];
+    DLog("%@-reason:%ld",NSStringFromSelector(_cmd),reason);
     if (reason == MPMovieFinishReasonPlaybackError)
     {
         NSError *mediaPlayerError = [notificationUserInfo objectForKey:@"error"];
@@ -353,7 +357,7 @@ static const NSTimeInterval pVideoTimeout = 15;
 }
 - (void)onMPMovieDurationAvailableNotification
 {
-    //NSLog(@"%@",NSStringFromSelector(_cmd));
+    DLog("%@",NSStringFromSelector(_cmd));
     [self setProgressSliderMaxMinValues];
 }
 
@@ -536,7 +540,7 @@ static const NSTimeInterval pVideoTimeout = 15;
     
 }
 -(void)videoStalled {
-    NSLog(@"stalled and restart");
+    DLog("stalled and restart");
     [self.videoControl.indicatorView stopAnimating];
     [self stop];
     [self play];

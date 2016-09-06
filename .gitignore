@@ -141,3 +141,5 @@ Podfile.lock
 livePlayer.xcodeproj/project.xcworkspace/xcuserdata/ft.xcuserdatad/UserInterfaceState.xcuserstate
 
 *.xcuserstate
+
+livePlayer.xcodeproj/xcuserdata/ft.xcuserdatad/xcdebugger/Breakpoints_v2.xcbkptlist

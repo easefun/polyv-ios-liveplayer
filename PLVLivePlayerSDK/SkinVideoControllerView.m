@@ -9,6 +9,7 @@
 #import "SkinVideoControllerView.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVFoundation/AVFoundation.h>
+#import <PLVChannel/PLVChannel.h>
 
 static const CGFloat pVideoControlBarHeight = 50.0;
 static const CGFloat pVideoControlSettingWidth = 100;
@@ -501,7 +502,7 @@ typedef NS_ENUM(NSInteger, PanDirection) {
 }
 
 - (void)dealloc {
-    //NSLog(@"%s",__FUNCTION__);
+    DLog("%s",__FUNCTION__);
 }
 
 #pragma mark - Private Method

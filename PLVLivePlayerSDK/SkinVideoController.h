@@ -50,8 +50,8 @@ typedef void(^PLVPlayerGoBackBlock)(void);
 // 额外参数，用来跟踪出错用户
 - (void)setParam1:(NSString*)param1;
 
-
-
+// 重置播放器前调用
+- (void)removeObserverAndTime;
 
 
 
