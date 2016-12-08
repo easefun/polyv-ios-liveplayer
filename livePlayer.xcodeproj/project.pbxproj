@@ -102,10 +102,10 @@
 			children = (
 				6709132D1D348A1600192BAC /* LivePlayerViewController.h */,
 				6709132E1D348A1600192BAC /* LivePlayerViewController.m */,
-				670912FE1D34883800192BAC /* AppDelegate.h */,
-				670912FF1D34883800192BAC /* AppDelegate.m */,
 				670913011D34883800192BAC /* ViewController.h */,
 				670913021D34883800192BAC /* ViewController.m */,
+				670912FE1D34883800192BAC /* AppDelegate.h */,
+				670912FF1D34883800192BAC /* AppDelegate.m */,
 				670913041D34883800192BAC /* Main.storyboard */,
 				670913071D34883800192BAC /* Assets.xcassets */,
 				670913091D34883800192BAC /* LaunchScreen.storyboard */,

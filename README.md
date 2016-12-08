@@ -3,6 +3,9 @@
 > 保利威视直播播放器video player基于MPMoviePlayerController的封装，提供接口使用userid 和 channel 进行直播播放
 
 
+> 建议使用Xcode8.0以上开发工具
+
+
 ## 文件结构
 
 - PLVLivePlayerSDK 文件结构
@@ -133,3 +136,4 @@ self.videoPlayer.channel = channel;
   ```
   
   > 以上配置可参考demo中的代码实现
+

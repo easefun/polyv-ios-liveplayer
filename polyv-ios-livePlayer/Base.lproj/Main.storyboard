@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="qYV-wk-EnR">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="qYV-wk-EnR">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -15,11 +16,11 @@
                         <viewControllerLayoutGuide type="bottom" id="Y7E-fE-BIv"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="eNI-jg-Jc4">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="efeezcdhg9" borderStyle="roundedRect" placeholder="输入用户ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vH1-6d-fpD">
-                                <rect key="frame" x="142" y="166" width="113" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="输入用户ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vH1-6d-fpD">
+                                <frame key="frameInset" minX="142" minY="166" width="113" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="113" id="Icf-FG-5IS"/>
                                     <constraint firstAttribute="height" constant="30" id="pVf-42-C93"/>
@@ -27,18 +28,18 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="用户ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JFz-yw-GcG">
-                                <rect key="frame" x="70" y="170" width="64" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="用户ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JFz-yw-GcG">
+                                <frame key="frameInset" minX="70" minY="170" width="64" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="wOP-rw-RaX"/>
                                     <constraint firstAttribute="width" constant="64" id="z6H-X5-kh6"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HLv-7P-QZJ">
-                                <rect key="frame" x="229" y="308" width="46" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HLv-7P-QZJ">
+                                <frame key="frameInset" minX="229" minY="308" width="46" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="2CC-gB-Vl1"/>
                                     <constraint firstAttribute="width" constant="46" id="wYb-Vm-DK9"/>
@@ -48,8 +49,8 @@
                                     <action selector="touch:" destination="qYV-wk-EnR" eventType="touchUpInside" id="MrQ-Cw-4Wo"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="100390" borderStyle="roundedRect" placeholder="输入频道ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bjn-Cy-YNT">
-                                <rect key="frame" x="142" y="225" width="113" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="输入频道ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="bjn-Cy-YNT">
+                                <frame key="frameInset" minX="142" minY="225" width="113" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="VC0-kG-G1s"/>
                                     <constraint firstAttribute="width" constant="113" id="viW-o1-s50"/>
@@ -57,18 +58,18 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="频道ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4X8-tk-7yw">
-                                <rect key="frame" x="62" y="234" width="64" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="频道ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4X8-tk-7yw">
+                                <frame key="frameInset" minX="62" minY="234" width="64" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="OrZ-Jx-cBX"/>
                                     <constraint firstAttribute="width" constant="64" id="Z0F-BL-pfj"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="bjn-Cy-YNT" firstAttribute="leading" secondItem="HLv-7P-QZJ" secondAttribute="trailing" constant="-133" id="3ab-0Y-3sZ"/>
                             <constraint firstAttribute="leadingMargin" secondItem="JFz-yw-GcG" secondAttribute="leading" constant="-50" id="KuS-35-6jT"/>
@@ -100,9 +101,9 @@
                         <viewControllerLayoutGuide type="bottom" id="Cr5-di-42l"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="J6O-cR-fRb">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Eke-Lr-a1c" userLabel="First Responder" sceneMemberID="firstResponder"/>

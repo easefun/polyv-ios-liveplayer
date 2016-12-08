@@ -64,7 +64,7 @@
     [PLVChannel loadVideoUrl:self.channel.userId channelId:self.channel.channelId completion:^(PLVChannel*channel){
         if (channel==nil) {
             NSLog(@"channel load error");
-        }else{
+        }else {
             self.channel = channel;
             self.videoPlayer.channel = channel;
             [self.videoPlayer setHeadTitle:self.channel.name];
