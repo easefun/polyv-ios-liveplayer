@@ -21,6 +21,7 @@
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *contentURL;
 @property (nonatomic, copy) NSString *stream;
+@property (nonatomic, copy) NSNumber *reportFreq;
 
 /**
  *  加载视频信息
@@ -31,6 +32,7 @@
  */
 +(void)loadVideoUrl:(NSString*)uid channelId:(NSString*)cid completion:(void(^)(PLVChannel*))completion;
 
-+(BOOL)isALive:(PLVChannel*)channel;                                                                    // 是否正在直播
+/* 是否正在直播*/
++(BOOL)isALive:(PLVChannel*)channel;
 
 @end

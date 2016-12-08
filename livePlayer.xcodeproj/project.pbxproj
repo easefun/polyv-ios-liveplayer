@@ -19,7 +19,7 @@
 		6709132C1D3488FE00192BAC /* SkinVideoControllerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 670913291D3488FE00192BAC /* SkinVideoControllerView.m */; };
 		6709132F1D348A1600192BAC /* LivePlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6709132E1D348A1600192BAC /* LivePlayerViewController.m */; };
 		670913611D34961100192BAC /* PLVLivePlayer.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 670913601D34961100192BAC /* PLVLivePlayer.bundle */; };
-		670913631D34991C00192BAC /* PLVChannel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670913621D34991C00192BAC /* PLVChannel.framework */; };
+		670E8FEF1DF95581007B8F40 /* PLVChannel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670E8FEE1DF95581007B8F40 /* PLVChannel.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +54,7 @@
 		6709132D1D348A1600192BAC /* LivePlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LivePlayerViewController.h; sourceTree = "<group>"; };
 		6709132E1D348A1600192BAC /* LivePlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LivePlayerViewController.m; sourceTree = "<group>"; };
 		670913601D34961100192BAC /* PLVLivePlayer.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = PLVLivePlayer.bundle; sourceTree = "<group>"; };
-		670913621D34991C00192BAC /* PLVChannel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PLVChannel.framework; sourceTree = "<group>"; };
+		670E8FEE1DF95581007B8F40 /* PLVChannel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PLVChannel.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +63,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				670913211D3488D300192BAC /* MediaPlayer.framework in Frameworks */,
-				670913631D34991C00192BAC /* PLVChannel.framework in Frameworks */,
+				670E8FEF1DF95581007B8F40 /* PLVChannel.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,7 +135,7 @@
 		670913241D3488FE00192BAC /* PLVLivePlayerSDK */ = {
 			isa = PBXGroup;
 			children = (
-				670913621D34991C00192BAC /* PLVChannel.framework */,
+				670E8FEE1DF95581007B8F40 /* PLVChannel.framework */,
 				670913601D34961100192BAC /* PLVLivePlayer.bundle */,
 				670913261D3488FE00192BAC /* SkinVideoController.h */,
 				670913271D3488FE00192BAC /* SkinVideoController.m */,
@@ -379,13 +379,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/PLVLivePlayerSDK",
-				);
+				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/PLVLivePlayerSDK";
 				INFOPLIST_FILE = "polyv-ios-livePlayer/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.polyv.livePlayer;
 				PRODUCT_NAME = livePlayer;
@@ -399,13 +396,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/PLVLivePlayerSDK",
-				);
+				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/PLVLivePlayerSDK";
 				INFOPLIST_FILE = "polyv-ios-livePlayer/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.polyv.livePlayer;
 				PRODUCT_NAME = livePlayer;

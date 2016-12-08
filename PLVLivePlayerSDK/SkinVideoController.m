@@ -259,7 +259,7 @@ static const NSTimeInterval pVideoTimeout = 12;
 
     if (self.videoLiveType & SkinVideoLiveTypeWillStop) {
         NSError *error = nil;
-        NSString *urlStr = [NSString stringWithFormat:@"http://api.live.polyv.net/live_status/query?stream=%@",self.channel.stream];
+        NSString *urlStr = [NSString stringWithFormat:@"https://api.polyv.net/live_status/query?stream=%@",self.channel.stream];
         NSString *stateStr = [NSString stringWithContentsOfURL:[NSURL URLWithString:urlStr] encoding:NSUTF8StringEncoding error:&error];
         NSString *state = [stateStr stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]; //忽略首位空白字符和换行字符
         if (!error && [state isEqualToString:@"end"]) {     // 推流直播结束,则跳出方法
