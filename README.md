@@ -1,9 +1,8 @@
 # polyv-ios-liveplayer
 
-> 保利威视直播播放器video player基于MPMoviePlayerController的封装，提供接口使用userid 和 channel 进行直播播放
+> 保利威视直播播放器liveplayer基于MPMoviePlayerController的封装，提供使用userId 和channelId 获取视频地址进行直播观看
 
-
-> 建议使用Xcode8.0以上开发工具
+> 建议使用Xcode8.0 以上开发工具
 
 
 ## 文件结构
@@ -32,9 +31,27 @@
 
 2. 配置info.plist文件
 
-  - 允许https连接访问。iOS 9只允许访问https内容，需要特殊配置下
-
+  根据苹果的审核要求，本DEMO 演示项目中已取消禁用ATS(App Transport Security)，SDK中大部分接口都已支持HTTPS，视频暂时还未支持HTTPS，也会在后续全面升级HTTPS。**特别的，如果将PLVLivePlayerSDK导入自己工程中，需要在项目的info.plist中添加以下内容：**
+   
    右键点击项目的plist文件->Open As Source Code:
+   ```xml
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>videocc.net</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSExceptionRequiresForwardSecrecy</key>
+                <false/>
+            </dict>
+        </dict>
+    </dict>
+   ```
+   临时允许http连接访问。可如下配置（不建议）
   ```xml
     <key>NSAppTransportSecurity</key>
     <dict>
@@ -43,7 +60,6 @@
     </dict>
     
   ```
-   加入以上内容，允许app访问http内容。
 
   - 设置状态栏默认不显示。和播放器皮肤视图相关
  
@@ -119,18 +135,14 @@ self.videoPlayer.channel = channel;
 
   ```objective-c
     // 加载直播频道信息
-    [PLVChannel loadVideoUrl:self.channel.userId channelId:self.channel.channelId completion:^(PLVChannel*channel){
-        if (channel==nil) {
-            //error handle
-            NSLog(@"channel load error");
-        }else{
-            self.channel = channel;
-            self.videoPlayer.channel = channel;
-            [self.videoPlayer setHeadTitle:self.channel.name];
-            [self.videoPlayer setContentURL:[NSURL URLWithString:self.channel.contentURL]];
-           
-            [self.videoPlayer play];            // 播放视频
-        }
+    [PLVChannel loadVideoUrl:self.channel.userId channelId:self.channel.channelId completion:^(PLVChannel *channel) {
+        self.channel = channel;
+        self.videoPlayer.channel = channel;
+        [self.videoPlayer setHeadTitle:self.channel.name];
+        [self.videoPlayer setContentURL:[NSURL URLWithString:self.channel.contentURL]];
+        [self.videoPlayer play];
+    } failure:^(NSInteger errorCode, NSString *description) {
+        NSLog(@"channel load failure, code:%ld, description:%@",errorCode,description);
     }];
 
   ```
