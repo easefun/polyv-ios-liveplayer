@@ -61,16 +61,15 @@
 }
 
 - (void)loadVideoJson {
-    [PLVChannel loadVideoUrl:self.channel.userId channelId:self.channel.channelId completion:^(PLVChannel*channel){
-        if (channel==nil) {
-            NSLog(@"channel load error");
-        }else {
-            self.channel = channel;
-            self.videoPlayer.channel = channel;
-            [self.videoPlayer setHeadTitle:self.channel.name];
-            [self.videoPlayer setContentURL:[NSURL URLWithString:self.channel.contentURL]];
-            [self.videoPlayer play];
-        }
+    
+    [PLVChannel loadVideoUrl:self.channel.userId channelId:self.channel.channelId completion:^(PLVChannel *channel) {
+        self.channel = channel;
+        self.videoPlayer.channel = channel;
+        [self.videoPlayer setHeadTitle:self.channel.name];
+        [self.videoPlayer setContentURL:[NSURL URLWithString:self.channel.contentURL]];
+        [self.videoPlayer play];
+    } failure:^(NSInteger errorCode, NSString *description) {
+        NSLog(@"channel load failure, code:%ld, description:%@",errorCode,description);
     }];
 }
 

@@ -28,11 +28,23 @@
  *
  *  @param uid        user id
  *  @param cid        channel id
+ *  @param completion 成功获得频道信息的block
+ *  @param failure    获取频道信息失败的block
+ */
++ (void)loadVideoUrl:(NSString *)uid channelId:(NSString *)cid
+          completion:(void(^)(PLVChannel *channel))completion
+             failure:(void(^)(NSInteger errorCode, NSString *description))failure;
+
+/**
+ *  加载视频信息（旧的API）
+ *
+ *  @param uid        user id
+ *  @param cid        channel id
  *  @param completion 获得频道信息的block
  */
-+(void)loadVideoUrl:(NSString*)uid channelId:(NSString*)cid completion:(void(^)(PLVChannel*))completion;
++ (void)loadVideoUrl:(NSString*)uid channelId:(NSString*)cid completion:(void(^)(PLVChannel*))completion __deprecated;
 
 /* 是否正在直播*/
-+(BOOL)isALive:(PLVChannel*)channel;
++ (BOOL)isALive:(PLVChannel*)channel;
 
 @end
