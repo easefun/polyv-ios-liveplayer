@@ -1,6 +1,0 @@
-framework module PLVChannel {
-  umbrella header "PLVChannel.h"
-
-  export *
-  module * { export * }
-}
