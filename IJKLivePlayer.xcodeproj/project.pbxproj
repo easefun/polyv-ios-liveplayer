@@ -305,12 +305,12 @@
 			children = (
 				670B17B31E1E24BF009D0BAA /* IJKMediaFramework.framework */,
 				670B176E1E1DEE41009D0BAA /* PLVLiveAPI.framework */,
+				670B17731E1DEE41009D0BAA /* PLVLivePlayerSkin */,
 				679A844E1E2F688A00F142AA /* PLVChatRoom */,
 				670B176F1E1DEE41009D0BAA /* PLVLivePlayerController.h */,
 				670B17701E1DEE41009D0BAA /* PLVLivePlayerController.m */,
 				670B17711E1DEE41009D0BAA /* PLVLivePlayerControllerSkin.h */,
 				670B17721E1DEE41009D0BAA /* PLVLivePlayerControllerSkin.m */,
-				670B17731E1DEE41009D0BAA /* PLVLivePlayerSkin */,
 			);
 			path = PLVLivePlayerSDK;
 			sourceTree = "<group>";
