@@ -18,7 +18,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    /** 配置appId 和 appSecret(保利威视后台获取)*/
+    /** 配置appId 和 appSecret(保利威视后台“API设置中”获取 http://live.polyv.net/secure/user/app.htm )*/
     NSLog(@"需要配置appId和appSecret，否则无法请求聊天token");
     [[PLVSettings sharedInstance] setAppId:@"" appSecret:@""];
     

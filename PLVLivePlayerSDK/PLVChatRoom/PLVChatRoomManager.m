@@ -8,8 +8,12 @@
 
 #import "PLVChatRoomManager.h"
 #import "PLVTableViewCell.h"
-#import <PLVLiveAPI/PLVChat.h>
+#import <PLVLiveAPI/PLVLiveAPI.h>
 #import "BCKeyBoard.h"
+
+
+#define CHATFONTSIZE 14.0       // 聊天文字大小
+#define ChATMAXWIDTH 200.0f     // 聊天内容长度
 
 #define TOOLBARHEIGHT 46
 #define BACKCOLOR [UIColor colorWithRed:233/255.0 green:235/255.0 blue:245/255.0 alpha:1.0]
@@ -30,6 +34,7 @@
     NSMutableArray *listChats;
     // chatSocket管理
     PLVChat *chatSocket;
+    
     // Emoji 键盘
     BCKeyBoard *bcKeyBoard;
 }
@@ -90,24 +95,34 @@
 
 #pragma mark - UITableViewDelegate
 
-// 返回单元格高度
+// 返回单元格高度，根据具体内容计算高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     PLVChat *chat = listChats[indexPath.row];
-    if (chat.messageType==PLVChatMessageTypeSpeak || chat.messageType==PLVChatMessageTypeOwnWords) {
-        //根据内容计算高度 两处需要对应：宽度和文字大小（根据cell xib中的约束计算）
-        PLVChat *chat = listChats[indexPath.row];
-        CGRect rect = [chat.messageContent boundingRectWithSize:CGSizeMake(CGRectGetWidth(self.view.frame)-100, MAXFLOAT)
-                                                        options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
-                                                     attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:14.0]} context:nil];
-        return rect.size.height + 50;
-        // 获取一个宽度，设置cell的label
-    }else if (chat.messageType==PLVChatMessageTypeGongGao) {
+    CGSize size = [self autoCalculateWidth:ChATMAXWIDTH
+                                  orHeight:MAXFLOAT
+                         attributedContent:chat.messageAttributedContent];
+    
+    if (chat.messageType == PLVChatMessageTypeSpeak)
+    {
+        return size.height + 60;
+    }
+    else if (chat.messageType == PLVChatMessageTypeOwnWords)
+    {
+        return size.height + 40;
+    }
+    else if (chat.messageType == PLVChatMessageTypeGongGao)
+    {
         return 45;
-    }else if (chat.messageType==PLVChatMessageTypeOpenRoom || chat.messageType==PLVChatMessageTypeCloseRoom
-              || chat.messageType==PLVChatMessageTypeError) {
+    }
+    else if (chat.messageType == PLVChatMessageTypeOpenRoom ||
+             chat.messageType == PLVChatMessageTypeCloseRoom ||
+             chat.messageType == PLVChatMessageTypeError)
+    {
         return 50;
-    }else {
+    }
+    else
+    {
         return 50;
     }
 }
@@ -119,42 +134,106 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    static NSString *CellIdentifier = @"Cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.backgroundColor = [UIColor clearColor];
+    }else{
+        for (UIView *cellView in cell.subviews){
+            [cellView removeFromSuperview];
+        }
+    }
+    
     PLVChat *chat = listChats[indexPath.row];
-   
-    if (chat.messageType == PLVChatMessageTypeSpeak) {          // 用户发言
-        PLVTableViewCell *cell = [PLVTableViewCell theMessageOtherTextCellWithTableView:tableView];
-        cell.nickNameLable.text = chat.speaker.nickName;
-        cell.contentLabel.attributedText = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chat.messageContent font:cell.contentLabel.font];
-        // 请求头像图片
+    if (chat.messageType == PLVChatMessageTypeSpeak)        // 用户发言
+    {
         NSError *error;
         NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:chat.speaker.nickImg] options:NSDataReadingMappedIfSafe error:&error];
+        // 用户头像
+        UIImageView *avatarView = [[UIImageView alloc]initWithFrame:CGRectMake(5, 5, 35, 35)];
+        [cell addSubview:avatarView];
         if (error) {
-            cell.avatarImageView.image = [UIImage imageNamed:@"plv_missing_face"];
+            avatarView.image = [UIImage imageNamed:@"plv_missing_face"];
         }else {
-            cell.avatarImageView.image = [UIImage imageWithData:imgData];
+            avatarView.image = [UIImage imageWithData:imgData];
         }
+        // 用户名
+        UILabel *nickNameLable = [[UILabel alloc] initWithFrame:CGRectMake(50, 5, 123, 20)];
+        [cell addSubview:nickNameLable];
+        nickNameLable.text = chat.speaker.nickName;
+        nickNameLable.textColor = [UIColor darkGrayColor];
+        nickNameLable.font = [UIFont boldSystemFontOfSize:11.0];
+        // 职称
+        // 发言内容
+        [cell addSubview:[self bubbleView:chat.messageAttributedContent fromSelf:NO withPosition:40]];
         
         return cell;
     }
-    else if (chat.messageType == PLVChatMessageTypeOwnWords){    // 自己的发言
-        PLVTableViewCell *cell = [PLVTableViewCell theMessageOwnTextCellWithTableView:tableView];
-        cell.mySpeakLabel.attributedText = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chat.messageContent font:cell.mySpeakLabel.font];
+    else if (chat.messageType == PLVChatMessageTypeOwnWords)    // 自己的发言
+    {
+        [cell addSubview:[self bubbleView:chat.messageAttributedContent fromSelf:YES withPosition:10]];
         
         return cell;
-    }else if (chat.messageType == PLVChatMessageTypeGongGao){       // 聊天室公告
+    }
+    else if (chat.messageType == PLVChatMessageTypeGongGao)     // 聊天室公告
+    {
         PLVTableViewCell *cell = [PLVTableViewCell theMessageGongGaoTextCell];
         cell.roomGongGaoLabel.text = [@"公告："stringByAppendingString:chat.messageContent];
         
         return cell;
-    }else if (chat.messageType == PLVChatMessageTypeOpenRoom||chat.messageType == PLVChatMessageTypeCloseRoom){      // 聊天室状态
+    }
+    else if (chat.messageType == PLVChatMessageTypeOpenRoom||chat.messageType == PLVChatMessageTypeCloseRoom||chat.messageType==PLVChatMessageTypeError)   // 聊天室状态
+    {
         PLVTableViewCell *cell = [PLVTableViewCell theMessageStateCell];
         cell.roomStateLabel.text = chat.messageContent;
         
         return cell;
-    }else {
+    }
+    else
+    {
         return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@""];
     }
 }
+
+//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+//    PLVChat *chat = listChats[indexPath.row];
+//   
+//    if (chat.messageType == PLVChatMessageTypeSpeak) {          // 用户发言
+//        PLVTableViewCell *cell = [PLVTableViewCell theMessageOtherTextCellWithTableView:tableView];
+//        cell.nickNameLable.text = chat.speaker.nickName;
+//        cell.contentLabel.attributedText = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chat.messageContent font:cell.contentLabel.font];
+//        // 请求头像图片
+//        NSError *error;
+//        NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:chat.speaker.nickImg] options:NSDataReadingMappedIfSafe error:&error];
+//        if (error) {
+//            cell.avatarImageView.image = [UIImage imageNamed:@"plv_missing_face"];
+//        }else {
+//            cell.avatarImageView.image = [UIImage imageWithData:imgData];
+//        }
+//        
+//        return cell;
+//    }
+//    else if (chat.messageType == PLVChatMessageTypeOwnWords){    // 自己的发言
+//        PLVTableViewCell *cell = [PLVTableViewCell theMessageOwnTextCellWithTableView:tableView];
+//        cell.mySpeakLabel.attributedText = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chat.messageContent font:cell.mySpeakLabel.font];
+//        
+//        return cell;
+//    }else if (chat.messageType == PLVChatMessageTypeGongGao){       // 聊天室公告
+//        PLVTableViewCell *cell = [PLVTableViewCell theMessageGongGaoTextCell];
+//        cell.roomGongGaoLabel.text = [@"公告："stringByAppendingString:chat.messageContent];
+//        
+//        return cell;
+//    }else if (chat.messageType == PLVChatMessageTypeOpenRoom||chat.messageType == PLVChatMessageTypeCloseRoom){      // 聊天室状态
+//        PLVTableViewCell *cell = [PLVTableViewCell theMessageStateCell];
+//        cell.roomStateLabel.text = chat.messageContent;
+//        
+//        return cell;
+//    }else {
+//        return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@""];
+//    }
+//}
 
 
 #pragma mark - SocketIO delegate 事件
@@ -227,8 +306,20 @@
 
 // 添加新的聊天
 - (void)addNewChat:(PLVChat *)chat {
+    
+    if (chat.messageType == PLVChatMessageTypeOwnWords && chatSocket.chatRoomState != PLVChatRoomStateConnected) {
+        NSLog(@"聊天室未连接");
+        chat.messageType = PLVChatMessageTypeCloseRoom;
+        chat.messageContent = @"聊天室未连接";
+    }
+    
+    // 将内容转化为属性文本
+    chat.messageAttributedContent = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chat.messageContent
+                                                                                                    font:[UIFont systemFontOfSize:CHATFONTSIZE]];
     // 数据源更新
     [listChats addObject:chat];
+    // 优化，管理socke和聊天内容分开
+    //chatSocket.messageType = chat.messageType;
     
     // tableView更新（插入新的cell）
     NSInteger rows = [_tableView numberOfRowsInSection:0];
@@ -248,23 +339,112 @@
     }
 }
 
-// 计算宽窄
--(float)autoCalculateWidthOrHeight:(float)height
-                             width:(float)width
-                          fontsize:(float)fontsize
-                           content:(NSString*)content
+// 计算普通字符串文本的宽或高
+- (CGSize)autoCalculateWidth:(float)width orHeight:(float)height fontsize:(float)fontsize content:(NSString *)content
 {
     //计算出rect
     CGRect rect = [content boundingRectWithSize:CGSizeMake(width, height)
                                         options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
-                                     attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:fontsize]} context:nil];
+                                     attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:fontsize]}
+                                        context:nil];
+    return rect.size;
     
-    //判断计算的是宽还是高
-    if (height == MAXFLOAT) {
-        return rect.size.height;
-    }
+    // 判断计算的是宽还是高
+    //if (height == MAXFLOAT) {
+    //    return rect.size.height;
+    //}
+    //else
+    //    return rect.size.width;
+}
+
+// 计算属性字符串文本的宽或高
+- (CGSize)autoCalculateWidth:(float)width orHeight:(float)height attributedContent:(NSAttributedString *)attributedContent
+{
+    CGRect rect = [attributedContent boundingRectWithSize:CGSizeMake(width, height)
+                                                  options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
+                                                  context:nil];
+    return rect.size;
+}
+
+// 设置泡泡文本
+- (UIView *)bubbleView:(NSString *)text from:(BOOL)fromSelf withPosition:(int)position{
+    
+    //计算文字大小
+    CGSize size = [self autoCalculateWidth:ChATMAXWIDTH
+                                  orHeight:MAXFLOAT
+                                  fontsize:CHATFONTSIZE
+                                   content:text];
+    //CGSize size = [text sizeWithFont:font constrainedToSize:CGSizeMake(180.0f, 20000.0f) lineBreakMode:NSLineBreakByWordWrapping]; __deprecated;
+    
+    // build single chat bubble cell with given text
+    UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
+    returnView.backgroundColor = [UIColor clearColor];
+    
+    //背影图片
+    UIImage *bubble = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:fromSelf?@"plv_chatfrom_mine":@"plv_chatfrom_other" ofType:@"png"]];
+    
+    UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[bubble stretchableImageWithLeftCapWidth:floorf(bubble.size.width/2) topCapHeight:floorf(bubble.size.height*0.7)]];
+    NSLog(@"%f,%f",size.width,size.height);
+    
+    //添加文本信息
+    UILabel *bubbleText = [[UILabel alloc] initWithFrame:CGRectMake(fromSelf ? 15.0f : 22.0f, fromSelf ? 16.0f : 6.0f, size.width+10, size.height+10)];
+    bubbleText.backgroundColor = [UIColor clearColor];
+    bubbleText.font = [UIFont systemFontOfSize:CHATFONTSIZE];
+    bubbleText.numberOfLines = 0;
+    bubbleText.lineBreakMode = NSLineBreakByWordWrapping;
+    bubbleText.attributedText =  [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:text font:bubbleText.font];
+    //bubbleText.text = text;
+    
+    bubbleImageView.frame = CGRectMake(0, fromSelf ? 10.0 : 0, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
+    
+    if(fromSelf)
+        returnView.frame = CGRectMake(CGRectGetWidth(self.view.frame)-position-(bubbleText.frame.size.width+30.0f), 0.0f, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
     else
-        return rect.size.width;
+        returnView.frame = CGRectMake(position, 30.0f, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
+    
+    [returnView addSubview:bubbleImageView];
+    [returnView addSubview:bubbleText];
+    
+    return returnView;
+}
+
+// 设置泡泡文本(属性字符串)
+- (UIView *)bubbleView:(NSAttributedString *)attributedText fromSelf:(BOOL)fromSelf withPosition:(int)position {
+    
+    //计算文字大小
+    CGSize size = [self autoCalculateWidth:ChATMAXWIDTH
+                                  orHeight:MAXFLOAT
+                         attributedContent:attributedText];
+    
+    // build single chat bubble cell with given text
+    UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
+    returnView.backgroundColor = [UIColor clearColor];
+    
+    //背影图片
+    UIImage *bubble = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:fromSelf?@"plv_chatfrom_mine":@"plv_chatfrom_other" ofType:@"png"]];
+    
+    UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[bubble stretchableImageWithLeftCapWidth:floorf(bubble.size.width/2) topCapHeight:floorf(bubble.size.height*0.7)]];
+    NSLog(@"%f,%f",size.width,size.height);
+    
+    //添加文本信息
+    UILabel *bubbleText = [[UILabel alloc] initWithFrame:CGRectMake(fromSelf ? 15.0f : 22.0f, fromSelf ? 16.0f : 6.0f, size.width+10, size.height+10)];
+    bubbleText.backgroundColor = [UIColor clearColor];
+    bubbleText.font = [UIFont systemFontOfSize:CHATFONTSIZE];
+    bubbleText.numberOfLines = 0;
+    bubbleText.lineBreakMode = NSLineBreakByWordWrapping;
+    bubbleText.attributedText =  attributedText;
+    
+    bubbleImageView.frame = CGRectMake(0, fromSelf ? 10.0 : 0, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
+    
+    if(fromSelf)
+        returnView.frame = CGRectMake(CGRectGetWidth(self.view.frame)-position-(bubbleText.frame.size.width+30.0f), 0.0f, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
+    else
+        returnView.frame = CGRectMake(position, 30.0f, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
+    
+    [returnView addSubview:bubbleImageView];
+    [returnView addSubview:bubbleText];
+    
+    return returnView;
 }
 
 #pragma mark - 外部接口方法

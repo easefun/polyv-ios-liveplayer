@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "LivePlayerViewController.h"
 #import <MBProgressHUD/MBProgressHUD.h>
+#import <PLVLiveAPI/PLVSettings.h>
 
 @interface ViewController ()
 
@@ -21,6 +22,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    NSString *appId = [PLVSettings sharedInstance].getAppId;
+    NSString *appSecret = [PLVSettings sharedInstance].getAppSecret;
+    if ( [appId isKindOfClass:[NSNull class]] || [appSecret isKindOfClass:[NSNull class]] || [appId isEqualToString:@""] || [appSecret isEqualToString:@""] ) {
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [hud setMode:MBProgressHUDModeText];
+        hud.label.text = @"未配置appId和appSecret!";
+        hud.detailsLabel.text = @"连接聊天室需要配置appId和appSecret，可查看AppDelegate中的说明";
+        [hud hideAnimated:YES afterDelay:7.0];
+    }
     
     NSArray *userInfo = [[NSUserDefaults standardUserDefaults] objectForKey:@"userInfo"];
     if (userInfo) {

@@ -7,8 +7,10 @@
 
 ## 概述
 
-`polyv-ios-liveplayer`工程是包括POLYV直播SDK在内的一个DEMO，下载后在Xcode上运行使用，下载量在60M左右。 此工程基于IJKPlayer播放器，可以进行FLV视频的播放，具有**延迟低、加载快**等直播优点。同时也添加有**聊天室的SDK**和**弹幕功能**等。
+`polyv-ios-liveplayer`工程是包括POLYV直播SDK在内的一个DEMO，下载后在Xcode上运行使用，下载量在60M左右。此工程基于IJKPlayer播放器，可以进行FLV视频的播放，具有**延迟低、加载快**等直播优点。同时也添加有**聊天室的SDK**和**弹幕功能**等。
 原iOS直播播放器基于`MPMovieViewPlayer`的封装，如继续使用原SDK，可移步[dev_moviePlayer分支](https://github.com/easefun/polyv-ios-liveplayer/tree/dev_moviePlayer)。
+
+**下载后如使用聊天室需要登录[保利威视后台](http://my.polyv.net/v2/login) 获取到 在AppDelegate中配置AppId和AppSecretId**
 
 ## PLVLivePlayerSDK 功能介绍
 

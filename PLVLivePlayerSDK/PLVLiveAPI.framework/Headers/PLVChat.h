@@ -63,8 +63,9 @@ typedef NS_ENUM(NSInteger, PLVChatMessageType) {
 @property (nonatomic, weak) id <SocketIODelegate> delegate;
 
 @property (nonatomic, assign, readonly) PLVChatRoomState chatRoomState;
-@property (nonatomic, assign, readonly) PLVChatMessageType messageType;
-@property (nonatomic, strong, readonly) NSString *messageContent;
+@property (nonatomic, assign) PLVChatMessageType messageType;
+@property (nonatomic, strong) NSString *messageContent;
+@property (nonatomic, strong) NSAttributedString *messageAttributedContent; // messageContent转化为可带表情的属性字符串
 
 // 聊天是其他成员信息
 @property (nonatomic, strong, readonly) Speaker *speaker;
