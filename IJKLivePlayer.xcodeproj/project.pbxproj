@@ -65,10 +65,6 @@
 		679A84891E2F688A00F142AA /* chatBar_keyboard@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 679A84691E2F688A00F142AA /* chatBar_keyboard@2x.png */; };
 		679A848A1E2F688A00F142AA /* chatBar_keyboardSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 679A846A1E2F688A00F142AA /* chatBar_keyboardSelected.png */; };
 		679A848B1E2F688A00F142AA /* chatBar_keyboardSelected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 679A846B1E2F688A00F142AA /* chatBar_keyboardSelected@2x.png */; };
-		679A848C1E2F688A00F142AA /* chatBar_more.png in Resources */ = {isa = PBXBuildFile; fileRef = 679A846C1E2F688A00F142AA /* chatBar_more.png */; };
-		679A848D1E2F688A00F142AA /* chatBar_more@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 679A846D1E2F688A00F142AA /* chatBar_more@2x.png */; };
-		679A848E1E2F688A00F142AA /* chatBar_moreSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 679A846E1E2F688A00F142AA /* chatBar_moreSelected.png */; };
-		679A848F1E2F688A00F142AA /* chatBar_moreSelected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 679A846F1E2F688A00F142AA /* chatBar_moreSelected@2x.png */; };
 		679A84901E2F688A00F142AA /* messageToolbarBg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 679A84721E2F688A00F142AA /* messageToolbarBg@2x.png */; };
 		679A84921E2F688A00F142AA /* PLVChatRoomManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84761E2F688A00F142AA /* PLVChatRoomManager.m */; };
 		679A84931E2F688A00F142AA /* PLVTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84781E2F688A00F142AA /* PLVTableViewCell.m */; };
@@ -167,10 +163,6 @@
 		679A84691E2F688A00F142AA /* chatBar_keyboard@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chatBar_keyboard@2x.png"; sourceTree = "<group>"; };
 		679A846A1E2F688A00F142AA /* chatBar_keyboardSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chatBar_keyboardSelected.png; sourceTree = "<group>"; };
 		679A846B1E2F688A00F142AA /* chatBar_keyboardSelected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chatBar_keyboardSelected@2x.png"; sourceTree = "<group>"; };
-		679A846C1E2F688A00F142AA /* chatBar_more.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chatBar_more.png; sourceTree = "<group>"; };
-		679A846D1E2F688A00F142AA /* chatBar_more@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chatBar_more@2x.png"; sourceTree = "<group>"; };
-		679A846E1E2F688A00F142AA /* chatBar_moreSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chatBar_moreSelected.png; sourceTree = "<group>"; };
-		679A846F1E2F688A00F142AA /* chatBar_moreSelected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chatBar_moreSelected@2x.png"; sourceTree = "<group>"; };
 		679A84721E2F688A00F142AA /* messageToolbarBg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "messageToolbarBg@2x.png"; sourceTree = "<group>"; };
 		679A84751E2F688A00F142AA /* PLVChatRoomManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLVChatRoomManager.h; sourceTree = "<group>"; };
 		679A84761E2F688A00F142AA /* PLVChatRoomManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLVChatRoomManager.m; sourceTree = "<group>"; };
@@ -385,9 +377,9 @@
 			isa = PBXGroup;
 			children = (
 				679A845E1E2F688A00F142AA /* emoji */,
+				679A84631E2F688A00F142AA /* MessageToolbarImages */,
 				679A84611E2F688A00F142AA /* Emotion.bundle */,
 				679A84621E2F688A00F142AA /* Emotions.plist */,
-				679A84631E2F688A00F142AA /* MessageToolbarImages */,
 			);
 			path = resource;
 			sourceTree = "<group>";
@@ -412,29 +404,9 @@
 				679A84691E2F688A00F142AA /* chatBar_keyboard@2x.png */,
 				679A846A1E2F688A00F142AA /* chatBar_keyboardSelected.png */,
 				679A846B1E2F688A00F142AA /* chatBar_keyboardSelected@2x.png */,
-				679A846C1E2F688A00F142AA /* chatBar_more.png */,
-				679A846D1E2F688A00F142AA /* chatBar_more@2x.png */,
-				679A846E1E2F688A00F142AA /* chatBar_moreSelected.png */,
-				679A846F1E2F688A00F142AA /* chatBar_moreSelected@2x.png */,
-				679A84701E2F688A00F142AA /* Color */,
-				679A84711E2F688A00F142AA /* Gray */,
 				679A84721E2F688A00F142AA /* messageToolbarBg@2x.png */,
 			);
 			path = MessageToolbarImages;
-			sourceTree = "<group>";
-		};
-		679A84701E2F688A00F142AA /* Color */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Color;
-			sourceTree = "<group>";
-		};
-		679A84711E2F688A00F142AA /* Gray */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Gray;
 			sourceTree = "<group>";
 		};
 		679A849B1E2F6B8400F142AA /* ZJZDanMu */ = {
@@ -555,13 +527,11 @@
 				670B178A1E1DEE41009D0BAA /* plv_fullScreen@3x.png in Resources */,
 				679A848B1E2F688A00F142AA /* chatBar_keyboardSelected@2x.png in Resources */,
 				670B17541E1DE949009D0BAA /* Assets.xcassets in Resources */,
-				679A848E1E2F688A00F142AA /* chatBar_moreSelected.png in Resources */,
 				679A84811E2F688A00F142AA /* faceDelete@2x.png in Resources */,
 				670B17911E1DEE41009D0BAA /* plv_play@3x.png in Resources */,
 				670B178F1E1DEE41009D0BAA /* plv_pause@3x.png in Resources */,
 				670B178D1E1DEE41009D0BAA /* plv_nolive.png in Resources */,
 				679A84861E2F688A00F142AA /* chatBar_faceSelected.png in Resources */,
-				679A848F1E2F688A00F142AA /* chatBar_moreSelected@2x.png in Resources */,
 				679A84821E2F688A00F142AA /* Emotion.bundle in Resources */,
 				679A849A1E2F6A5F00F142AA /* plv_missing_face.png in Resources */,
 				679A848A1E2F688A00F142AA /* chatBar_keyboardSelected.png in Resources */,
@@ -572,8 +542,6 @@
 				670B17521E1DE949009D0BAA /* Main.storyboard in Resources */,
 				670B178B1E1DEE41009D0BAA /* plv_logo@2x.png in Resources */,
 				670B178E1E1DEE41009D0BAA /* plv_pause@2x.png in Resources */,
-				679A848D1E2F688A00F142AA /* chatBar_more@2x.png in Resources */,
-				679A848C1E2F688A00F142AA /* chatBar_more.png in Resources */,
 				679A84891E2F688A00F142AA /* chatBar_keyboard@2x.png in Resources */,
 				679A84881E2F688A00F142AA /* chatBar_keyboard.png in Resources */,
 				679A84981E2F6A5F00F142AA /* plv_chatfrom_mine.png in Resources */,

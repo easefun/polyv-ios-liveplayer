@@ -64,7 +64,7 @@ CREATE_SHARED_MANAGER(PLVEmojiModelManager)
                                                                                        options:kNilOptions
                                                                                          error:&error];
     
-    NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:text];
+    NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName:font}];
     while(YES) {
         NSRange range = [regularExpression rangeOfFirstMatchInString:attributeString.string options:kNilOptions range:NSMakeRange(0, attributeString.string.length)];
         if (range.location == NSNotFound)

@@ -167,7 +167,7 @@
         nickNameLable.font = [UIFont boldSystemFontOfSize:11.0];
         // 职称
         // 发言内容
-        [cell addSubview:[self bubbleView:chat.messageAttributedContent fromSelf:NO withPosition:40]];
+        [cell addSubview:[self bubbleView:chat.messageAttributedContent fromSelf:NO withPosition:35]];
         
         return cell;
     }
@@ -196,45 +196,6 @@
         return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@""];
     }
 }
-
-//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-//    PLVChat *chat = listChats[indexPath.row];
-//   
-//    if (chat.messageType == PLVChatMessageTypeSpeak) {          // 用户发言
-//        PLVTableViewCell *cell = [PLVTableViewCell theMessageOtherTextCellWithTableView:tableView];
-//        cell.nickNameLable.text = chat.speaker.nickName;
-//        cell.contentLabel.attributedText = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chat.messageContent font:cell.contentLabel.font];
-//        // 请求头像图片
-//        NSError *error;
-//        NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:chat.speaker.nickImg] options:NSDataReadingMappedIfSafe error:&error];
-//        if (error) {
-//            cell.avatarImageView.image = [UIImage imageNamed:@"plv_missing_face"];
-//        }else {
-//            cell.avatarImageView.image = [UIImage imageWithData:imgData];
-//        }
-//        
-//        return cell;
-//    }
-//    else if (chat.messageType == PLVChatMessageTypeOwnWords){    // 自己的发言
-//        PLVTableViewCell *cell = [PLVTableViewCell theMessageOwnTextCellWithTableView:tableView];
-//        cell.mySpeakLabel.attributedText = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chat.messageContent font:cell.mySpeakLabel.font];
-//        
-//        return cell;
-//    }else if (chat.messageType == PLVChatMessageTypeGongGao){       // 聊天室公告
-//        PLVTableViewCell *cell = [PLVTableViewCell theMessageGongGaoTextCell];
-//        cell.roomGongGaoLabel.text = [@"公告："stringByAppendingString:chat.messageContent];
-//        
-//        return cell;
-//    }else if (chat.messageType == PLVChatMessageTypeOpenRoom||chat.messageType == PLVChatMessageTypeCloseRoom){      // 聊天室状态
-//        PLVTableViewCell *cell = [PLVTableViewCell theMessageStateCell];
-//        cell.roomStateLabel.text = chat.messageContent;
-//        
-//        return cell;
-//    }else {
-//        return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@""];
-//    }
-//}
-
 
 #pragma mark - SocketIO delegate 事件
 
@@ -339,24 +300,6 @@
     }
 }
 
-// 计算普通字符串文本的宽或高
-- (CGSize)autoCalculateWidth:(float)width orHeight:(float)height fontsize:(float)fontsize content:(NSString *)content
-{
-    //计算出rect
-    CGRect rect = [content boundingRectWithSize:CGSizeMake(width, height)
-                                        options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
-                                     attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:fontsize]}
-                                        context:nil];
-    return rect.size;
-    
-    // 判断计算的是宽还是高
-    //if (height == MAXFLOAT) {
-    //    return rect.size.height;
-    //}
-    //else
-    //    return rect.size.width;
-}
-
 // 计算属性字符串文本的宽或高
 - (CGSize)autoCalculateWidth:(float)width orHeight:(float)height attributedContent:(NSAttributedString *)attributedContent
 {
@@ -364,48 +307,6 @@
                                                   options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
                                                   context:nil];
     return rect.size;
-}
-
-// 设置泡泡文本
-- (UIView *)bubbleView:(NSString *)text from:(BOOL)fromSelf withPosition:(int)position{
-    
-    //计算文字大小
-    CGSize size = [self autoCalculateWidth:ChATMAXWIDTH
-                                  orHeight:MAXFLOAT
-                                  fontsize:CHATFONTSIZE
-                                   content:text];
-    //CGSize size = [text sizeWithFont:font constrainedToSize:CGSizeMake(180.0f, 20000.0f) lineBreakMode:NSLineBreakByWordWrapping]; __deprecated;
-    
-    // build single chat bubble cell with given text
-    UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
-    returnView.backgroundColor = [UIColor clearColor];
-    
-    //背影图片
-    UIImage *bubble = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:fromSelf?@"plv_chatfrom_mine":@"plv_chatfrom_other" ofType:@"png"]];
-    
-    UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[bubble stretchableImageWithLeftCapWidth:floorf(bubble.size.width/2) topCapHeight:floorf(bubble.size.height*0.7)]];
-    NSLog(@"%f,%f",size.width,size.height);
-    
-    //添加文本信息
-    UILabel *bubbleText = [[UILabel alloc] initWithFrame:CGRectMake(fromSelf ? 15.0f : 22.0f, fromSelf ? 16.0f : 6.0f, size.width+10, size.height+10)];
-    bubbleText.backgroundColor = [UIColor clearColor];
-    bubbleText.font = [UIFont systemFontOfSize:CHATFONTSIZE];
-    bubbleText.numberOfLines = 0;
-    bubbleText.lineBreakMode = NSLineBreakByWordWrapping;
-    bubbleText.attributedText =  [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:text font:bubbleText.font];
-    //bubbleText.text = text;
-    
-    bubbleImageView.frame = CGRectMake(0, fromSelf ? 10.0 : 0, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
-    
-    if(fromSelf)
-        returnView.frame = CGRectMake(CGRectGetWidth(self.view.frame)-position-(bubbleText.frame.size.width+30.0f), 0.0f, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
-    else
-        returnView.frame = CGRectMake(position, 30.0f, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
-    
-    [returnView addSubview:bubbleImageView];
-    [returnView addSubview:bubbleText];
-    
-    return returnView;
 }
 
 // 设置泡泡文本(属性字符串)
@@ -439,7 +340,7 @@
     if(fromSelf)
         returnView.frame = CGRectMake(CGRectGetWidth(self.view.frame)-position-(bubbleText.frame.size.width+30.0f), 0.0f, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
     else
-        returnView.frame = CGRectMake(position, 30.0f, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
+        returnView.frame = CGRectMake(position, 27.0f, bubbleText.frame.size.width+30.0f, bubbleText.frame.size.height+20.0f);
     
     [returnView addSubview:bubbleImageView];
     [returnView addSubview:bubbleText];
