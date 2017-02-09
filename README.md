@@ -1,16 +1,20 @@
 # polyv-ios-liveplayer
 
-**下载须知**
+## 注意事项
 
-首次下载需要将IJKMediaFramework.framework.zip 文件解压缩。Github限制单个文件不超过100M，同时也为了减少传输的数据量，将SDK包中的`IJKMediaFramework.framework`文件进行了压缩，在工程目录的PLVLivePlayerSDK文件夹下。
+- 下载后需要将IJKMediaFramework.framework.zip 文件解压缩
+   
+- 聊天室功能需要在工程中配置AppId和AppSecrect参数（一般在AppDelegate中）
 
 
+        1. Github限制单个文件不超过100M，同时也为了减少传输的数据量，将SDK包中的`IJKMediaFramework.framework`文件进行了压缩，在工程目录的PLVLivePlayerSDK文件夹下。
+         
+        2. AppId和AppSecrect 需要登录自己的账号在保利威视后台获取，http://my.polyv.net/v2/login
+   
 ## 概述
 
 `polyv-ios-liveplayer`工程是包括POLYV直播SDK在内的一个DEMO，下载后在Xcode上运行使用，下载量在60M左右。此工程基于IJKPlayer播放器，可以进行FLV视频的播放，具有**延迟低、加载快**等直播优点。同时也添加有**聊天室的SDK**和**弹幕功能**等。
 原iOS直播播放器基于`MPMovieViewPlayer`的封装，如继续使用原SDK，可移步[dev_moviePlayer分支](https://github.com/easefun/polyv-ios-liveplayer/tree/dev_moviePlayer)。
-
-**下载后如使用聊天室需要登录[保利威视后台](http://my.polyv.net/v2/login) 获取到 在AppDelegate中配置AppId和AppSecretId**
 
 ## PLVLivePlayerSDK 功能介绍
 
@@ -108,12 +112,12 @@ ijk_version_info: k0.7.5
 
 1. 导入PLVLiveSDK 登录时报"解析加密内容失败"
     
-需要在工程build setting的 Other Link Flags 中配置添加`-ObjC`标识
+    需要在工程build setting的 Other Link Flags 中配置添加`-ObjC`标识
  
  
 2. 打开IJKLivePlayer.xcworkspace (注意：不是IJKLivePlayer 工程文件)，发现工程中`IJKMediaFramework.framework` 为红色，直接运行会报`PLVLivePlayerController.h:9:9: 'IJKMediaFramework/IJKMediaFramework.h' file not found`，
 
-参看文档“下载须知”，重新导入`IJKMediaFramework.framework` 库即可。
+    参看文档“注意事项”，重新添加`IJKMediaFramework.framework` 库即可。
  
 
 
