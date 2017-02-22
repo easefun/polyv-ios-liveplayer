@@ -47,6 +47,7 @@
 		670B17B01E1DEF4F009D0BAA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670B17AF1E1DEF4F009D0BAA /* UIKit.framework */; };
 		670B17B21E1DEF5A009D0BAA /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670B17B11E1DEF5A009D0BAA /* VideoToolbox.framework */; };
 		670B17B41E1E24BF009D0BAA /* IJKMediaFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670B17B31E1E24BF009D0BAA /* IJKMediaFramework.framework */; };
+		6715C5D81E5D3D0D008155F7 /* SocketIO.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6715C5D51E5D3CE9008155F7 /* SocketIO.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		679A847A1E2F688A00F142AA /* BCKeyBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84511E2F688A00F142AA /* BCKeyBoard.m */; };
 		679A847B1E2F688A00F142AA /* BCTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84531E2F688A00F142AA /* BCTextView.m */; };
 		679A847C1E2F688A00F142AA /* DXFaceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84561E2F688A00F142AA /* DXFaceView.m */; };
@@ -74,7 +75,7 @@
 		679A849A1E2F6A5F00F142AA /* plv_missing_face.png in Resources */ = {isa = PBXBuildFile; fileRef = 679A84971E2F6A5F00F142AA /* plv_missing_face.png */; };
 		679A84A11E2F6B8400F142AA /* ZJZDanMu.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A849D1E2F6B8400F142AA /* ZJZDanMu.m */; };
 		679A84A21E2F6B8400F142AA /* ZJZDanMuLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84A01E2F6B8400F142AA /* ZJZDanMuLabel.m */; };
-		CA3797EE861BA8513519B610 /* Pods_IJKLivePlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C25DF0DBFDA3C4AF879DDB45 /* Pods_IJKLivePlayer.framework */; };
+		AA7ED7CA270686D486F9382E /* Pods_IJKLivePlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89F7ED6534B0E79DD9910002 /* Pods_IJKLivePlayer.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +87,20 @@
 			remoteInfo = IJKLivePlayer;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6715C5D91E5D3D0D008155F7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				6715C5D81E5D3D0D008155F7 /* SocketIO.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1F497E22FF496527892193E1 /* Pods-IJKLivePlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IJKLivePlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-IJKLivePlayer/Pods-IJKLivePlayer.release.xcconfig"; sourceTree = "<group>"; };
@@ -139,6 +154,7 @@
 		670B17AF1E1DEF4F009D0BAA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		670B17B11E1DEF5A009D0BAA /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		670B17B31E1E24BF009D0BAA /* IJKMediaFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = IJKMediaFramework.framework; sourceTree = "<group>"; };
+		6715C5D51E5D3CE9008155F7 /* SocketIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SocketIO.framework; sourceTree = "<group>"; };
 		679A84501E2F688A00F142AA /* BCKeyBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCKeyBoard.h; sourceTree = "<group>"; };
 		679A84511E2F688A00F142AA /* BCKeyBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCKeyBoard.m; sourceTree = "<group>"; };
 		679A84521E2F688A00F142AA /* BCTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCTextView.h; sourceTree = "<group>"; };
@@ -177,7 +193,7 @@
 		679A849E1E2F6B8400F142AA /* ZJZDanMuDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZJZDanMuDefine.h; sourceTree = "<group>"; };
 		679A849F1E2F6B8400F142AA /* ZJZDanMuLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZJZDanMuLabel.h; sourceTree = "<group>"; };
 		679A84A01E2F6B8400F142AA /* ZJZDanMuLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZJZDanMuLabel.m; sourceTree = "<group>"; };
-		C25DF0DBFDA3C4AF879DDB45 /* Pods_IJKLivePlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IJKLivePlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		89F7ED6534B0E79DD9910002 /* Pods_IJKLivePlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IJKLivePlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,7 +216,7 @@
 				670B179C1E1DEEE5009D0BAA /* AVFoundation.framework in Frameworks */,
 				670B179A1E1DEEDB009D0BAA /* AudioToolbox.framework in Frameworks */,
 				670B17841E1DEE41009D0BAA /* PLVLiveAPI.framework in Frameworks */,
-				CA3797EE861BA8513519B610 /* Pods_IJKLivePlayer.framework in Frameworks */,
+				AA7ED7CA270686D486F9382E /* Pods_IJKLivePlayer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,7 +246,7 @@
 				670B179D1E1DEEEE009D0BAA /* CoreGraphics.framework */,
 				670B179B1E1DEEE5009D0BAA /* AVFoundation.framework */,
 				670B17991E1DEEDB009D0BAA /* AudioToolbox.framework */,
-				C25DF0DBFDA3C4AF879DDB45 /* Pods_IJKLivePlayer.framework */,
+				89F7ED6534B0E79DD9910002 /* Pods_IJKLivePlayer.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -295,6 +311,7 @@
 		670B176C1E1DEE41009D0BAA /* PLVLivePlayerSDK */ = {
 			isa = PBXGroup;
 			children = (
+				6715C5D51E5D3CE9008155F7 /* SocketIO.framework */,
 				670B17B31E1E24BF009D0BAA /* IJKMediaFramework.framework */,
 				670B176E1E1DEE41009D0BAA /* PLVLiveAPI.framework */,
 				670B17731E1DEE41009D0BAA /* PLVLivePlayerSkin */,
@@ -443,6 +460,7 @@
 				670B17421E1DE949009D0BAA /* Resources */,
 				78DCD0045879917E4979ABCA /* [CP] Embed Pods Frameworks */,
 				D98E4228EDA38C57DFF0ED85 /* [CP] Copy Pods Resources */,
+				6715C5D91E5D3D0D008155F7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -765,6 +783,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 64C638EE5C63729A53D50C45 /* Pods-IJKLivePlayer.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -795,6 +814,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1F497E22FF496527892193E1 /* Pods-IJKLivePlayer.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (

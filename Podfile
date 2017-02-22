@@ -7,6 +7,4 @@ target 'IJKLivePlayer' do
     
     pod 'Masonry', '~> 1.0.2'
     pod 'MBProgressHUD', '~> 1.0.0'
-    pod 'Socket.IO-Client-Swift', '~> 8.1.2'
-    
 end
