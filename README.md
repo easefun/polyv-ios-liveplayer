@@ -61,13 +61,23 @@
     #         UIKit.framework
     #         VideoToolbox.framework
     ```
- - 选择工程target -> build setting -> Other Link Flags 中添加"-ObjC"标记
+    
+2. 导入PLVLivePlayerSDK包中的`SocketIO.framework`库
 
-2. 在info.plist文件中,添加`View controller-based status bar appearance`,属性为`bool`,设为`NO`，不添加则在全屏时状态栏不显示。
+   `SocketIO.framework`需要添加到工程的`Embedded Binaries`中，同时需要在工程中打开使用Swift的标准库（默认关闭），具体操作如下
 
-3. 添加第三方库
+   ![](https://github.com/easefun/polyv-ios-liveplayer/blob/master/images/plv_1.png)
+   
+   Target -> Build Settings -> Aways Embed Swift Standard Libraries 设置`YES` 
+   ![](https://github.com/easefun/polyv-ios-liveplayer/blob/master/images/plv_2.png)
+    
+3. 选择工程Target -> Build Setting -> Other Link Flags 中添加"-ObjC"标记
 
-使用cocopod 在Podfile中添加`Masonry`和`Socket.IO-Client-Swift`，格式如下
+4. 在info.plist文件中,添加`View controller-based status bar appearance`,属性为`bool`,设为`NO`，不添加则在全屏时状态栏不显示。
+
+5. 添加第三方库
+
+使用cocopod 在Podfile中添加`Masonry`，格式如下
 
 ```
 source 'https://github.com/CocoaPods/Specs.git'
@@ -78,12 +88,11 @@ use_frameworks!
 target 'IJKLivePlayer' do
     pod 'Masonry', '~> 1.0.2'
     pod 'MBProgressHUD', '~> 1.0.0'
-    pod 'Socket.IO-Client-Swift', '~> 8.1.2' 
 end
 ```
 `Masonry` 在直播播放器的视图类中使用到
-`Socket.IO-Client-Swift`用于聊天室的连接
-`MBProgressHUD` 是在demo使用到的库，根据自己工程情况添加。
+
+`MBProgressHUD` 在demo使用到的库（网络加载处的等待效果），视自己工程情况添加
 
 完成以上操作后在真机和虚拟机下分别编译检查是否通过
     
