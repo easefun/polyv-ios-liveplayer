@@ -8,6 +8,7 @@
 
 #import "PLVChatRoomManager.h"
 #import "PLVTableViewCell.h"
+#import <PLVChatManager/PLVChatManager.h>
 #import <PLVLiveAPI/PLVLiveAPI.h>
 #import "BCKeyBoard.h"
 
@@ -33,7 +34,7 @@
     // 数据源
     NSMutableArray *listChats;
     // chatSocket管理
-    PLVChat *chatSocket;
+    PLVChatSocket *_chatSocket;
     
     // Emoji 键盘
     BCKeyBoard *bcKeyBoard;
@@ -79,12 +80,12 @@
 
 - (void)configChatSocket {
     
-    [PLVChat requestChatTokenCompletion:^(NSString *chatToken) {
+    [PLVChatRequest getChatTokenWithAppid:[PLVSettings sharedInstance].getAppId appSecret:[PLVSettings sharedInstance].getAppSecret success:^(NSString *chatToken) {
         NSLog(@"chat token is %@", chatToken);
         @try {
-            chatSocket = [[PLVChat alloc] initChatWithConnectParams:@{@"token":chatToken} enableLog:NO];
-            chatSocket.delegate = self;
-            [chatSocket connect];
+            _chatSocket = [[PLVChatSocket alloc] initChatSocketWithConnectParams:@{@"token":chatToken} enableLog:NO];
+            _chatSocket.delegate = self;
+            [_chatSocket connect];
         } @catch (NSException *exception) {
             NSLog(@"chat connect failed, reason:%@",exception.reason);
         }
@@ -98,26 +99,26 @@
 // 返回单元格高度，根据具体内容计算高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    PLVChat *chat = listChats[indexPath.row];
+    PLVChatObject *chatObject = listChats[indexPath.row];
     CGSize size = [self autoCalculateWidth:ChATMAXWIDTH
                                   orHeight:MAXFLOAT
-                         attributedContent:chat.messageAttributedContent];
+                         attributedContent:chatObject.messageAttributedContent];
     
-    if (chat.messageType == PLVChatMessageTypeSpeak)
+    if (chatObject.messageType == PLVChatMessageTypeSpeak)
     {
         return size.height + 60;
     }
-    else if (chat.messageType == PLVChatMessageTypeOwnWords)
+    else if (chatObject.messageType == PLVChatMessageTypeOwnWords)
     {
         return size.height + 40;
     }
-    else if (chat.messageType == PLVChatMessageTypeGongGao)
+    else if (chatObject.messageType == PLVChatMessageTypeGongGao)
     {
         return 45;
     }
-    else if (chat.messageType == PLVChatMessageTypeOpenRoom ||
-             chat.messageType == PLVChatMessageTypeCloseRoom ||
-             chat.messageType == PLVChatMessageTypeError)
+    else if (chatObject.messageType == PLVChatMessageTypeOpenRoom ||
+             chatObject.messageType == PLVChatMessageTypeCloseRoom ||
+             chatObject.messageType == PLVChatMessageTypeError)
     {
         return 50;
     }
@@ -146,11 +147,11 @@
         }
     }
     
-    PLVChat *chat = listChats[indexPath.row];
-    if (chat.messageType == PLVChatMessageTypeSpeak)        // 用户发言
+    PLVChatObject *chatObject = listChats[indexPath.row];
+    if (chatObject.messageType == PLVChatMessageTypeSpeak)        // 用户发言
     {
         NSError *error;
-        NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:chat.speaker.nickImg] options:NSDataReadingMappedIfSafe error:&error];
+        NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:chatObject.speaker.nickImg] options:NSDataReadingMappedIfSafe error:&error];
         // 用户头像
         UIImageView *avatarView = [[UIImageView alloc]initWithFrame:CGRectMake(5, 5, 35, 35)];
         [cell addSubview:avatarView];
@@ -162,32 +163,31 @@
         // 用户名
         UILabel *nickNameLable = [[UILabel alloc] initWithFrame:CGRectMake(50, 5, 123, 20)];
         [cell addSubview:nickNameLable];
-        nickNameLable.text = chat.speaker.nickName;
+        nickNameLable.text = chatObject.speaker.nickName;
         nickNameLable.textColor = [UIColor darkGrayColor];
         nickNameLable.font = [UIFont boldSystemFontOfSize:11.0];
-        // 职称
         // 发言内容
-        [cell addSubview:[self bubbleView:chat.messageAttributedContent fromSelf:NO withPosition:35]];
+        [cell addSubview:[self bubbleView:chatObject.messageAttributedContent fromSelf:NO withPosition:35]];
         
         return cell;
     }
-    else if (chat.messageType == PLVChatMessageTypeOwnWords)    // 自己的发言
+    else if (chatObject.messageType == PLVChatMessageTypeOwnWords)    // 自己的发言
     {
-        [cell addSubview:[self bubbleView:chat.messageAttributedContent fromSelf:YES withPosition:10]];
+        [cell addSubview:[self bubbleView:chatObject.messageAttributedContent fromSelf:YES withPosition:10]];
         
         return cell;
     }
-    else if (chat.messageType == PLVChatMessageTypeGongGao)     // 聊天室公告
+    else if (chatObject.messageType == PLVChatMessageTypeGongGao)     // 聊天室公告
     {
         PLVTableViewCell *cell = [PLVTableViewCell theMessageGongGaoTextCell];
-        cell.roomGongGaoLabel.text = [@"公告："stringByAppendingString:chat.messageContent];
+        cell.roomGongGaoLabel.text = [@"公告："stringByAppendingString:chatObject.messageContent];
         
         return cell;
     }
-    else if (chat.messageType == PLVChatMessageTypeOpenRoom||chat.messageType == PLVChatMessageTypeCloseRoom||chat.messageType==PLVChatMessageTypeError)   // 聊天室状态
+    else if (chatObject.messageType == PLVChatMessageTypeOpenRoom||chatObject.messageType == PLVChatMessageTypeCloseRoom||chatObject.messageType==PLVChatMessageTypeError)   // 聊天室状态
     {
         PLVTableViewCell *cell = [PLVTableViewCell theMessageStateCell];
-        cell.roomStateLabel.text = chat.messageContent;
+        cell.roomStateLabel.text = chatObject.messageContent;
         
         return cell;
     }
@@ -200,46 +200,48 @@
 #pragma mark - SocketIO delegate 事件
 
 /** socket成功连接上聊天室*/
-- (void)socketIODidConnect:(PLVChat *)chat {
+- (void)socketIODidConnect:(PLVChatSocket *)chatSocket {
     NSLog(@"socket connected");
 
-    NSArray *values = @[self.nickName,self.userPic,self.userId];
-    NSDictionary *dict = @{@"EVENT":@"LOGIN", @"values":values, @"roomId":self.channelId};
-    
-    [chat sendMessage:dict];
+    // 使用时间戳生成一个userId((SDK内部)
+    long long ts =(long long)([[NSDate date] timeIntervalSince1970] * 1000.0);
+    NSString *userId = [NSString stringWithFormat:@"%lld",ts];
+    // 登录聊天室
+    [chatSocket loginChatRoomWithChannelId:self.channelId userId:userId nickName:self.nickName avatar:self.userPic];
 }
 
 /** socket收到聊天室信息*/
-- (void)socketIODidReceiveMessage:(PLVChat *)chat {
-    NSLog(@"%ld,",chat.messageType);
+- (void)socketIODidReceiveMessage:(PLVChatSocket *)chatSocket withChatObject:(PLVChatObject *)chatObject {
     
-    switch (chat.messageType) {
+    NSLog(@"messageType: %ld",chatObject.messageType);
+    
+    switch (chatObject.messageType) {
         case PLVChatMessageTypeCloseRoom:
         case PLVChatMessageTypeOpenRoom: {
             NSLog(@"房间暂时关闭/打开");
-            [self addNewChat:chat];
+            [self addNewChatObject:chatObject];
         }
             break;
         case PLVChatMessageTypeGongGao: {
-            NSLog(@"GongGao: %@",chat.messageContent);
-            [self addNewChat:chat];
+            NSLog(@"GongGao: %@",chatObject.messageContent);
+            [self addNewChatObject:chatObject];
         }
             break;
         case PLVChatMessageTypeSpeak: {
-            NSLog(@"messageContent, %@",chat.messageContent);
-            // 容错处理，
-            if (chat.messageContent && ![chat.messageContent isKindOfClass:[NSNull class]]) {
-                [self addNewChat:chat];
+            NSLog(@"messageContent, %@",chatObject.messageContent);
+            // 容错处理
+            if (chatObject.messageContent && ![chatObject.messageContent isKindOfClass:[NSNull class]]) {
+                [self addNewChatObject:chatObject];
             }
         }
             break;
         case PLVChatMessageTypeReward:
             
             break;
-        case PLVChatMessageTypeElse:
+        case PLVChatMessageTypeError:
             
             break;
-        case PLVChatMessageTypeError:
+        case PLVChatMessageTypeElse:
             
             break;
         default:
@@ -247,40 +249,38 @@
     }
 }
 
-- (void)socketIOConnectOnError:(PLVChat *)chat {
+- (void)socketIOConnectOnError:(PLVChatSocket *)chatSocket {
     NSLog(@"socket error");
 }
 
-- (void)socketIODidDisconnect:(PLVChat *)chat {
+- (void)socketIODidDisconnect:(PLVChatSocket *)chatSocket {
     NSLog(@"socket disconnect");
 }
 
-- (void)socketIOReconnect:(PLVChat *)chat {
+- (void)socketIOReconnect:(PLVChatSocket *)chatSocket {
     NSLog(@"socket reconnect");
 }
 
-- (void)socketIOReconnectAttempt:(PLVChat *)chat {
+- (void)socketIOReconnectAttempt:(PLVChatSocket *)chatSocket {
     NSLog(@"socket reconnectAttempt");
 }
 
 #pragma mark - 私有方法
 
 // 添加新的聊天
-- (void)addNewChat:(PLVChat *)chat {
+- (void)addNewChatObject:(PLVChatObject *)chatObject {
     
-    if (chat.messageType == PLVChatMessageTypeOwnWords && chatSocket.chatRoomState != PLVChatRoomStateConnected) {
+    if (chatObject.messageType == PLVChatMessageTypeOwnWords && _chatSocket.chatRoomState != PLVChatRoomStateConnected) {
         NSLog(@"聊天室未连接");
-        chat.messageType = PLVChatMessageTypeCloseRoom;
-        chat.messageContent = @"聊天室未连接";
+        chatObject.messageType = PLVChatMessageTypeCloseRoom;
+        chatObject.messageContent = @"聊天室未连接";
     }
     
     // 将内容转化为属性文本
-    chat.messageAttributedContent = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chat.messageContent
+    chatObject.messageAttributedContent = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chatObject.messageContent
                                                                                                     font:[UIFont systemFontOfSize:CHATFONTSIZE]];
     // 数据源更新
-    [listChats addObject:chat];
-    // 优化，管理socke和聊天内容分开
-    //chatSocket.messageType = chat.messageType;
+    [listChats addObject:chatObject];
     
     // tableView更新（插入新的cell）
     NSInteger rows = [_tableView numberOfRowsInSection:0];
@@ -293,9 +293,9 @@
     [_tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     
     // 回调聊天信息
-    if (chat.messageType==PLVChatMessageTypeSpeak || chat.messageType==PLVChatMessageTypeOwnWords) {
+    if (chatObject.messageType==PLVChatMessageTypeSpeak || chatObject.messageType==PLVChatMessageTypeOwnWords) {
         if (self.delegate && [self.delegate respondsToSelector:@selector(receiveMessage:)]) {
-            [self.delegate receiveMessage:chat.messageContent];
+            [self.delegate receiveMessage:chatObject.messageContent];
         }
     }
 }
@@ -351,8 +351,8 @@
 #pragma mark - 外部接口方法
 
 - (void)closeChatRoom {
-    [chatSocket disconnect];        // 断开聊天室
-    [chatSocket removeAllHandlers]; // 移除所有监听事件
+    [_chatSocket disconnect];        // 断开聊天室
+    [_chatSocket removeAllHandlers]; // 移除所有监听事件
 }
 
 - (void)returnKeyBoard {
@@ -413,13 +413,12 @@
     if ([text isEqualToString:@""]) {
         return;
     }
-    NSDictionary *dict = @{
-                           @"EVENT":@"SPEAK",
-                           @"values":@[text],
-                           @"roomId":self.channelId };
-    [chatSocket sendMessage:dict];
+    
+    // 提交发言
+    [_chatSocket sendMessageWithContent:text];
+    
     // 更新到本地上显示
-    [self addNewChat:[PLVChat chatWithOwnMessageContent:text]];
+    [self addNewChatObject:[PLVChatObject chatObjectWithOwnMessageContent:text]];
 }
 
 - (void)returnHeight:(CGFloat)height {

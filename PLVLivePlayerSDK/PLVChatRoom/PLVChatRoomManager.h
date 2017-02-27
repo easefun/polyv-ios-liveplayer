@@ -23,7 +23,6 @@
 
 /** 设置请求参数*/
 @property (nonatomic, strong) NSString *channelId;              // 房间号
-@property (nonatomic, strong) NSString *userId;                 // 用户Id
 @property (nonatomic, strong) NSString *nickName;               // 用户昵称
 @property (nonatomic, strong) NSString *userPic;                // 用户图片
 

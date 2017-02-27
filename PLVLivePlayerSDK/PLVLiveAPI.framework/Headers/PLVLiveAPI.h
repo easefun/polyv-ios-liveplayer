@@ -8,9 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "PLVChannel.h"
-#import "PLVReportManager.h"
-#import "PLVChat.h"
 #import "PLVSettings.h"
+#import "PLVReportManager.h"
 
 //! Project version number for PLVLiveAPI.
 FOUNDATION_EXPORT double PLVLiveAPIVersionNumber;

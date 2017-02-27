@@ -48,6 +48,7 @@
 		670B17B21E1DEF5A009D0BAA /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670B17B11E1DEF5A009D0BAA /* VideoToolbox.framework */; };
 		670B17B41E1E24BF009D0BAA /* IJKMediaFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670B17B31E1E24BF009D0BAA /* IJKMediaFramework.framework */; };
 		6715C5D81E5D3D0D008155F7 /* SocketIO.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6715C5D51E5D3CE9008155F7 /* SocketIO.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6721E9B31E64313D005F192A /* PLVChatManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6721E9B21E64313D005F192A /* PLVChatManager.framework */; };
 		679A847A1E2F688A00F142AA /* BCKeyBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84511E2F688A00F142AA /* BCKeyBoard.m */; };
 		679A847B1E2F688A00F142AA /* BCTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84531E2F688A00F142AA /* BCTextView.m */; };
 		679A847C1E2F688A00F142AA /* DXFaceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84561E2F688A00F142AA /* DXFaceView.m */; };
@@ -155,6 +156,7 @@
 		670B17B11E1DEF5A009D0BAA /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		670B17B31E1E24BF009D0BAA /* IJKMediaFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = IJKMediaFramework.framework; sourceTree = "<group>"; };
 		6715C5D51E5D3CE9008155F7 /* SocketIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SocketIO.framework; sourceTree = "<group>"; };
+		6721E9B21E64313D005F192A /* PLVChatManager.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PLVChatManager.framework; sourceTree = "<group>"; };
 		679A84501E2F688A00F142AA /* BCKeyBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCKeyBoard.h; sourceTree = "<group>"; };
 		679A84511E2F688A00F142AA /* BCKeyBoard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BCKeyBoard.m; sourceTree = "<group>"; };
 		679A84521E2F688A00F142AA /* BCTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BCTextView.h; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 				670B17AE1E1DEF47009D0BAA /* QuartzCore.framework in Frameworks */,
 				670B17B41E1E24BF009D0BAA /* IJKMediaFramework.framework in Frameworks */,
 				670B17AC1E1DEF3F009D0BAA /* OpenGLES.framework in Frameworks */,
+				6721E9B31E64313D005F192A /* PLVChatManager.framework in Frameworks */,
 				670B17AA1E1DEF33009D0BAA /* MobileCoreServices.framework in Frameworks */,
 				670B17A81E1DEF27009D0BAA /* MediaPlayer.framework in Frameworks */,
 				670B17A61E1DEF1B009D0BAA /* libz.tbd in Frameworks */,
@@ -312,6 +315,7 @@
 			isa = PBXGroup;
 			children = (
 				6715C5D51E5D3CE9008155F7 /* SocketIO.framework */,
+				6721E9B21E64313D005F192A /* PLVChatManager.framework */,
 				670B17B31E1E24BF009D0BAA /* IJKMediaFramework.framework */,
 				670B176E1E1DEE41009D0BAA /* PLVLiveAPI.framework */,
 				670B17731E1DEE41009D0BAA /* PLVLivePlayerSkin */,

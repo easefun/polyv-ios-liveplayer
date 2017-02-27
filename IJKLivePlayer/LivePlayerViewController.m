@@ -66,7 +66,6 @@
     
     // 初始化请求参数
     self.chatRoomManager.channelId = self.channel.channelId;
-    self.chatRoomManager.userId = self.channel.userId;
     self.chatRoomManager.nickName = @"iPhoneSimulator";
     self.chatRoomManager.userPic = @"http://www.polyv.net/images/effect/effect-device.png";
 }
