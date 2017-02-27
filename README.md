@@ -24,14 +24,22 @@
 
 2. PLVLiveAPI.framework
 
-    `PLVLiveAPI.framework`里面为POLYV的一些接口，包括登录和聊天室等。
+    POLYV 登录相关等一些接口
+    
+3. PLVChatManager.framework
+    
+    POLYV 聊天室相关接口的封装，包括聊天室的连接、接受、发送信息等
+    
+4. SocketIO.framework
 
-3. PLVLivePlayerController
+    SocketIO Swift版本库，用于连接POLYV聊天室进行通讯
+
+5. PLVLivePlayerController
 
     `PLVLivePlayerController` 为IJK上二次封装的POLYV直播播放器
     `PLVLivePlayerControllerSkin`为`PLVLivePlayerController` 播放器的视图皮肤类
 
-4. PLVChatRoom
+6. PLVChatRoom
 
     聊天室相关的类和资源等
     
@@ -127,7 +135,3 @@ ijk_version_info: k0.7.5
 2. 打开IJKLivePlayer.xcworkspace (注意：不是IJKLivePlayer 工程文件)，发现工程中`IJKMediaFramework.framework` 为红色，直接运行会报`PLVLivePlayerController.h:9:9: 'IJKMediaFramework/IJKMediaFramework.h' file not found`，
 
     参看文档“注意事项”，重新添加`IJKMediaFramework.framework` 库即可。
- 
-
-
-
