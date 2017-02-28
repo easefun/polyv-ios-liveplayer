@@ -82,13 +82,10 @@
     
     [PLVChatRequest getChatTokenWithAppid:[PLVSettings sharedInstance].getAppId appSecret:[PLVSettings sharedInstance].getAppSecret success:^(NSString *chatToken) {
         NSLog(@"chat token is %@", chatToken);
-        @try {
-            _chatSocket = [[PLVChatSocket alloc] initChatSocketWithConnectParams:@{@"token":chatToken} enableLog:NO];
-            _chatSocket.delegate = self;
-            [_chatSocket connect];
-        } @catch (NSException *exception) {
-            NSLog(@"chat connect failed, reason:%@",exception.reason);
-        }
+        
+        _chatSocket = [[PLVChatSocket alloc] initChatSocketWithConnectToken:chatToken enableLog:NO];
+        _chatSocket.delegate = self;
+        [_chatSocket connect];
     } failure:^(NSString *errorName, NSString *errorDescription) {
         NSLog(@"errorName: %@, errorDescription: %@",errorName,errorDescription);
     }];
@@ -202,18 +199,15 @@
 /** socket成功连接上聊天室*/
 - (void)socketIODidConnect:(PLVChatSocket *)chatSocket {
     NSLog(@"socket connected");
-
-    // 使用时间戳生成一个userId((SDK内部)
-    long long ts =(long long)([[NSDate date] timeIntervalSince1970] * 1000.0);
-    NSString *userId = [NSString stringWithFormat:@"%lld",ts];
+    
     // 登录聊天室
-    [chatSocket loginChatRoomWithChannelId:self.channelId userId:userId nickName:self.nickName avatar:self.userPic];
+    [chatSocket loginChatRoomWithChannelId:self.channelId nickName:self.nickName avatar:self.userPic];
 }
 
 /** socket收到聊天室信息*/
 - (void)socketIODidReceiveMessage:(PLVChatSocket *)chatSocket withChatObject:(PLVChatObject *)chatObject {
     
-    NSLog(@"messageType: %ld",chatObject.messageType);
+    NSLog(@"messageType: %ld",(long)chatObject.messageType);
     
     switch (chatObject.messageType) {
         case PLVChatMessageTypeCloseRoom:

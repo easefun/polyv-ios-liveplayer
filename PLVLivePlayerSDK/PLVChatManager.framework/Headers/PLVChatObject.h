@@ -17,12 +17,12 @@
 
 @end
 
-typedef NS_ENUM(NSInteger, PLVChatMessageType) {
+typedef NS_ENUM(NSUInteger, PLVChatMessageType) {
     PLVChatMessageTypeCloseRoom = 0,    // 聊天室关闭
     PLVChatMessageTypeOpenRoom,         // 聊天室打开
     PLVChatMessageTypeGongGao,          // 系统公告
     PLVChatMessageTypeSpeak,            // 用户发言
-    PLVChatMessageTypeOwnWords,         // 自己的发言
+    PLVChatMessageTypeOwnWords,         // 自己发言
     PLVChatMessageTypeReward,           // 奖励信息
     PLVChatMessageTypeKick,             // 用户被踢
     PLVChatMessageTypeError,            // 出错了

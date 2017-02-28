@@ -13,9 +13,9 @@
 #define KZJZDMHEIGHT        20
 
 // 弹幕默认滚动时间
-#define KZJZDMLROLLANIMATION    5.0f
+#define KZJZDMLROLLANIMATION    8.0f
 
 // 弹幕默认浮动时间
-#define KZJZDMLFADEANIMATION    2.0f
+#define KZJZDMLFADEANIMATION    4.0f
 
 #endif /* ZJZDanMuDefine_h */

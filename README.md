@@ -135,3 +135,17 @@ ijk_version_info: k0.7.5
 2. 打开IJKLivePlayer.xcworkspace (注意：不是IJKLivePlayer 工程文件)，发现工程中`IJKMediaFramework.framework` 为红色，直接运行会报`PLVLivePlayerController.h:9:9: 'IJKMediaFramework/IJKMediaFramework.h' file not found`，
 
     参看文档“注意事项”，重新添加`IJKMediaFramework.framework` 库即可。
+
+    
+3. 使用`SocketIO.framework`库连接聊天室或打包程序出错
+    
+    可在自己工程的cocopod中添加`Socket.IO-Client-Swift`源库，去掉工程中导入的`SocketIO.framework`，使用cocopod生成的`SocketIO.framework`库文件。添加`pod 'Socket.IO-Client-Swift', '~> 8.2.0'`
+    
+    ```
+    use_frameworks!
+
+    target 'YourApp' do
+        pod 'Socket.IO-Client-Swift', '~> 8.2.0'
+    end
+    ```
+
