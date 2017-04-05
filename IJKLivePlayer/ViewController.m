@@ -30,7 +30,7 @@
         [hud setMode:MBProgressHUDModeText];
         hud.label.text = @"未配置appId和appSecret!";
         hud.detailsLabel.text = @"连接聊天室需要配置appId和appSecret，可查看AppDelegate中的说明";
-        [hud hideAnimated:YES afterDelay:7.0];
+        [hud hideAnimated:YES afterDelay:5.0];
     }
     
     NSArray *userInfo = [[NSUserDefaults standardUserDefaults] objectForKey:@"userInfo"];

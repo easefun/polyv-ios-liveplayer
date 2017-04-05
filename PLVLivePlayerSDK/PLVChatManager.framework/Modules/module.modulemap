@@ -1,6 +1,0 @@
-framework module PLVChatManager {
-  umbrella header "PLVChatManager.h"
-
-  export *
-  module * { export * }
-}

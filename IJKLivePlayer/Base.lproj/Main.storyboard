@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,6 +23,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="用户ID" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="xpv-Gz-rXX">
+                                <rect key="frame" x="27.5" y="253" width="320" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="750" constant="320" id="Tu5-24-o6F"/>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="Wtd-gr-M5S"/>
@@ -30,6 +34,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="频道号" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="bcV-yU-NHi">
+                                <rect key="frame" x="27.5" y="304" width="320" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" priority="750" constant="320" id="6dM-N8-0tf"/>
                                     <constraint firstAttribute="height" constant="40" id="yBD-5E-Ttj"/>
@@ -39,6 +44,7 @@
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="© 2010-2016 广州易方信息科技有限公司 版权所有" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WCy-Le-jP1">
+                                <rect key="frame" x="47" y="621" width="281" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="CiO-S7-PiY"/>
                                     <constraint firstAttribute="width" constant="281" id="pdo-mC-avR"/>
@@ -47,13 +53,15 @@
                                 <color key="textColor" red="0.32941176470588235" green="0.43137254901960786" blue="0.47843137254901957" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="plv_logo.png" translatesAutoresizingMaskIntoConstraints="NO" id="YVG-JG-EQh">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="plv_logo" translatesAutoresizingMaskIntoConstraints="NO" id="YVG-JG-EQh">
+                                <rect key="frame" x="87" y="150" width="201" height="26"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="201" id="ea5-3L-tnL"/>
                                     <constraint firstAttribute="height" constant="26" id="mog-ch-K4C"/>
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r44-EB-UCd">
+                                <rect key="frame" x="28" y="365" width="319" height="50"/>
                                 <color key="backgroundColor" red="0.12941176470588234" green="0.58823529411764708" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="HsK-BP-GoF"/>
@@ -102,6 +110,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="plv_logo.png" width="201" height="26"/>
+        <image name="plv_logo" width="201" height="26"/>
     </resources>
 </document>
