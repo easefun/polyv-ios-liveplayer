@@ -183,10 +183,11 @@ IJKLivePlayer
     ```
     
 ## 更新历史
-    
-### 当前
-
-  `IJKMediaFramework.framework` 版本 `0.7.7.1.170327`    
+  
+### [polyv-ios-liveplayer release v2.0](https://github.com/easefun/polyv-ios-liveplayer/releases/tag/v2.0)
+  
+  - 优化文件目录，调整工程结构
+  - 更新IJKMediaFramework.framework 库至0.7.7.1；支持HTTPS视频地址播放
     
 ### [polyv-ios-liveplayer v2.0-beta](https://github.com/easefun/polyv-ios-liveplayer/releases/tag/v2.0-beta)
 
