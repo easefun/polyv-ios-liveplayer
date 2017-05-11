@@ -8,7 +8,6 @@
 
         1. Github限制单个文件不超过100M，同时也为了减少传输的数据量，将SDK包中的`IJKMediaFramework.framework`文件进行了压缩，在工程目录的PolyvLiveSDK\lib文件夹下
         2. AppId和AppSecrect 需要登录自己的账号在保利威视后台获取，http://my.polyv.net/v2/login
-   
   - SDK中`PLVChatManager.frame` 聊天室依赖`SocketIO`库，目前比较建议使用[cocopod](https://cocoapods.org)方式添加[SocketIO](socket.io-client-swift)(使用cocopod方式后需要将工程中`SocketIO.framework`移除)
        
   - 更新Xcode版本后编译或运行出错可查看`SocketIO` 是否有新版本，查询链接：https://cocoapods.org/?q=Socket.IO-Client-Swift
