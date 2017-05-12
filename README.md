@@ -18,7 +18,7 @@
    
    原iOS直播播放器基于`MPMovieViewPlayer` 的封装，如继续使用原SDK(不建议，MPMoviePlayerController无法播放FLV格式视频，播放m3u8格式视频，延迟比FLV高)，可移步[dev_moviePlayer分支](https://github.com/easefun/polyv-ios-liveplayer/tree/dev_moviePlayer)。
    
-   建议最低系统支持iOS8.0（苹果最新的三代系统）, 播放器默认开启硬解码需要在iOS8.0之后支持；使用的socketIO库为swift版本，在iOS8.0之后混编更易。
+   建议最低系统支持iOS8.0（苹果最新的三代系统）, 非系统播放器在iOS8.0之后支持使用硬解码；SDK中`socketIO`库为swift版本，在iOS8.0之后混编更易。
    
 ## 文件结构和功能介绍
 
