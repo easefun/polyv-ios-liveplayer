@@ -25,5 +25,4 @@
 // 获取配置的appSecret
 - (NSString *)getAppSecret;
 
-
 @end

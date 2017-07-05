@@ -20,10 +20,10 @@
 + (NSString *)getPid;
 
 // MARK: - 首次加载时长
-+ (void)reportLoading:(NSString*)pid uid:(NSString*)uid channelId:(NSString*)channelId time:(double)time session_id:(NSString *)session_id param1:(NSString*)param1 param2:(NSString*)param2 param3:(NSString*)param3 param4:(NSString*)param4 param5:(NSString*)param5;
++ (void)reportLoading:(NSString*)pid uid:(NSString*)uid channelId:(NSString*)channelId time:(int)time session_id:(NSString *)session_id param1:(NSString*)param1 param2:(NSString*)param2 param3:(NSString*)param3 param4:(NSString*)param4 param5:(NSString*)param5;
 
 // MARK: - 二次缓冲时长
-+ (void)reportBuffer:(NSString*)pid uid:(NSString*)uid channelId:(NSString*)channelId time:(double)time session_id:(NSString *)session_id param1:(NSString*)param1 param2:(NSString*)param2 param3:(NSString*)param3 param4:(NSString*)param4 param5:(NSString*)param5;
++ (void)reportBuffer:(NSString*)pid uid:(NSString*)uid channelId:(NSString*)channelId time:(int)time session_id:(NSString *)session_id param1:(NSString*)param1 param2:(NSString*)param2 param3:(NSString*)param3 param4:(NSString*)param4 param5:(NSString*)param5;
 
 // MARK: - 直播出错
 + (void)reportError:(NSString *)pid uid:(NSString *)uid channelId:(NSString *)channelId session_id:(NSString *)session_id param1:(NSString *)param1 param2:(NSString *)param2 param3:(NSString *)param3 param4:(NSString *)param4 param5:(NSString *)param5 uri:(NSString *)uri status:(NSString *)status errorcode:(NSString *)errorcode errormsg:(NSString *)errormsg;

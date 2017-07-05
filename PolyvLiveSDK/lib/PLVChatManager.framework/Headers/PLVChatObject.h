@@ -23,7 +23,8 @@ typedef NS_ENUM(NSUInteger, PLVChatMessageType) {
     PLVChatMessageTypeGongGao,          // 系统公告
     PLVChatMessageTypeSpeak,            // 用户发言
     PLVChatMessageTypeOwnWords,         // 自己发言
-    PLVChatMessageTypeReward,           // 奖励信息
+    PLVChatMessageTypeReward,           // 打赏事件
+    PLVChatMessageTypeFlowers,          // 送花事件
     PLVChatMessageTypeKick,             // 用户被踢
     PLVChatMessageTypeError,            // 出错了
     PLVChatMessageTypeElse              // 其他信息
@@ -33,6 +34,9 @@ typedef NS_ENUM(NSUInteger, PLVChatMessageType) {
 
 // 信息类型
 @property (nonatomic, assign) PLVChatMessageType messageType;
+
+// 事件内容（事件类型未知时为nil）
+@property (nonatomic, strong) NSDictionary *contentDict;
 
 // 信息内容
 @property (nonatomic, strong) NSString *messageContent;

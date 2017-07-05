@@ -29,6 +29,7 @@ typedef NS_ENUM(NSInteger, PLVChatRoomState) {
 
 /**
  *  初始化聊天室（连接聊天室需要调用-connect 方法）
+ *  备注：建议此方法在"@try {} @catch (NSException *exception) {}" 下执行，防止因token等值非法引起的崩溃
  *
  *  @param token        连接聊天室的token(获取方法参看PLVChatRequest.h文件)
  *  @param enableLog    是否输出调试信息
