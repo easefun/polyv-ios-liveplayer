@@ -97,7 +97,7 @@ IJKLivePlayer
      #         libstdc++.tbd
     ```
     
- 2. 导入PolyvLiveSDK包中的`SocketIO.framework`库
+ 2. 导入PolyvLiveSDK包中的`SocketIO.framework`库（目前已默认使用pod方式添加该库）
 
    **如果使用cocopod则不需要导入`SocketIO.framework`, 在podfile中添加`pod 'Socket.IO-Client-Swift'`**
    
@@ -124,13 +124,18 @@ IJKLivePlayer
  target 'IJKLivePlayer' do
      pod 'Masonry', '~> 1.0.2'
      pod 'MBProgressHUD', '~> 1.0.0'
+     pod 'Socket.IO-Client-Swift', '~> 10.0'
  end
  ```
- `Masonry` 在直播播放器的视图类中使用到
-
- `MBProgressHUD` 在demo使用到的库（网络加载处的等待效果），视自己工程情况添加
-
- 完成以上操作后在真机和虚拟机下分别编译检查是否通过
+ 
+ - `Masonry` 在直播播放器的视图类中使用到
+ 
+ - `MBProgressHUD` 在demo使用到的库（网络加载处的等待效果），视自己工程情况添加
+ 
+ - `Socket.IO-Client-Swift`  SocketIO库，用于聊天室的连接
+  
+  
+完成以上操作后在真机和虚拟机下分别编译检查是否通过
     
 ## 其他
 
