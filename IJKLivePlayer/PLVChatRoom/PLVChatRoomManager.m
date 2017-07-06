@@ -334,8 +334,8 @@
     returnView.backgroundColor = [UIColor clearColor];
     
     //背影图片
-    UIImage *bubble = [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:fromSelf?@"plv_chatfrom_mine":@"plv_chatfrom_other" ofType:@"png"]];
-    
+    NSString *playerBundlePath = [[NSBundle mainBundle] pathForResource:@"PLVLivePlayerSkin" ofType:@"bundle"];
+    UIImage *bubble = [UIImage imageWithContentsOfFile:[[NSBundle bundleWithPath:playerBundlePath] pathForResource:fromSelf?@"plv_chatfrom_mine":@"plv_chatfrom_other" ofType:@"png"]];
     UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[bubble stretchableImageWithLeftCapWidth:floorf(bubble.size.width/2) topCapHeight:floorf(bubble.size.height*0.7)]];
     NSLog(@"%f,%f",size.width,size.height);
     
