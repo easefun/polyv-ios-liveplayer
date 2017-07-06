@@ -6,9 +6,11 @@
    
  - 聊天室功能需要在工程中配置AppId和AppSecrect参数（一般在AppDelegate中）
 
-       1. Github限制单个文件不超过100M，同时也为了减少传输的数据量，将SDK包中的`IJKMediaFramework.framework`文件进行了压缩，在工程目录的PolyvLiveSDK\lib文件夹下
-         
-       2. AppId和AppSecrect 需要登录自己的账号在保利威视后台获取，http://my.polyv.net/v2/login
+        1. Github限制单个文件不超过100M，同时也为了减少传输的数据量，将SDK包中的`IJKMediaFramework.framework`文件进行了压缩，在工程目录的PolyvLiveSDK\lib文件夹下
+        2. AppId和AppSecrect 需要登录自己的账号在保利威视后台获取，http://my.polyv.net/v2/login
+  - SDK中`PLVChatManager.frame` 聊天室依赖`SocketIO`库，目前比较建议使用[cocopod](https://cocoapods.org)方式添加[SocketIO](socket.io-client-swift)(使用cocopod方式后需要将工程中`SocketIO.framework`移除)
+       
+  - 更新Xcode版本后编译或运行出错可查看`SocketIO` 是否有新版本，查询链接：https://cocoapods.org/?q=Socket.IO-Client-Swift
    
 ## 概述
 
@@ -16,7 +18,7 @@
    
    原iOS直播播放器基于`MPMovieViewPlayer` 的封装，如继续使用原SDK(不建议，MPMoviePlayerController无法播放FLV格式视频，播放m3u8格式视频，延迟比FLV高)，可移步[dev_moviePlayer分支](https://github.com/easefun/polyv-ios-liveplayer/tree/dev_moviePlayer)。
    
-   建议最低系统支持iOS8.0（苹果最新的三代系统）, 播放器默认开启硬解码需要在iOS8.0之后支持；使用的socketIO库为swift版本，在iOS8.0之后混编更易。
+   建议最低系统支持iOS8.0（苹果最新的三代系统）, 非系统播放器在iOS8.0之后支持使用硬解码；SDK中`socketIO`库为swift版本，在iOS8.0之后混编更易。
    
 ## 文件结构和功能介绍
 
