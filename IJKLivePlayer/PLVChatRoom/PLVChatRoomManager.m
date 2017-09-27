@@ -210,6 +210,7 @@
     NSLog(@"socket connected");
     
     // 登录聊天室
+#warning - 这几个参数目前不能为空，SDK会在下个版本内设置默认值
     [chatSocket loginChatRoomWithChannelId:self.channelId nickName:self.nickName avatar:self.userPic];
 }
 
