@@ -1,18 +1,21 @@
 PODS:
   - Masonry (1.0.2)
   - MBProgressHUD (1.0.0)
-  - Socket.IO-Client-Swift (10.0.0)
+  - Socket.IO-Client-Swift (12.0.0):
+    - StarscreamSocketIO (~> 8.0.7)
+  - StarscreamSocketIO (8.0.7)
 
 DEPENDENCIES:
   - Masonry (~> 1.0.2)
   - MBProgressHUD (~> 1.0.0)
-  - Socket.IO-Client-Swift (~> 10.0)
+  - Socket.IO-Client-Swift (= 12.0)
 
 SPEC CHECKSUMS:
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
-  Socket.IO-Client-Swift: 9c5b4e5e76e30e1b9a1804c40e11dad0a002b1a4
+  Socket.IO-Client-Swift: 5b0154b42b3892bfb4c44fa138cbeb8afec4f6ef
+  StarscreamSocketIO: 00b54e4208481ca5cef089545353aaf126bae16d
 
-PODFILE CHECKSUM: 1782b5a50858c46545382f4ab4d37c6ee1784e1d
+PODFILE CHECKSUM: 98ec3bbedb3971a9c09c7571256bf65b42218755
 
-COCOAPODS: 1.1.1
+COCOAPODS: 1.2.0

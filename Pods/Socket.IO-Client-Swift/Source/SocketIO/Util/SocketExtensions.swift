@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 
 import Foundation
+import StarscreamSocketIO
 
 enum JSONError : Error {
     case notArray
@@ -80,8 +81,8 @@ extension NSDictionary {
             return .selfSigned(selfSigned)
         case let ("sessionDelegate", delegate as URLSessionDelegate):
             return .sessionDelegate(delegate)
-        case let ("voipEnabled", enable as Bool):
-            return .voipEnabled(enable)
+        case let ("compress", compress as Bool):
+            return compress ? .compress : nil
         default:
             return nil
         }
@@ -110,9 +111,9 @@ extension String {
         return array
     }
 
-    func toNSDictionary() throws -> NSDictionary {
+    func toDictionary() throws -> [String: Any] {
         guard let binData = data(using: .utf16, allowLossyConversion: false) else { return [:] }
-        guard let json = try JSONSerialization.jsonObject(with: binData, options: .allowFragments) as? NSDictionary else {
+        guard let json = try JSONSerialization.jsonObject(with: binData, options: .allowFragments) as? [String: Any] else {
             throw JSONError.notNSDictionary
         }
 
