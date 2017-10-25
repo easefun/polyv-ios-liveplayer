@@ -4,7 +4,9 @@
 
 ## 最近更新
 
-- `SocketIO` 当前版本为 `12.0` ，支持Xcode 9.0 编译环境。
+- Socket.IO 当前版本为 `12.0` ，支持Xcode 9.0 编译环境。
+
+- 添加 Socket.IO 库方面的 wiki 文档和兼容说明，[Socket.IO 库的使用](https://github.com/easefun/polyv-ios-liveplayer/wiki/socket.io)
 
 ## (一) 下载须知
 
@@ -23,8 +25,6 @@
 ## （二）概述
 
 `polyv-ios-liveplayer` 工程是包括POLYV直播SDK在内的一个DEMO，下载后可直接在Xcode上编译运行，下载大小70M左右。此工程基于IJKPlayer播放器，可播放FLV视频，有**延迟低、加载快**等优点，也有**聊天室的 SDK**和**弹幕功能**等。
-   
-
    
 ## （三）文件结构和功能介绍
 
@@ -185,6 +185,11 @@ end
 ```
     
 ## （七）更新历史
+
+### [polyv-ios-liveplayer release v2.1.1](https://github.com/easefun/polyv-ios-liveplayer/releases/tag/v2.1.1)
+
+- 更新 README.md 文档 
+- 更新 SocketIO 库至 12.0 版本，支持 Xcode 9.0
   
 ### [polyv-ios-liveplayer release v2.0](https://github.com/easefun/polyv-ios-liveplayer/releases/tag/v2.0)
   
