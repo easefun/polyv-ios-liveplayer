@@ -6,7 +6,7 @@
 
 - Socket.IO 当前版本为 `12.0` ，支持Xcode 9.0 编译环境。
 
-- 添加 Socket.IO 库方面的 wiki 文档和兼容说明，[Socket.IO 库的使用](https://github.com/easefun/polyv-ios-liveplayer/wiki/socket.io)
+- 添加 Socket.IO 库方面的 wiki 文档和兼容说明，[Socket.IO 库的使用](https://github.com/easefun/polyv-ios-liveplayer/wiki/socket.io)
 
 ## (一) 下载须知
 
