@@ -83,11 +83,12 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     // 此处可配置初始化IJK播放器的选项
     IJKFFOptions *options = [IJKFFOptions optionsByDefault];
     /** FFmpeg 参数配置*/
-    [options setPlayerOptionIntValue:1 forKey:@"videotoolbox"]; // 打开硬解
+    // 打开硬解
+    [options setPlayerOptionIntValue:1 forKey:@"videotoolbox"];
     // specify how many microseconds are analyzed to probe the input (from 0 to I64_MAX)
     [options setFormatOptionValue:@"500000" forKey:@"analyzeduration"];
     // set probing size (from 32 to I64_MAX)
-    [options setFormatOptionValue:@"4096" forKey:@"probsize"];
+    [options setFormatOptionValue:@"4096" forKey:@"probesize"];
     //[options setFormatOptionValue:@"nobuffer" forKey:@"fflags"];
     //[options setFormatOptionIntValue:3 forKey:@"reconnect"];
     
