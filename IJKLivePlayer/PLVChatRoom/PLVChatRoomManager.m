@@ -29,8 +29,8 @@
     CGRect origionFrame;
     // UI
     UITableView *_tableView;
-    UIToolbar *toolBar;
-    UITextField *chatInputField;
+    //UIToolbar *toolBar;
+    //UITextField *chatInputField;
     // 数据源
     NSMutableArray *listChats;
     // chatSocket管理
