@@ -3,7 +3,6 @@
 ## 最近更新
 
 - 从仓库中移除`IJKMediaFramework.framework.zip` 包，减少下载体积。
-- 3.0 SDK：[polyv-ios-live-sdk](https://github.com/polyv/polyv-ios-live-sdk)现可使用，具体的使用demo开发之中。
 - Socket.IO 当前版本为 `12.0` ，支持Xcode 9.0 编译环境。
 - 添加 Socket.IO 库方面的 wiki 文档和兼容说明，[Socket.IO 库的使用](https://github.com/easefun/polyv-ios-liveplayer/wiki/socket.io)
 
@@ -62,11 +61,11 @@ IJKLivePlayer
 `IJKMediaFramework.framework` 已经编译好的 framework，参考 ijkplayer [Build iOS](https://github.com/Bilibili/ijkplayer)。这个编译过程较久，需要耐心等候。PLVLivePlayerSDK 中的`IJKMediaFramework.framework` 对i386、x86_64、armv7、arm64 架构CUP 都支持，可以在虚拟机和真机上进行调试。
 
 此版本framework支持HTTPS地址视频播放；支持HLS AES-126加密视频；修改部分代码修复后台返回前台时视频画面不动的问题，如忽略此问题亦可自行编译
-​    
+
 ### 3.2 PLVChatManager.framework
 
 POLYV 聊天室相关接口的封装，包括聊天室的连接、接受、发送信息等
-​    
+
 ### 3.3 PLVLivePlayerController
 
 IJK上二次封装的POLYV直播播放器
@@ -117,17 +116,15 @@ platform :ios, "8.0"
 use_frameworks!
 
 target 'IJKLivePlayer' do
-pod 'Masonry', '~> 1.0.2'
-pod 'MBProgressHUD', '~> 1.0.0'
-    pod 'Socket.IO-Client-Swift', 12.0
+	pod 'Masonry', '~> 1.0.2'
+	pod 'MBProgressHUD', '~> 1.0.0'
+    pod 'PolyvSocketAPI', '~> 0.2.0'
 end
 ```
 
 - `Masonry` 在直播播放器的视图类中使用到
-
 - `MBProgressHUD` demo 使用到的库（网络加载处的等待效果），视项目需求添加
-
-- `Socket.IO-Client-Swift`  SocketIO 库，用于聊天室的连接  
+- ` PolyvSocketAPI`  SocketIO 接口，用于聊天室的连接等
 
 **完成以上操作后在真机和虚拟机下分别编译检查是否通过**
 ​    
