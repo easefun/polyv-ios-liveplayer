@@ -2,8 +2,8 @@ PODS:
   - Masonry (1.0.2)
   - MBProgressHUD (1.0.0)
   - PolyvIJKPlayer (0.0.3)
-  - PolyvLiveAPI (0.1.0)
-  - PolyvSocketAPI (0.2.0):
+  - PolyvLiveAPI (0.1.2)
+  - PolyvSocketAPI (0.2.1):
     - Socket.IO-Client-Swift (= 12.0)
   - Socket.IO-Client-Swift (12.0.0):
     - StarscreamSocketIO (~> 8.0.7)
@@ -20,8 +20,8 @@ SPEC CHECKSUMS:
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   PolyvIJKPlayer: 36cc3a26fb266edf9db21223339e9650c36f03b1
-  PolyvLiveAPI: ea241b52c0f564f13bed10e8504a56d9844027ff
-  PolyvSocketAPI: ee72b1045e0e01da5b7a65df56e40357f076458c
+  PolyvLiveAPI: 7fd3c167d1fcb9c1ee5a33891ae0212e2e4186a4
+  PolyvSocketAPI: 7fcb56286dc33ebcbf1cccc187ed6c0ef28a1f21
   Socket.IO-Client-Swift: 5b0154b42b3892bfb4c44fa138cbeb8afec4f6ef
   StarscreamSocketIO: 00b54e4208481ca5cef089545353aaf126bae16d
 
