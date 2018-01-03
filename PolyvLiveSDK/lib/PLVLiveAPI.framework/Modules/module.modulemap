@@ -1,6 +1,0 @@
-framework module PLVLiveAPI {
-  umbrella header "PLVLiveAPI.h"
-
-  export *
-  module * { export * }
-}

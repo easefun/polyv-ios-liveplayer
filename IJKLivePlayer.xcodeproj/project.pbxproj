@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		670935FF1E8FB0C700863200 /* IJKMediaFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670935E21E8FB0C700863200 /* IJKMediaFramework.framework */; };
-		670936011E8FB0C800863200 /* PLVChatManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670935E41E8FB0C700863200 /* PLVChatManager.framework */; };
-		670936021E8FB0C800863200 /* PLVLiveAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670935E51E8FB0C700863200 /* PLVLiveAPI.framework */; };
 		670936041E8FB0C800863200 /* PLVLivePlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 670935E91E8FB0C700863200 /* PLVLivePlayerController.m */; };
 		670936051E8FB0C800863200 /* PLVLivePlayerControllerSkin.m in Sources */ = {isa = PBXBuildFile; fileRef = 670935EB1E8FB0C700863200 /* PLVLivePlayerControllerSkin.m */; };
 		6709363C1E8FB0FB00863200 /* BCKeyBoard.m in Sources */ = {isa = PBXBuildFile; fileRef = 6709361B1E8FB0FA00863200 /* BCKeyBoard.m */; };
@@ -88,9 +85,6 @@
 /* Begin PBXFileReference section */
 		1F497E22FF496527892193E1 /* Pods-IJKLivePlayer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IJKLivePlayer.release.xcconfig"; path = "Pods/Target Support Files/Pods-IJKLivePlayer/Pods-IJKLivePlayer.release.xcconfig"; sourceTree = "<group>"; };
 		64C638EE5C63729A53D50C45 /* Pods-IJKLivePlayer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IJKLivePlayer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-IJKLivePlayer/Pods-IJKLivePlayer.debug.xcconfig"; sourceTree = "<group>"; };
-		670935E21E8FB0C700863200 /* IJKMediaFramework.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = IJKMediaFramework.framework; sourceTree = "<group>"; };
-		670935E41E8FB0C700863200 /* PLVChatManager.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PLVChatManager.framework; sourceTree = "<group>"; };
-		670935E51E8FB0C700863200 /* PLVLiveAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = PLVLiveAPI.framework; sourceTree = "<group>"; };
 		670935E81E8FB0C700863200 /* PLVLivePlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLVLivePlayerController.h; sourceTree = "<group>"; };
 		670935E91E8FB0C700863200 /* PLVLivePlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLVLivePlayerController.m; sourceTree = "<group>"; };
 		670935EA1E8FB0C700863200 /* PLVLivePlayerControllerSkin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLVLivePlayerControllerSkin.h; sourceTree = "<group>"; };
@@ -170,16 +164,13 @@
 			files = (
 				670936551E8FB7C400863200 /* libstdc++.tbd in Frameworks */,
 				670B17B21E1DEF5A009D0BAA /* VideoToolbox.framework in Frameworks */,
-				670936011E8FB0C800863200 /* PLVChatManager.framework in Frameworks */,
 				670B17B01E1DEF4F009D0BAA /* UIKit.framework in Frameworks */,
 				670B17AE1E1DEF47009D0BAA /* QuartzCore.framework in Frameworks */,
-				670935FF1E8FB0C700863200 /* IJKMediaFramework.framework in Frameworks */,
 				670B17AC1E1DEF3F009D0BAA /* OpenGLES.framework in Frameworks */,
 				670B17AA1E1DEF33009D0BAA /* MobileCoreServices.framework in Frameworks */,
 				670B17A81E1DEF27009D0BAA /* MediaPlayer.framework in Frameworks */,
 				670B17A61E1DEF1B009D0BAA /* libz.tbd in Frameworks */,
 				670B17A41E1DEF12009D0BAA /* libbz2.tbd in Frameworks */,
-				670936021E8FB0C800863200 /* PLVLiveAPI.framework in Frameworks */,
 				670B17A21E1DEEFF009D0BAA /* CoreVideo.framework in Frameworks */,
 				670B17A01E1DEEF6009D0BAA /* CoreMedia.framework in Frameworks */,
 				670B179E1E1DEEEE009D0BAA /* CoreGraphics.framework in Frameworks */,
@@ -233,9 +224,6 @@
 		670935E11E8FB0C700863200 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				670935E21E8FB0C700863200 /* IJKMediaFramework.framework */,
-				670935E41E8FB0C700863200 /* PLVChatManager.framework */,
-				670935E51E8FB0C700863200 /* PLVLiveAPI.framework */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -532,9 +520,18 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-IJKLivePlayer/Pods-IJKLivePlayer-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
+				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
+				"${BUILT_PRODUCTS_DIR}/Socket.IO-Client-Swift/SocketIO.framework",
+				"${BUILT_PRODUCTS_DIR}/StarscreamSocketIO/StarscreamSocketIO.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketIO.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StarscreamSocketIO.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -547,13 +544,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-IJKLivePlayer-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D98E4228EDA38C57DFF0ED85 /* [CP] Copy Pods Resources */ = {
