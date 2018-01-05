@@ -34,7 +34,7 @@
 		670936551E8FB7C400863200 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 670936541E8FB7C400863200 /* libstdc++.tbd */; };
 		670B17491E1DE949009D0BAA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 670B17481E1DE949009D0BAA /* main.m */; };
 		670B174C1E1DE949009D0BAA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 670B174B1E1DE949009D0BAA /* AppDelegate.m */; };
-		670B174F1E1DE949009D0BAA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 670B174E1E1DE949009D0BAA /* ViewController.m */; };
+		670B174F1E1DE949009D0BAA /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 670B174E1E1DE949009D0BAA /* LoginViewController.m */; };
 		670B17521E1DE949009D0BAA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 670B17501E1DE949009D0BAA /* Main.storyboard */; };
 		670B17541E1DE949009D0BAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 670B17531E1DE949009D0BAA /* Assets.xcassets */; };
 		670B17571E1DE949009D0BAA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 670B17551E1DE949009D0BAA /* LaunchScreen.storyboard */; };
@@ -54,6 +54,7 @@
 		670B17B01E1DEF4F009D0BAA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670B17AF1E1DEF4F009D0BAA /* UIKit.framework */; };
 		670B17B21E1DEF5A009D0BAA /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670B17B11E1DEF5A009D0BAA /* VideoToolbox.framework */; };
 		6716189B1E947EBA0068C9CF /* PLVLivePlayerSkin.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6716189A1E947EBA0068C9CF /* PLVLivePlayerSkin.bundle */; };
+		677F4D0A1FFF830B00F3DCBE /* PLVLiveManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 677F4D091FFF830B00F3DCBE /* PLVLiveManager.m */; };
 		679A84A11E2F6B8400F142AA /* ZJZDanMu.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A849D1E2F6B8400F142AA /* ZJZDanMu.m */; };
 		679A84A21E2F6B8400F142AA /* ZJZDanMuLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84A01E2F6B8400F142AA /* ZJZDanMuLabel.m */; };
 		AA7ED7CA270686D486F9382E /* Pods_IJKLivePlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89F7ED6534B0E79DD9910002 /* Pods_IJKLivePlayer.framework */; };
@@ -124,8 +125,8 @@
 		670B17481E1DE949009D0BAA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		670B174A1E1DE949009D0BAA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		670B174B1E1DE949009D0BAA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		670B174D1E1DE949009D0BAA /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		670B174E1E1DE949009D0BAA /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		670B174D1E1DE949009D0BAA /* LoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		670B174E1E1DE949009D0BAA /* LoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		670B17511E1DE949009D0BAA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		670B17531E1DE949009D0BAA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		670B17561E1DE949009D0BAA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -149,6 +150,8 @@
 		670B17AF1E1DEF4F009D0BAA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		670B17B11E1DEF5A009D0BAA /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		6716189A1E947EBA0068C9CF /* PLVLivePlayerSkin.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = PLVLivePlayerSkin.bundle; sourceTree = "<group>"; };
+		677F4D081FFF830B00F3DCBE /* PLVLiveManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLVLiveManager.h; sourceTree = "<group>"; };
+		677F4D091FFF830B00F3DCBE /* PLVLiveManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLVLiveManager.m; sourceTree = "<group>"; };
 		679A849C1E2F6B8400F142AA /* ZJZDanMu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZJZDanMu.h; sourceTree = "<group>"; };
 		679A849D1E2F6B8400F142AA /* ZJZDanMu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZJZDanMu.m; sourceTree = "<group>"; };
 		679A849E1E2F6B8400F142AA /* ZJZDanMuDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZJZDanMuDefine.h; sourceTree = "<group>"; };
@@ -345,8 +348,10 @@
 				679A849B1E2F6B8400F142AA /* ZJZDanMu */,
 				670B17961E1DEE5F009D0BAA /* LivePlayerViewController.h */,
 				670B17971E1DEE5F009D0BAA /* LivePlayerViewController.m */,
-				670B174D1E1DE949009D0BAA /* ViewController.h */,
-				670B174E1E1DE949009D0BAA /* ViewController.m */,
+				677F4D081FFF830B00F3DCBE /* PLVLiveManager.h */,
+				677F4D091FFF830B00F3DCBE /* PLVLiveManager.m */,
+				670B174D1E1DE949009D0BAA /* LoginViewController.h */,
+				670B174E1E1DE949009D0BAA /* LoginViewController.m */,
 				670B174A1E1DE949009D0BAA /* AppDelegate.h */,
 				670B174B1E1DE949009D0BAA /* AppDelegate.m */,
 				670B17501E1DE949009D0BAA /* Main.storyboard */,
@@ -444,7 +449,7 @@
 		670B173C1E1DE949009D0BAA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = easefun;
 				TargetAttributes = {
 					670B17431E1DE949009D0BAA = {
@@ -580,8 +585,9 @@
 			files = (
 				670936051E8FB0C800863200 /* PLVLivePlayerControllerSkin.m in Sources */,
 				670936411E8FB0FB00863200 /* PLVEmojiModel.m in Sources */,
+				677F4D0A1FFF830B00F3DCBE /* PLVLiveManager.m in Sources */,
 				670936501E8FB0FB00863200 /* PLVTableViewCell.m in Sources */,
-				670B174F1E1DE949009D0BAA /* ViewController.m in Sources */,
+				670B174F1E1DE949009D0BAA /* LoginViewController.m in Sources */,
 				6709363E1E8FB0FB00863200 /* DXFaceView.m in Sources */,
 				670B17981E1DEE5F009D0BAA /* LivePlayerViewController.m in Sources */,
 				670936401E8FB0FB00863200 /* FacialView.m in Sources */,
@@ -644,7 +650,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -652,7 +660,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
@@ -692,7 +704,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
@@ -700,7 +714,11 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;

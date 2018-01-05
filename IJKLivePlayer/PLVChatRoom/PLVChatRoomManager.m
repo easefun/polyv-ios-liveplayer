@@ -12,7 +12,6 @@
 #import <PLVLiveAPI/PLVLiveAPI.h>
 #import "BCKeyBoard.h"
 
-
 #define CHATFONTSIZE 14.0       // 聊天文字大小
 #define ChATMAXWIDTH 200.0f     // 聊天内容长度
 
@@ -29,8 +28,6 @@
     CGRect origionFrame;
     // UI
     UITableView *_tableView;
-    //UIToolbar *toolBar;
-    //UITextField *chatInputField;
     // 数据源
     NSMutableArray *listChats;
     // chatSocket管理
@@ -210,7 +207,6 @@
     NSLog(@"socket connected");
     
     // 登录聊天室
-#warning - 这几个参数目前不能为空，SDK会在下个版本内设置默认值
     [chatSocket loginChatRoomWithChannelId:self.channelId nickName:self.nickName avatar:self.userPic];
 }
 
@@ -290,8 +286,7 @@
     }
     
     // 将内容转化为属性文本
-    chatObject.messageAttributedContent = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chatObject.messageContent
-                                                                                                    font:[UIFont systemFontOfSize:CHATFONTSIZE]];
+    chatObject.messageAttributedContent = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:chatObject.messageContent font:[UIFont systemFontOfSize:CHATFONTSIZE]];
     // 数据源更新
     [listChats addObject:chatObject];
     

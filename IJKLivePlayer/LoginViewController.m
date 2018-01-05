@@ -6,19 +6,19 @@
 //  Copyright © 2016年 easefun. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "LoginViewController.h"
 #import "LivePlayerViewController.h"
 #import <MBProgressHUD/MBProgressHUD.h>
 #import <PLVLiveAPI/PLVSettings.h>
 
-@interface ViewController ()
+@interface LoginViewController ()
 
 @property (weak, nonatomic) IBOutlet UITextField *userIdTF;
 @property (weak, nonatomic) IBOutlet UITextField *channelIdTF;
 
 @end
 
-@implementation ViewController
+@implementation LoginViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
