@@ -28,7 +28,6 @@
 		6709364C1E8FB0FB00863200 /* chatBar_keyboardSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 670936341E8FB0FB00863200 /* chatBar_keyboardSelected.png */; };
 		6709364D1E8FB0FB00863200 /* chatBar_keyboardSelected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 670936351E8FB0FB00863200 /* chatBar_keyboardSelected@2x.png */; };
 		6709364E1E8FB0FB00863200 /* messageToolbarBg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 670936361E8FB0FB00863200 /* messageToolbarBg@2x.png */; };
-		6709364F1E8FB0FB00863200 /* PLVChatRoomManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 670936381E8FB0FB00863200 /* PLVChatRoomManager.m */; };
 		670936501E8FB0FB00863200 /* PLVTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6709363A1E8FB0FB00863200 /* PLVTableViewCell.m */; };
 		670936511E8FB0FB00863200 /* PLVTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6709363B1E8FB0FB00863200 /* PLVTableViewCell.xib */; };
 		670936551E8FB7C400863200 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 670936541E8FB7C400863200 /* libstdc++.tbd */; };
@@ -54,6 +53,10 @@
 		670B17B01E1DEF4F009D0BAA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670B17AF1E1DEF4F009D0BAA /* UIKit.framework */; };
 		670B17B21E1DEF5A009D0BAA /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 670B17B11E1DEF5A009D0BAA /* VideoToolbox.framework */; };
 		6716189B1E947EBA0068C9CF /* PLVLivePlayerSkin.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 6716189A1E947EBA0068C9CF /* PLVLivePlayerSkin.bundle */; };
+		673AE820200306ED00A2E7C4 /* PLVChatroomController.m in Sources */ = {isa = PBXBuildFile; fileRef = 673AE81F200306ED00A2E7C4 /* PLVChatroomController.m */; };
+		673AE82820034D7500A2E7C4 /* FTPageController.m in Sources */ = {isa = PBXBuildFile; fileRef = 673AE82320034D7500A2E7C4 /* FTPageController.m */; };
+		673AE82920034D7500A2E7C4 /* FTTitleViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 673AE82520034D7500A2E7C4 /* FTTitleViewCell.m */; };
+		673AE82A20034D7500A2E7C4 /* FTTitleViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 673AE82720034D7500A2E7C4 /* FTTitleViewCell.xib */; };
 		677F4D0A1FFF830B00F3DCBE /* PLVLiveManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 677F4D091FFF830B00F3DCBE /* PLVLiveManager.m */; };
 		679A84A11E2F6B8400F142AA /* ZJZDanMu.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A849D1E2F6B8400F142AA /* ZJZDanMu.m */; };
 		679A84A21E2F6B8400F142AA /* ZJZDanMuLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 679A84A01E2F6B8400F142AA /* ZJZDanMuLabel.m */; };
@@ -115,8 +118,6 @@
 		670936341E8FB0FB00863200 /* chatBar_keyboardSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chatBar_keyboardSelected.png; sourceTree = "<group>"; };
 		670936351E8FB0FB00863200 /* chatBar_keyboardSelected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chatBar_keyboardSelected@2x.png"; sourceTree = "<group>"; };
 		670936361E8FB0FB00863200 /* messageToolbarBg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "messageToolbarBg@2x.png"; sourceTree = "<group>"; };
-		670936371E8FB0FB00863200 /* PLVChatRoomManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLVChatRoomManager.h; sourceTree = "<group>"; };
-		670936381E8FB0FB00863200 /* PLVChatRoomManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLVChatRoomManager.m; sourceTree = "<group>"; };
 		670936391E8FB0FB00863200 /* PLVTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLVTableViewCell.h; sourceTree = "<group>"; };
 		6709363A1E8FB0FB00863200 /* PLVTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLVTableViewCell.m; sourceTree = "<group>"; };
 		6709363B1E8FB0FB00863200 /* PLVTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PLVTableViewCell.xib; sourceTree = "<group>"; };
@@ -150,6 +151,13 @@
 		670B17AF1E1DEF4F009D0BAA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		670B17B11E1DEF5A009D0BAA /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		6716189A1E947EBA0068C9CF /* PLVLivePlayerSkin.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = PLVLivePlayerSkin.bundle; sourceTree = "<group>"; };
+		673AE81E200306ED00A2E7C4 /* PLVChatroomController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLVChatroomController.h; sourceTree = "<group>"; };
+		673AE81F200306ED00A2E7C4 /* PLVChatroomController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLVChatroomController.m; sourceTree = "<group>"; };
+		673AE82220034D7500A2E7C4 /* FTPageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTPageController.h; sourceTree = "<group>"; };
+		673AE82320034D7500A2E7C4 /* FTPageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTPageController.m; sourceTree = "<group>"; };
+		673AE82520034D7500A2E7C4 /* FTTitleViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTTitleViewCell.m; sourceTree = "<group>"; };
+		673AE82620034D7500A2E7C4 /* FTTitleViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTTitleViewCell.h; sourceTree = "<group>"; };
+		673AE82720034D7500A2E7C4 /* FTTitleViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FTTitleViewCell.xib; sourceTree = "<group>"; };
 		677F4D081FFF830B00F3DCBE /* PLVLiveManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLVLiveManager.h; sourceTree = "<group>"; };
 		677F4D091FFF830B00F3DCBE /* PLVLiveManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLVLiveManager.m; sourceTree = "<group>"; };
 		679A849C1E2F6B8400F142AA /* ZJZDanMu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZJZDanMu.h; sourceTree = "<group>"; };
@@ -246,12 +254,12 @@
 		670936181E8FB0FA00863200 /* PLVChatRoom */ = {
 			isa = PBXGroup;
 			children = (
-				670936371E8FB0FB00863200 /* PLVChatRoomManager.h */,
-				670936381E8FB0FB00863200 /* PLVChatRoomManager.m */,
 				670936391E8FB0FB00863200 /* PLVTableViewCell.h */,
 				6709363A1E8FB0FB00863200 /* PLVTableViewCell.m */,
 				6709363B1E8FB0FB00863200 /* PLVTableViewCell.xib */,
 				670936191E8FB0FA00863200 /* BCKeyBoard */,
+				673AE81E200306ED00A2E7C4 /* PLVChatroomController.h */,
+				673AE81F200306ED00A2E7C4 /* PLVChatroomController.m */,
 			);
 			path = PLVChatRoom;
 			sourceTree = "<group>";
@@ -344,6 +352,7 @@
 		670B17461E1DE949009D0BAA /* IJKLivePlayer */ = {
 			isa = PBXGroup;
 			children = (
+				673AE82120034D7500A2E7C4 /* FTPageController */,
 				670936181E8FB0FA00863200 /* PLVChatRoom */,
 				679A849B1E2F6B8400F142AA /* ZJZDanMu */,
 				670B17961E1DEE5F009D0BAA /* LivePlayerViewController.h */,
@@ -378,6 +387,26 @@
 				670B17631E1DE949009D0BAA /* Info.plist */,
 			);
 			path = IJKLivePlayerTests;
+			sourceTree = "<group>";
+		};
+		673AE82120034D7500A2E7C4 /* FTPageController */ = {
+			isa = PBXGroup;
+			children = (
+				673AE82220034D7500A2E7C4 /* FTPageController.h */,
+				673AE82320034D7500A2E7C4 /* FTPageController.m */,
+				673AE82420034D7500A2E7C4 /* views */,
+			);
+			path = FTPageController;
+			sourceTree = "<group>";
+		};
+		673AE82420034D7500A2E7C4 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				673AE82520034D7500A2E7C4 /* FTTitleViewCell.m */,
+				673AE82620034D7500A2E7C4 /* FTTitleViewCell.h */,
+				673AE82720034D7500A2E7C4 /* FTTitleViewCell.xib */,
+			);
+			path = views;
 			sourceTree = "<group>";
 		};
 		679A849B1E2F6B8400F142AA /* ZJZDanMu */ = {
@@ -491,6 +520,7 @@
 				6709364A1E8FB0FB00863200 /* chatBar_keyboard.png in Resources */,
 				670936511E8FB0FB00863200 /* PLVTableViewCell.xib in Resources */,
 				670936471E8FB0FB00863200 /* chatBar_face@2x.png in Resources */,
+				673AE82A20034D7500A2E7C4 /* FTTitleViewCell.xib in Resources */,
 				6709364D1E8FB0FB00863200 /* chatBar_keyboardSelected@2x.png in Resources */,
 				670936491E8FB0FB00863200 /* chatBar_faceSelected@2x.png in Resources */,
 				670B17571E1DE949009D0BAA /* LaunchScreen.storyboard in Resources */,
@@ -529,14 +559,14 @@
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
 				"${BUILT_PRODUCTS_DIR}/Socket.IO-Client-Swift/SocketIO.framework",
-				"${BUILT_PRODUCTS_DIR}/StarscreamSocketIO/StarscreamSocketIO.framework",
+				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketIO.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/StarscreamSocketIO.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -586,12 +616,13 @@
 				670936051E8FB0C800863200 /* PLVLivePlayerControllerSkin.m in Sources */,
 				670936411E8FB0FB00863200 /* PLVEmojiModel.m in Sources */,
 				677F4D0A1FFF830B00F3DCBE /* PLVLiveManager.m in Sources */,
+				673AE820200306ED00A2E7C4 /* PLVChatroomController.m in Sources */,
 				670936501E8FB0FB00863200 /* PLVTableViewCell.m in Sources */,
 				670B174F1E1DE949009D0BAA /* LoginViewController.m in Sources */,
 				6709363E1E8FB0FB00863200 /* DXFaceView.m in Sources */,
 				670B17981E1DEE5F009D0BAA /* LivePlayerViewController.m in Sources */,
 				670936401E8FB0FB00863200 /* FacialView.m in Sources */,
-				6709364F1E8FB0FB00863200 /* PLVChatRoomManager.m in Sources */,
+				673AE82820034D7500A2E7C4 /* FTPageController.m in Sources */,
 				679A84A11E2F6B8400F142AA /* ZJZDanMu.m in Sources */,
 				670936041E8FB0C800863200 /* PLVLivePlayerController.m in Sources */,
 				6709363F1E8FB0FB00863200 /* Emoji.m in Sources */,
@@ -600,6 +631,7 @@
 				6709363C1E8FB0FB00863200 /* BCKeyBoard.m in Sources */,
 				6709363D1E8FB0FB00863200 /* BCTextView.m in Sources */,
 				679A84A21E2F6B8400F142AA /* ZJZDanMuLabel.m in Sources */,
+				673AE82920034D7500A2E7C4 /* FTTitleViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -758,7 +790,7 @@
 					"$(PROJECT_DIR)/PolyvLiveSDK/lib",
 				);
 				INFOPLIST_FILE = IJKLivePlayer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -791,7 +823,7 @@
 					"$(PROJECT_DIR)/PolyvLiveSDK/lib",
 				);
 				INFOPLIST_FILE = IJKLivePlayer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",

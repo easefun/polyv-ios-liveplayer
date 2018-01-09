@@ -26,7 +26,11 @@
 
 @end
 
-@implementation BCKeyBoard
+@implementation BCKeyBoard {
+    CGRect _originFrame;
+}
+
+#pragma mark - Overwrite methods
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -35,12 +39,11 @@
     }
     self = [super initWithFrame:frame];
     if (self) {
+        _originFrame = frame;
         [self createUI];
     }
     return self;
 }
-
-#pragma mark - 重写
 
 - (void)setFrame:(CGRect)frame
 {
@@ -50,16 +53,11 @@
     [super setFrame:frame];
 }
 
-- (BOOL)isFirstResponder {
-    return _textView.isFirstResponder;
-}
+#pragma mark - Initialize
 
-#pragma mark - 初始化配置
-
-- (void)createUI
-{
+- (void)createUI {
     _lastHeight = 30;
-    // 注册键盘改变是调用
+    // 注册键盘改变时调用
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
     self.backgroundImageView = [[UIImageView alloc] initWithFrame:self.bounds];
@@ -104,13 +102,88 @@
     }
 }
 
-#pragma mark - 改变frame
+#pragma mark - Public interfaces
+
+- (void)setPlaceholder:(NSString *)placeholder {
+    self.textView.placeholder = placeholder;
+}
+
+- (void)setPlaceholderColor:(UIColor *)placeholderColor {
+    self.textView.placeholderColor = placeholderColor;
+}
+
+- (BOOL)isFirstResponder {
+    return _textView.isFirstResponder;
+}
+
+- (void)hideTheKeyBoard {
+    if (self.textView.isFirstResponder) {
+        [self.textView resignFirstResponder];
+    }else {
+        [self willShowBottomView:nil];
+        self.faceBtn.selected = NO;
+    }
+}
+
+#pragma mark - Interaction events
+
+- (void)willShowFaceView:(UIButton *)btn {
+    btn.selected = !btn.selected;
+    if(btn.selected == YES) {
+        [self.textView resignFirstResponder];
+        [self willShowBottomView:self.faceView];
+    }else {
+        [self.textView becomeFirstResponder];
+        [self willShowBottomView:nil];
+    }
+}
+
+-(void)sendButtonClick {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(didSendText:)]) {
+        [self.delegate didSendText:self.textView.text];
+        self.textView.text = @"";
+        [self changeFrame:ceilf([self.textView sizeThatFits:self.textView.frame.size].height)];
+    }
+}
+
+#pragma mark - Notifications
+
+- (void)keyboardWillChangeFrame:(NSNotification *)notification {
+    NSDictionary *userInfo = notification.userInfo;
+    CGRect beginFrame = [userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    CGRect endFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    void(^animations)(void) = ^{
+        if (CGRectGetMinY(beginFrame) > CGRectGetMinY(endFrame)) {
+            // 键盘弹出
+            CGRect frame = self.frame;
+            frame.origin.y = CGRectGetMinY(frame) - endFrame.size.height;
+            self.frame = frame;
+            if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
+                [self.delegate returnHeight:CGRectGetHeight(endFrame)+CGRectGetHeight(_originFrame)];
+            }
+        }else {
+            if (!self.activeView) {
+                self.frame = _originFrame;
+                if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
+                    [self.delegate returnHeight:CGRectGetHeight(_originFrame)];
+                }
+            }
+        }
+    };
+    //void(^completion)(BOOL) = ^(BOOL finished){
+    //    NSLog(@"finished:%d",finished);
+    //};
+    [UIView animateWithDuration:duration delay:0.0f options:(curve << 16 | UIViewAnimationOptionBeginFromCurrentState) animations:animations completion:nil];
+}
+
+#pragma mark - Private methods
 
 - (void)changeFrame:(CGFloat)height {
-    
     if (height == _lastHeight) {
         return;
-    } else{
+    }else {
         CGFloat changeHeight = height - _lastHeight;
         
         CGRect rect = self.frame;
@@ -134,123 +207,25 @@
             [self.delegate returnHeight:height];
         }
     }
-
 }
 
-#pragma mark - 外部方法啊实现
-
-- (void)setPlaceholder:(NSString *)placeholder {
-    self.textView.placeholder = placeholder;
-}
-
-- (void)setPlaceholderColor:(UIColor *)placeholderColor {
-    self.textView.placeholderColor = placeholderColor;
-}
-
-#pragma mark - 通知方法
-
-- (void)keyboardWillChangeFrame:(NSNotification *)notification{
-    NSDictionary *userInfo = notification.userInfo;
-    CGRect endFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGFloat duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
-    void(^animations)() = ^{
-        CGRect frame = self.frame;
-        frame.origin.y = endFrame.origin.y - self.bounds.size.height;
-        self.frame = frame;
-    };
-    void(^completion)(BOOL) = ^(BOOL finished){
-    };
-    [UIView animateWithDuration:duration delay:0.0f options:(curve << 16 | UIViewAnimationOptionBeginFromCurrentState) animations:animations completion:completion];
-}
-
-#pragma mark - 点击事件处理
-
-- (void)willShowFaceView:(UIButton *)btn
-{
-    btn.selected = !btn.selected;
-    if(btn.selected == YES){
-        [self willShowBottomView:self.faceView];
-        [self.textView resignFirstResponder];
-    }else {
-        [self willShowBottomView:nil];
-        [self.textView becomeFirstResponder];
-    }
-}
-
--(void)sendButtonClick {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(didSendText:)]) {
-        [self.delegate didSendText:self.textView.text];
-        self.textView.text = @"";
-        [self changeFrame:ceilf([self.textView sizeThatFits:self.textView.frame.size].height)];
-    }
-}
-
-#pragma mark - 外部事件处理
-
-- (void)hideTheKeyBoard {
-    if (self.textView.isFirstResponder) {
-        [self.textView resignFirstResponder];
-    }else {
-        [self willShowBottomView:nil];
-        self.faceBtn.selected = NO;
-    }
-}
-
-#pragma mark - Show bottom
-
-- (void)willShowBottomHeight:(CGFloat)bottomHeight
-{
+- (void)willShowBottomHeight:(CGFloat)bottomHeight bottomView:(UIView *)bottomView {
     CGRect fromFrame = self.frame;
-    CGFloat toHeight = self.backgroundImageView.frame.size.height + bottomHeight;
+    CGFloat toHeight = CGRectGetHeight(self.backgroundImageView.frame) + bottomHeight;
     CGRect toFrame = CGRectMake(fromFrame.origin.x, fromFrame.origin.y + (fromFrame.size.height - toHeight), fromFrame.size.width, toHeight);
     self.frame = toFrame;
     
-    if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
-        [self.delegate returnHeight:toHeight];
-    }
-}
-
-- (CGFloat)getTextViewContentH:(UITextView *)textView {
-    
-    return ceilf([textView sizeThatFits:textView.frame.size].height);
-}
-
-
-#pragma mark - 键盘代理事件
-
-- (void)textViewDidBeginEditing:(UITextView *)textView {
-    
-    [self willShowBottomView:nil];
-    self.faceBtn.selected = NO;
-    //self.sendBtn.selected = NO;
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-    // 返回键事件
-    if ([text isEqualToString:@"\n"]) {
-        if ([self.delegate respondsToSelector:@selector(didSendText:)]) {
-            [self.delegate didSendText:textView.text];
-            self.textView.text = @"";
-            [self changeFrame:ceilf([textView sizeThatFits:textView.frame.size].height)];
+    if (bottomView) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
+            [self.delegate returnHeight:toHeight];
         }
-        return NO;
     }
-    return YES;
 }
-
-- (void)textViewDidChange:(UITextView *)textView {
-    
-    [self changeFrame:ceilf([textView sizeThatFits:textView.frame.size].height)];
-}
-
-#pragma mark -
 
 - (void)willShowBottomView:(UIView *)bottomView {
-    
     if (![self.activeView isEqual:bottomView]) {
         CGFloat bottomHeight = bottomView ? bottomView.frame.size.height : 0;
-        [self willShowBottomHeight:bottomHeight];
+        [self willShowBottomHeight:bottomHeight bottomView:bottomView];
         
         if (bottomView) {
             CGRect rect = bottomView.frame;
@@ -265,35 +240,58 @@
     }
 }
 
+- (CGFloat)getTextViewContentH:(UITextView *)textView {
+    return ceilf([textView sizeThatFits:textView.frame.size].height);
+}
 
-#pragma mark - 代理回调事件
+#pragma mark - <UITextViewDelegate>
+
+- (void)textViewDidBeginEditing:(UITextView *)textView {
+    [self willShowBottomView:nil];
+    self.faceBtn.selected = NO;
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    if ([text isEqualToString:@"\n"]) {         // 返回键符号
+        if ([self.delegate respondsToSelector:@selector(didSendText:)]) {
+            [self.delegate didSendText:textView.text];
+            self.textView.text = @"";
+            [self changeFrame:ceilf([textView sizeThatFits:textView.frame.size].height)];
+        }
+        return NO;
+    }
+    return YES;
+}
+
+- (void)textViewDidChange:(UITextView *)textView {
+    [self changeFrame:ceilf([textView sizeThatFits:textView.frame.size].height)];
+}
+
+#pragma mark - <DXFaceDelegate>
 
 - (void)selectedEmoji:(PLVEmojiModel *)emojiModel {
     NSString *chatText = self.textView.text;
-    
     self.textView.text = [NSString stringWithFormat:@"%@%@",chatText,emojiModel.text];
-    
     [self textViewDidChange:self.textView];
 }
 
-- (void)deleteEvent
-{
+- (void)deleteEvent {
     NSString *chatText = self.textView.text;
-//    if (chatText.length >= 4)
-//    {
-//        NSString *subStr = [chatText substringFromIndex:chatText.length-4];
-//        self.textView.text = [chatText substringToIndex:chatText.length-4];
-//        [self textViewDidChange:self.textView];
-//        return;
-//    }
     if (chatText.length > 0) {
         self.textView.text = [chatText substringToIndex:chatText.length-1];
     }
+    //if (chatText.length >= 4) {
+    //    NSString *subStr = [chatText substringFromIndex:chatText.length-4];
+    //    self.textView.text = [chatText substringToIndex:chatText.length-4];
+    //    [self textViewDidChange:self.textView];
+    //    return;
+    //}
 }
 
+#pragma mark - Dealloc
 
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
 }
+
 @end

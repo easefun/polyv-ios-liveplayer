@@ -9,53 +9,54 @@
 #import "LivePlayerViewController.h"
 #import "PLVLivePlayerController.h"
 #import <MBProgressHUD/MBProgressHUD.h>
-#import "PLVChatRoomManager.h"
+#import <PLVSocketAPI/PLVSocketAPI.h>
+#import "FTPageController.h"
+#import "PLVLiveManager.h"
+#import "PLVChatroomController.h"
 #import "ZJZDanMu.h"
 
-#define WIDTH [UIScreen mainScreen].bounds.size.width
-#define HEIGHT [UIScreen mainScreen].bounds.size.height
+#define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
+#define SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 
-#define BACKGROUNDIMAGE @"PLVLivePlayerSkin.bundle/plv_background"      // 播放器背景地址
+/// 播放器背景图片路径
+#define PLAYER_BACKGROUND @"PLVLivePlayerSkin.bundle/plv_background"
 
-@interface LivePlayerViewController ()<PLVChatRoomDelegate>
+@interface LivePlayerViewController () <PLVSocketIODelegate, PLVChatroomDelegate>
 
-@property (nonatomic, strong) PLVLivePlayerController *livePlayer;  // PLV播放器
-@property (nonatomic, strong) UIView *displayView;                  // 播放器显示层
+@property (nonatomic, strong) PLVLivePlayerController *livePlayer;          // PLV播放器
+@property (nonatomic, strong) UIView *displayView;                          // 播放器显示层
 
-@property (nonatomic, strong) PLVChatRoomManager *chatRoomManager;  // 聊天室管理
-@property (nonatomic, strong) ZJZDanMu *danmuLayer;                 // 弹幕层
+@property (nonatomic, strong) ZJZDanMu *danmuLayer;                         // 弹幕
+
+@property (nonatomic, strong) PLVSocketIO *socketIO;                        // 即时通信
+@property (nonatomic, strong) PLVSocketObject *login;                       // Socket 登录对象
+@property (nonatomic, assign) BOOL loginSuccess;                            // Socket 登录成功
+
+@property (nonatomic, strong) PLVChatroomController *chatroomController;    // 互动聊天室(房间内公共聊天)
+@property (nonatomic, strong) PLVChatroomController *privateChatController;     // 咨询提问聊天室(房间内私有聊天)
 
 @end
 
 @implementation LivePlayerViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self initPlayer];
+    [self initSocketIO];
+    [self configDanmu];
+    [self setupUI];
+}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    /** 初始化播放器、聊天室、弹幕*/
-    [self initPlayer];
-    [self addChatRoom];
-    [self configDanmu];
-}
+#pragma mark - initialize
 
-#pragma mark - 初始化配置
-
-// 初始化播放器
 - (void)initPlayer {
-    
-#ifdef DEBUG
-    // Debug模式的播放器日志输出级别 k_IJK_LOG_DEBUG模式输出内容更详细
-    [IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];
-#else
-    [IJKFFMoviePlayerController setLogReport:NO];
-    [IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];
-#endif
+    [IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];    // IJK日志输出等级
     
     self.livePlayer = [self getLivePlayer];
     [self.livePlayer prepareToPlay];
@@ -64,28 +65,44 @@
     [self configObservers];
 }
 
-// 添加聊天室
-- (void)addChatRoom {
-
-    CGFloat videoBottom = self.livePlayer.view.bounds.size.height;
-    self.chatRoomManager = [[PLVChatRoomManager alloc] initWithFrame:CGRectMake(0, videoBottom, WIDTH, HEIGHT-videoBottom)];
-    /** 添加自身view和设置currentCtl先后顺序不可变(view层次关系)*/
-    [self.view addSubview:self.chatRoomManager.view];
-    self.chatRoomManager.currentCrl = self;
-    self.chatRoomManager.delegate = self;
+- (void)initSocketIO {
+    NSString *chatToken = @"";  // TODO:请求连麦授权接口
+    // 初始化 socketIO 连接对象
+    self.socketIO = [[PLVSocketIO alloc] initSocketIOWithConnectToken:chatToken enableLog:NO];
+    self.socketIO.delegate = self;
+    [self.socketIO connect];
     
-    // 初始化请求参数
-    self.chatRoomManager.channelId = self.channel.channelId;
-    self.chatRoomManager.nickName = @"iPhoneSimulator";
-    self.chatRoomManager.userPic = @"http://www.polyv.net/images/effect/effect-device.png";
+    // 初始化一个socket登录对象（昵称和头像使用默认设置）
+    self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:[PLVLiveManager sharedLiveManager].channelId.integerValue nickName:nil avatar:nil userType:PLVSocketObjectUserTypeStudent];
 }
 
-// 配置弹幕
 - (void)configDanmu {
-    
     CGRect bounds = self.livePlayer.view.bounds;
     self.danmuLayer = [[ZJZDanMu alloc] initWithFrame:CGRectMake(0, 20, bounds.size.width, bounds.size.height-20)];
     [self.livePlayer insertDanmuView:self.danmuLayer];
+}
+
+- (void)setupUI {
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    // TODO:请求后台判断是否开启提问功能
+    CGRect pageCtrlFrame = CGRectMake(0, CGRectGetMaxY(self.displayView.frame), SCREEN_WIDTH, SCREEN_HEIGHT-CGRectGetMaxY(self.displayView.frame));
+    
+    // 初始化互动聊天室
+    self.chatroomController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
+    self.chatroomController.delegate = self;
+    // 初始化咨询提问聊天室
+    self.privateChatController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
+    self.privateChatController.privateChatMode = YES;
+    self.privateChatController.delegate = self;
+    
+    NSArray *titles = @[@"互动聊天",@"咨询提问"];
+    NSArray *controllers = @[self.chatroomController,self.privateChatController];
+    
+    FTPageController *pageController = [[FTPageController alloc] initWithTitles:titles controllers:controllers];
+    pageController.view.frame = pageCtrlFrame;
+    [self addChildViewController:pageController];
+    [self.view addSubview:pageController.view];
 }
 
 // 注册播放器通知
@@ -95,32 +112,31 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(livePlayerWillExitFullScreenNotification) name:PLVLivePlayerWillExitFullScreenNotification object:nil];
 }
 
-#pragma mark - 播放器回调通知
+#pragma mark - player callback
 
 - (void)configCallBackBlock {
     __weak typeof(self)weakSelf = self;
     [_livePlayer setReturnButtonClickBlcok:^{
         NSLog(@"返回按钮点击了...");
-        [weakSelf.chatRoomManager closeChatRoom];
+        //[weakSelf.chatRoomManager closeChatRoom];
+        [weakSelf.socketIO disconnect];
         [weakSelf dismissViewControllerAnimated:YES completion:nil];
     }];
-    
     [_livePlayer setPlayButtonClickBlcok:^{
         NSLog(@"播放按钮点击了...");
     }];
-    
     [_livePlayer setPauseButtonClickBlcok:^{
         NSLog(@"暂停按钮点击了...");
     }];
-    
     [_livePlayer setFullScreenButtonClickBlcok:^{
         NSLog(@"全屏按钮点击了...");
     }];
-    
     [_livePlayer setSmallScreenButtonClickBlcok:^{
         NSLog(@"小屏按钮点击了...");
     }];
 }
+
+#pragma mark - notifications
 
 // 直播播断流后重新连接时创建一个新的播放器
 - (void)livePlayerReconnectNotification {
@@ -128,7 +144,8 @@
     hud.label.text = @"加载JSON...";
     
     __weak typeof(self)weakSelf = self;
-    [PLVChannel loadVideoJsonWithUserId:_channel.userId channelId:_channel.channelId completionHandler:^(PLVChannel *channel) {
+    PLVLiveManager *liveManager = [PLVLiveManager sharedLiveManager];
+    [PLVChannel loadVideoJsonWithUserId:liveManager.userId channelId:liveManager.channelId completionHandler:^(PLVChannel *channel) {
         weakSelf.channel = channel;
         
         hud.label.text = @"JSON加载成功";
@@ -142,7 +159,6 @@
         if (weakSelf.danmuLayer) {
             [weakSelf.livePlayer insertDanmuView:self.danmuLayer];
         }
-        
     } failureHandler:^(NSString *errorName, NSString *errorDescription) {
         hud.label.text = @"JSON加载失败";
         [hud hideAnimated:YES];
@@ -152,22 +168,21 @@
 
 - (void)livePlayerWillChangeToFullScreenNotification {
     NSLog(@"将要全屏啦");
-    [self.chatRoomManager setHiddenView:YES];
+    //[self.chatRoomManager setHiddenView:YES];
 }
 
 - (void)livePlayerWillExitFullScreenNotification {
     NSLog(@"将要退出全屏啦");
-    [self.chatRoomManager setHiddenView:NO];
+    //[self.chatRoomManager setHiddenView:NO];
 }
 
-#pragma mark - 播放器器相关
+#pragma mark - private methods
 
 - (PLVLivePlayerController *)getLivePlayer {
     if (_livePlayer) {
         [_livePlayer clearPlayer];
         _livePlayer = nil ;
     }
-    // 初始化PLVLivePlayerController（默认拉流地址为FLV格式）
     _livePlayer = [[PLVLivePlayerController alloc] initWithChannel:self.channel displayView:self.displayView];
     [self configCallBackBlock];
     
@@ -180,26 +195,104 @@
         // 初始化一个播放器显示层，用于显示直播内容（默认为竖屏模式，横屏模式需要按需修改）
         _displayView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, width*3.0/4.0)];
         _displayView.backgroundColor = [UIColor blackColor];
-        _displayView.layer.contents = (id)[UIImage imageNamed:BACKGROUNDIMAGE].CGImage;  // 播放器背景图
+        _displayView.layer.contents = (id)[UIImage imageNamed:PLAYER_BACKGROUND].CGImage;  // 播放器背景图
         [self.view addSubview:_displayView];
     }
     return _displayView;
 }
 
-#pragma mark - PLVChatRoomDelegate 聊天室信息回调
+#pragma mark - <PLVSocketIODelegate>
+/// 连接成功
+- (void)socketIO:(PLVSocketIO *)socketIO didConnectWithInfo:(NSString *)info {
+    NSLog(@"%@--%@",NSStringFromSelector(_cmd),info);
+    [socketIO emitMessageWithSocketObject:self.login];  // 登录聊天室
+}
 
-- (void)receiveMessage:(NSString *)message {
-    
-    if (self.danmuLayer) {
-        [self.danmuLayer insertDML:message];
+/// 收到聊天室信息
+- (void)socketIO:(PLVSocketIO *)socketIO didReceiveChatMessage:(PLVSocketChatRoomObject *)chatObject {
+    NSLog(@"%@--type:%lu, event:%@",NSStringFromSelector(_cmd),chatObject.eventType,chatObject.event);
+    NSDictionary *dict = chatObject.jsonDict;
+    switch (chatObject.eventType) {
+        case PLVSocketChatRoomEventType_LOGIN: {          // 聊天室内容
+            self.loginSuccess = YES;
+            [[PLVLiveManager sharedLiveManager].chatRoomObjects addObject:chatObject];
+            [self.chatroomController updateChatroom];
+        } break;
+        case PLVSocketChatRoomEventType_GONGGAO:
+        case PLVSocketChatRoomEventType_BULLETIN:
+        case PLVSocketChatRoomEventType_SPEAK: {
+            if (chatObject.eventType == PLVSocketChatRoomEventType_SPEAK) {
+                // 移除自己的数据，开启聊天室审核后会收到自己数据
+                [self.danmuLayer insertDML:[dict[PLVSocketIOChatRoom_SPEAK_values] firstObject]];
+            }else {
+                [self.danmuLayer insertDML:[@"公告:" stringByAppendingString:dict[PLVSocketIOChatRoom_GONGGAO_content]]];
+            }
+            // 更新数据源及显示
+            [[PLVLiveManager sharedLiveManager].chatRoomObjects addObject:chatObject];
+            [self.chatroomController updateChatroom];
+        } break;
+        case PLVSocketChatRoomEventType_S_QUESTION:      // 提问内容
+        case PLVSocketChatRoomEventType_T_ANSWER: {
+            NSString *userId;
+            if (chatObject.eventType == PLVSocketChatRoomEventType_S_QUESTION) {
+                userId = dict[PLVSocketIOChatRoom_S_QUESTION_userKey][PLVSocketIOChatRoomUserUserIdKey];
+            }else {
+                userId = dict[PLVSocketIOChatRoom_T_ANSWER_sUserId];
+            }
+            if ([userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
+                // 更新提问私聊数据源
+                [[PLVLiveManager sharedLiveManager].privateChatObjects addObject:chatObject];
+                [self.chatroomController updateChatroom];
+            }
+        } break;
+        default:
+            break;
     }
 }
 
+/// 失去连接
+- (void)socketIO:(PLVSocketIO *)socketIO didDisconnectWithInfo:(NSString *)info {
+    NSLog(@"%@--%@",NSStringFromSelector(_cmd),info);
+    self.loginSuccess = NO;
+}
+
+/// 连接出错
+- (void)socketIO:(PLVSocketIO *)socketIO connectOnErrorWithInfo:(NSString *)info {
+    NSLog(@"%@--%@",NSStringFromSelector(_cmd),info);
+}
+
+/// 重连SocketIO服务器
+- (void)socketIO:(PLVSocketIO *)socketIO reconnectWithInfo:(NSString *)info {
+    NSLog(@"%@--%@",NSStringFromSelector(_cmd),info);
+}
+
+/// 本地错误信息
+- (void)socketIO:(PLVSocketIO *)socketIO localError:(NSString *)description {
+    NSLog(@"%@--%@",NSStringFromSelector(_cmd),description);
+}
+
+#pragma mark - <PLVChatroomDelegate>
+
+- (void)sendMessage:(NSString *)message privateChatMode:(BOOL)privateChatMode {
+    if (privateChatMode) {
+        PLVSocketChatRoomObject *sQuestion = [PLVSocketChatRoomObject chatRoomObjectForStudentQuestionEventTypeWithLoginObject:self.login content:message];
+        [self.socketIO emitMessageWithSocketObject:sQuestion];
+        [[PLVLiveManager sharedLiveManager].privateChatObjects addObject:sQuestion];
+    }else {
+        [self.danmuLayer insertDML:message];
+        PLVSocketChatRoomObject *mySpeak = [PLVSocketChatRoomObject chatRoomObjectForSpeakEventTypeWithRoomId:[PLVLiveManager sharedLiveManager].channelId.integerValue content:message];
+        [self.socketIO emitMessageWithSocketObject:mySpeak];
+        [[PLVLiveManager sharedLiveManager].chatRoomObjects addObject:mySpeak];
+    }
+    [self.chatroomController updateChatroom];
+}
+
+#pragma mark - view controller
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // 退出键盘
     [self.view endEditing:YES];
-    [self.chatRoomManager returnKeyBoard];
+    //[self.chatRoomManager returnKeyBoard];
 }
 
 

@@ -10,6 +10,7 @@
 #import "LivePlayerViewController.h"
 #import <MBProgressHUD/MBProgressHUD.h>
 #import <PLVLiveAPI/PLVSettings.h>
+#import "PLVLiveManager.h"
 
 @interface LoginViewController ()
 
@@ -23,16 +24,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSString *appId = [PLVSettings sharedInstance].getAppId;
-    NSString *appSecret = [PLVSettings sharedInstance].getAppSecret;
-    if ( [appId isKindOfClass:[NSNull class]] || [appSecret isKindOfClass:[NSNull class]] || [appId isEqualToString:@""] || [appSecret isEqualToString:@""] ) {
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        [hud setMode:MBProgressHUDModeText];
-        hud.label.text = @"未配置appId和appSecret!";
-        hud.detailsLabel.text = @"连接聊天室需要配置appId和appSecret，可查看AppDelegate中的说明";
-        [hud hideAnimated:YES afterDelay:5.0];
-    }
-    
     NSArray *userInfo = [[NSUserDefaults standardUserDefaults] objectForKey:@"userInfo"];
     if (userInfo) {
         self.userIdTF.text = userInfo[0];
@@ -40,9 +31,9 @@
     }
 }
 
-// 登录
 - (IBAction)loginButtonClick:(UIButton *)sender {
-    [[NSUserDefaults standardUserDefaults] setObject:@[self.userIdTF.text,self.channelIdTF.text] forKey:@"userInfo"];   // 保存数据
+    // 保存数据
+    [[NSUserDefaults standardUserDefaults] setObject:@[self.userIdTF.text,self.channelIdTF.text] forKey:@"userInfo"];
     if (![self.userIdTF.text length] || ![self.channelIdTF.text length]) {
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"用户名和账号不能为空" preferredStyle:UIAlertControllerStyleAlert];
         [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
@@ -53,15 +44,17 @@
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.label.text = @"登录中...";
     
+    NSString *userId = self.userIdTF.text;
+    NSString *channelId = self.channelIdTF.text;
+    
     // 请求拉流地址
-    [PLVChannel loadVideoJsonWithUserId:self.userIdTF.text channelId:self.channelIdTF.text completionHandler:^(PLVChannel *channel) {
+    [PLVChannel loadVideoJsonWithUserId:userId channelId:channelId completionHandler:^(PLVChannel *channel) {
         [hud hideAnimated:YES];
+        [[PLVLiveManager sharedLiveManager] setupChannelId:channelId userId:userId];
         
         LivePlayerViewController *livePlayerVC = [LivePlayerViewController new];
         livePlayerVC.channel = channel;
-
         [self presentViewController:livePlayerVC animated:YES completion:nil];
-        
     } failureHandler:^(NSString *errorName, NSString *errorDescription) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         
@@ -71,6 +64,7 @@
     }];
 }
 
+#pragma mark - view controller
 
 // 点击view结束编辑
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
