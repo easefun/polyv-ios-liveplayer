@@ -33,7 +33,7 @@
 @property (nonatomic, assign) BOOL loginSuccess;                            // Socket 登录成功
 
 @property (nonatomic, strong) PLVChatroomController *chatroomController;    // 互动聊天室(房间内公共聊天)
-@property (nonatomic, strong) PLVChatroomController *privateChatController;     // 咨询提问聊天室(房间内私有聊天)
+@property (nonatomic, strong) PLVChatroomController *privateChatController; // 咨询提问聊天室(房间内私有聊天)
 
 @end
 
@@ -120,6 +120,7 @@
         NSLog(@"返回按钮点击了...");
         //[weakSelf.chatRoomManager closeChatRoom];
         [weakSelf.socketIO disconnect];
+        [[PLVLiveManager sharedLiveManager] resetData];
         [weakSelf dismissViewControllerAnimated:YES completion:nil];
     }];
     [_livePlayer setPlayButtonClickBlcok:^{
@@ -210,43 +211,37 @@
 
 /// 收到聊天室信息
 - (void)socketIO:(PLVSocketIO *)socketIO didReceiveChatMessage:(PLVSocketChatRoomObject *)chatObject {
-    NSLog(@"%@--type:%lu, event:%@",NSStringFromSelector(_cmd),chatObject.eventType,chatObject.event);
-    NSDictionary *dict = chatObject.jsonDict;
+    NSLog(@"%@--type:%lu, event:%@",NSStringFromSelector(_cmd),chatObject.eventType,chatObject.event);    
+
     switch (chatObject.eventType) {
-        case PLVSocketChatRoomEventType_LOGIN: {          // 聊天室内容
-            self.loginSuccess = YES;
-            [[PLVLiveManager sharedLiveManager].chatRoomObjects addObject:chatObject];
-            [self.chatroomController updateChatroom];
-        } break;
+        case PLVSocketChatRoomEventType_LOGIN:              // 聊天室内容
+        case PLVSocketChatRoomEventType_SPEAK:
         case PLVSocketChatRoomEventType_GONGGAO:
-        case PLVSocketChatRoomEventType_BULLETIN:
-        case PLVSocketChatRoomEventType_SPEAK: {
-            if (chatObject.eventType == PLVSocketChatRoomEventType_SPEAK) {
+        case PLVSocketChatRoomEventType_BULLETIN: {
+            if (chatObject.eventType == PLVSocketChatRoomEventType_LOGIN) {
+                self.loginSuccess = YES;
+                NSString *nickname = chatObject.jsonDict[PLVSocketIOChatRoom_LOGIN_userKey][PLVSocketIOChatRoomUserNickKey];
+                [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:[NSString stringWithFormat:@"欢迎%@加入",nickname]];
+            }else if (chatObject.eventType == PLVSocketChatRoomEventType_SPEAK) {
                 // 移除自己的数据，开启聊天室审核后会收到自己数据
-                [self.danmuLayer insertDML:[dict[PLVSocketIOChatRoom_SPEAK_values] firstObject]];
+                [self.danmuLayer insertDML:[chatObject.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject]];
+                [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:chatObject];
             }else {
-                [self.danmuLayer insertDML:[@"公告:" stringByAppendingString:dict[PLVSocketIOChatRoom_GONGGAO_content]]];
+                NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_GONGGAO_content];
+                [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:[@"公告:" stringByAppendingString:content]];
             }
-            // 更新数据源及显示
-            [[PLVLiveManager sharedLiveManager].chatRoomObjects addObject:chatObject];
             [self.chatroomController updateChatroom];
         } break;
-        case PLVSocketChatRoomEventType_S_QUESTION:      // 提问内容
+        //case PLVSocketChatRoomEventType_S_QUESTION:       // 提问内容(私有聊天)
         case PLVSocketChatRoomEventType_T_ANSWER: {
-            NSString *userId;
-            if (chatObject.eventType == PLVSocketChatRoomEventType_S_QUESTION) {
-                userId = dict[PLVSocketIOChatRoom_S_QUESTION_userKey][PLVSocketIOChatRoomUserUserIdKey];
-            }else {
-                userId = dict[PLVSocketIOChatRoom_T_ANSWER_sUserId];
-            }
+            NSString *userId = chatObject.jsonDict[PLVSocketIOChatRoom_T_ANSWER_sUserId];
             if ([userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
                 // 更新提问私聊数据源
                 [[PLVLiveManager sharedLiveManager].privateChatObjects addObject:chatObject];
-                [self.chatroomController updateChatroom];
+                [self.privateChatController updateChatroom];
             }
         } break;
-        default:
-            break;
+        default: break;
     }
 }
 
@@ -278,13 +273,14 @@
         PLVSocketChatRoomObject *sQuestion = [PLVSocketChatRoomObject chatRoomObjectForStudentQuestionEventTypeWithLoginObject:self.login content:message];
         [self.socketIO emitMessageWithSocketObject:sQuestion];
         [[PLVLiveManager sharedLiveManager].privateChatObjects addObject:sQuestion];
+        [self.privateChatController updateChatroom];
     }else {
         [self.danmuLayer insertDML:message];
         PLVSocketChatRoomObject *mySpeak = [PLVSocketChatRoomObject chatRoomObjectForSpeakEventTypeWithRoomId:[PLVLiveManager sharedLiveManager].channelId.integerValue content:message];
         [self.socketIO emitMessageWithSocketObject:mySpeak];
-        [[PLVLiveManager sharedLiveManager].chatRoomObjects addObject:mySpeak];
+        [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:mySpeak];
+        [self.chatroomController updateChatroom];
     }
-    [self.chatroomController updateChatroom];
 }
 
 #pragma mark - view controller

@@ -7,11 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <PLVSocketAPI/PLVSocketChatRoomObject.h>
+#import <PLVSocketAPI/PLVSocketAPI.h>
 
 @protocol PLVChatroomDelegate <NSObject>
 
 - (void)sendMessage:(NSString *)message privateChatMode:(BOOL)privateChatMode;
+
+//- (void)sendMessage:(NSString *)message withchatroomObject:(PLVSocketChatRoomObject *)chatRoomObject;
 
 @end
 
