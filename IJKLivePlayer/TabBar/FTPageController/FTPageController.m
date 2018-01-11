@@ -12,7 +12,7 @@
 #define kWidth [UIScreen mainScreen].bounds.size.width
 //#define kHeight [UIScreen mainScreen].bounds.size.height
 
-static NSString *TitleCellIdentifier = @"TitleCell";
+static NSString *TitleCellIdentifier = @"PageTitleCell";
 
 @interface FTPageController () <UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,UIPageViewControllerDataSource,UIPageViewControllerDelegate>
 

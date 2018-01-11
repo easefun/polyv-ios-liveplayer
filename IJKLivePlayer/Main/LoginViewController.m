@@ -54,6 +54,7 @@
         
         LivePlayerViewController *livePlayerVC = [LivePlayerViewController new];
         livePlayerVC.channel = channel;
+        livePlayerVC.channelId = channelId.integerValue;
         [self presentViewController:livePlayerVC animated:YES completion:nil];
     } failureHandler:^(NSString *errorName, NSString *errorDescription) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];

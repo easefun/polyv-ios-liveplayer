@@ -122,6 +122,9 @@
     }else {
         [self willShowBottomView:nil];
         self.faceBtn.selected = NO;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
+            [self.delegate returnHeight:CGRectGetHeight(_originFrame)];
+        }
     }
 }
 
@@ -139,6 +142,7 @@
 }
 
 -(void)sendButtonClick {
+    [self hideTheKeyBoard];
     if (self.delegate && [self.delegate respondsToSelector:@selector(didSendText:)]) {
         [self.delegate didSendText:self.textView.text];
         self.textView.text = @"";
@@ -253,11 +257,12 @@
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
     if ([text isEqualToString:@"\n"]) {         // 返回键符号
-        if ([self.delegate respondsToSelector:@selector(didSendText:)]) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(didSendText:)]) {
             [self.delegate didSendText:textView.text];
             self.textView.text = @"";
             [self changeFrame:ceilf([textView sizeThatFits:textView.frame.size].height)];
         }
+        [textView resignFirstResponder];
         return NO;
     }
     return YES;

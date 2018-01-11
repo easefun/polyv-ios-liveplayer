@@ -21,9 +21,22 @@
 /// 咨询提问对象数据源
 @property (nonatomic, strong) NSMutableArray<PLVSocketChatRoomObject *> *privateChatObjects;
 
+/// 聊天室在线列表数据源
+@property (nonatomic, strong) NSArray<NSDictionary *> *onlineList;
+
 + (instancetype)sharedLiveManager;
 
 - (void)setupChannelId:(NSString *)channelId userId:(NSString *)userId;
+
+/**
+ 生成在线用户列表
+ 
+ @param jsonDict 服务器返回json数据
+ */
++ (NSArray *)handleOnlineListWithJsonDictionary:(NSDictionary *)jsonDict;
+
+/// 重置数据
+- (void)resetData;
 
 /**
  处理聊天室信息
@@ -32,9 +45,6 @@
  @param message 回调的聊天室信息
  @return 是否处理，处理成功会添加至聊天室或咨询提问的数据源
  */
-- (BOOL)handleChatroomObject:(PLVSocketChatRoomObject *)chatroomObject messgae:(NSString **)message;
-
-/// 重置数据
-- (void)resetData;
+//- (BOOL)handleChatroomObject:(PLVSocketChatRoomObject *)chatroomObject messgae:(NSString **)message;
 
 @end

@@ -18,8 +18,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    NSString *appId =
-    NSString *appSecret =
+    NSString *appId = @"ej7xw7pl1e";
+    NSString *appSecret = @"78f73d576a064f91b5598ffc8d556e4c";
     /** 配置appId 和 appSecret(保利威视后台“API设置中”获取 http://live.polyv.net/secure/user/app.htm )*/
     [[PLVSettings sharedInstance] setAppId:appId appSecret:appSecret];
     

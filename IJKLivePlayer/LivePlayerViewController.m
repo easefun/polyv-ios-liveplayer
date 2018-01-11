@@ -13,6 +13,7 @@
 #import "FTPageController.h"
 #import "PLVLiveManager.h"
 #import "PLVChatroomController.h"
+#import "PLVOnlineListController.h"
 #import "ZJZDanMu.h"
 
 #define SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
@@ -33,6 +34,7 @@
 @property (nonatomic, assign) BOOL loginSuccess;                            // Socket 登录成功
 
 @property (nonatomic, strong) PLVChatroomController *chatroomController;    // 互动聊天室(房间内公共聊天)
+@property (nonatomic, strong) PLVOnlineListController *onlineListController;// 在线列表控制器
 @property (nonatomic, strong) PLVChatroomController *privateChatController; // 咨询提问聊天室(房间内私有聊天)
 
 @end
@@ -66,14 +68,20 @@
 }
 
 - (void)initSocketIO {
-    NSString *chatToken = @"";  // TODO:请求连麦授权接口
-    // 初始化 socketIO 连接对象
-    self.socketIO = [[PLVSocketIO alloc] initSocketIOWithConnectToken:chatToken enableLog:NO];
-    self.socketIO.delegate = self;
-    [self.socketIO connect];
-    
-    // 初始化一个socket登录对象（昵称和头像使用默认设置）
-    self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:[PLVLiveManager sharedLiveManager].channelId.integerValue nickName:nil avatar:nil userType:PLVSocketObjectUserTypeStudent];
+    __weak typeof(self)weakSelf = self;
+    [PLVChannel requestAuthorizationForLinkingSocketWithChannelId:self.channelId Appld:[PLVSettings sharedInstance].getAppId appSecret:[PLVSettings sharedInstance].getAppSecret success:^(NSDictionary *responseDict) {
+        NSString *chatToken = responseDict[@"chat_token"];
+        
+        // 初始化 socketIO 连接对象
+        weakSelf.socketIO = [[PLVSocketIO alloc] initSocketIOWithConnectToken:chatToken enableLog:NO];
+        weakSelf.socketIO.delegate = weakSelf;
+        [weakSelf.socketIO connect];
+        
+        // 初始化一个socket登录对象（昵称和头像使用默认设置）
+        weakSelf.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:nil avatar:nil userType:PLVSocketObjectUserTypeStudent];
+    } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
+        NSLog(@"获取Socket授权失败:%ld,%@",errorCode,description);
+    }];
 }
 
 - (void)configDanmu {
@@ -83,24 +91,37 @@
 }
 
 - (void)setupUI {
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    // TODO:请求后台判断是否开启提问功能
     CGRect pageCtrlFrame = CGRectMake(0, CGRectGetMaxY(self.displayView.frame), SCREEN_WIDTH, SCREEN_HEIGHT-CGRectGetMaxY(self.displayView.frame));
     
     // 初始化互动聊天室
     self.chatroomController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
     self.chatroomController.delegate = self;
-    // 初始化咨询提问聊天室
-    self.privateChatController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
-    self.privateChatController.privateChatMode = YES;
-    self.privateChatController.delegate = self;
-    
-    NSArray *titles = @[@"互动聊天",@"咨询提问"];
-    NSArray *controllers = @[self.chatroomController,self.privateChatController];
-    
+    // 在线列表控制器
+    self.onlineListController = [[PLVOnlineListController alloc] init];
+    [self.onlineListController updateOnlineList];
+    NSMutableArray *titles = [NSMutableArray arrayWithObjects:@"互动聊天",@"在线列表",nil];
+    NSMutableArray *controllers = [NSMutableArray arrayWithObjects:self.chatroomController,self.onlineListController,nil];
+
+    __weak typeof(self)weakSelf = self;
+    [PLVChannel getChannelInfoWithQuestionMenuStatus:self.channelId completion:^(BOOL isOn) {
+        if (isOn) { // 初始化咨询提问聊天室
+            weakSelf.privateChatController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
+            weakSelf.privateChatController.privateChatMode = YES;
+            weakSelf.privateChatController.delegate = weakSelf;
+            [titles addObject:@"咨询提问"];
+            [controllers addObject:self.privateChatController];
+        }
+        [weakSelf setupPageControllerWithTitles:titles controllers:controllers frame:pageCtrlFrame];
+    } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
+        NSLog(@"咨询提问状态获取失败:%ld,%@",errorCode,description);
+        [weakSelf setupPageControllerWithTitles:titles controllers:controllers frame:pageCtrlFrame];
+    }];
+}
+
+- (void)setupPageControllerWithTitles:(NSArray *)titles controllers:(NSArray *)controllers frame:(CGRect)frame {
     FTPageController *pageController = [[FTPageController alloc] initWithTitles:titles controllers:controllers];
-    pageController.view.frame = pageCtrlFrame;
+    pageController.view.backgroundColor = [UIColor colorWithRed:233/255.0 green:235/255.0 blue:245/255.0 alpha:1.0];
+    pageController.view.frame = frame;
     [self addChildViewController:pageController];
     [self.view addSubview:pageController.view];
 }
@@ -211,10 +232,13 @@
 
 /// 收到聊天室信息
 - (void)socketIO:(PLVSocketIO *)socketIO didReceiveChatMessage:(PLVSocketChatRoomObject *)chatObject {
-    NSLog(@"%@--type:%lu, event:%@",NSStringFromSelector(_cmd),chatObject.eventType,chatObject.event);    
-
+    NSLog(@"%@--type:%lu, event:%@",NSStringFromSelector(_cmd),chatObject.eventType,chatObject.event);
     switch (chatObject.eventType) {
-        case PLVSocketChatRoomEventType_LOGIN:              // 聊天室内容
+        case PLVSocketChatRoomEventType_LOGOUT: {
+            [self.onlineListController updateOnlineList];
+        } break;
+        case PLVSocketChatRoomEventType_LOGIN:             // 聊天室内容
+            [self.onlineListController updateOnlineList];
         case PLVSocketChatRoomEventType_SPEAK:
         case PLVSocketChatRoomEventType_GONGGAO:
         case PLVSocketChatRoomEventType_BULLETIN: {
@@ -226,14 +250,18 @@
                 // 移除自己的数据，开启聊天室审核后会收到自己数据
                 [self.danmuLayer insertDML:[chatObject.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject]];
                 [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:chatObject];
-            }else {
+            }else if (chatObject.eventType == PLVSocketChatRoomEventType_GONGGAO) {
                 NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_GONGGAO_content];
+                [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:[@"管理员发言:" stringByAppendingString:content]];
+            }else {
+                NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_BULLETIN_content];
                 [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:[@"公告:" stringByAppendingString:content]];
             }
             [self.chatroomController updateChatroom];
         } break;
         //case PLVSocketChatRoomEventType_S_QUESTION:       // 提问内容(私有聊天)
         case PLVSocketChatRoomEventType_T_ANSWER: {
+            if (!self.privateChatController) break;
             NSString *userId = chatObject.jsonDict[PLVSocketIOChatRoom_T_ANSWER_sUserId];
             if ([userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
                 // 更新提问私聊数据源
@@ -276,7 +304,7 @@
         [self.privateChatController updateChatroom];
     }else {
         [self.danmuLayer insertDML:message];
-        PLVSocketChatRoomObject *mySpeak = [PLVSocketChatRoomObject chatRoomObjectForSpeakEventTypeWithRoomId:[PLVLiveManager sharedLiveManager].channelId.integerValue content:message];
+        PLVSocketChatRoomObject *mySpeak = [PLVSocketChatRoomObject chatRoomObjectForSpeakEventTypeWithRoomId:self.channelId content:message];
         [self.socketIO emitMessageWithSocketObject:mySpeak];
         [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:mySpeak];
         [self.chatroomController updateChatroom];
