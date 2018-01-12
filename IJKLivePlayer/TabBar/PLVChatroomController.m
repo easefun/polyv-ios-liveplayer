@@ -140,7 +140,6 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     if (self.isPrivateChatMode) {
         PLVSocketChatRoomObject *chatObject = self.privateChatObjects[indexPath.row];
         NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_S_QUESTION_content];
-        //NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:content attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:CHAT_FONT_SIZE]}];
         NSMutableAttributedString *attributeString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:content font:[UIFont systemFontOfSize:CHAT_FONT_SIZE]];
         switch (chatObject.eventType) {
             case PLVSocketChatRoomEventType_S_QUESTION:
@@ -182,7 +181,6 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
             PLVSocketChatRoomObject *chatroom = (PLVSocketChatRoomObject *)chatroomObject;
             if (chatroom.eventType == PLVSocketChatRoomEventType_SPEAK) {
                 NSString *speakContent = [chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
-                //NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:speakContent attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:CHAT_FONT_SIZE]}];
                 NSMutableAttributedString *attributeString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:speakContent font:[UIFont systemFontOfSize:CHAT_FONT_SIZE]];
                 if (chatroom.isLocalMessage) {
                     [cell addSubview:[self bubbleViewForSelfWithContent:attributeString position:5]];

@@ -13,4 +13,6 @@
 @property (weak, nonatomic) IBOutlet UIImageView *avatarView;
 @property (weak, nonatomic) IBOutlet UILabel *nicknameLB;
 
+@property (nonatomic, strong) NSString *imgUrl;
+
 @end

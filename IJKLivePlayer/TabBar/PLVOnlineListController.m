@@ -66,6 +66,7 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     
     PLVUserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseUserCellIdentifier forIndexPath:indexPath];
     cell.nicknameLB.text = userInfo[@"nick"];
+    cell.imgUrl = userInfo[@"pic"];
 //    if (cell) {
 //        for (UIView *view in cell.subviews) {
 //            [view removeFromSuperview];
