@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Login View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="LoginViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -25,7 +25,6 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="用户ID" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="xpv-Gz-rXX">
                                 <rect key="frame" x="27.5" y="253" width="320" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" priority="750" constant="320" id="Tu5-24-o6F"/>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="Wtd-gr-M5S"/>
                                     <constraint firstAttribute="height" constant="40" id="czo-jw-8je"/>
                                 </constraints>
@@ -36,7 +35,6 @@
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="频道号" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="bcV-yU-NHi">
                                 <rect key="frame" x="27.5" y="304" width="320" height="40"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" priority="750" constant="320" id="6dM-N8-0tf"/>
                                     <constraint firstAttribute="height" constant="40" id="yBD-5E-Ttj"/>
                                 </constraints>
                                 <nil key="textColor"/>
@@ -44,10 +42,9 @@
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="© 2010-2016 广州易方信息科技有限公司 版权所有" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WCy-Le-jP1">
-                                <rect key="frame" x="47" y="621" width="281" height="21"/>
+                                <rect key="frame" x="48.5" y="621" width="278.5" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="CiO-S7-PiY"/>
-                                    <constraint firstAttribute="width" constant="281" id="pdo-mC-avR"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" red="0.32941176470588235" green="0.43137254901960786" blue="0.47843137254901957" alpha="1" colorSpace="calibratedRGB"/>
@@ -65,7 +62,6 @@
                                 <color key="backgroundColor" red="0.12941176470588234" green="0.58823529411764708" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="HsK-BP-GoF"/>
-                                    <constraint firstAttribute="width" priority="750" constant="320" id="hY0-DP-JwE"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                 <state key="normal" title="登录">
@@ -80,6 +76,15 @@
                                     <action selector="loginButtonClick:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9Hp-UU-REl"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2.2.0-beta2" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="baV-eL-vGR">
+                                <rect key="frame" x="226.5" y="186" width="61.5" height="12"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="12" id="O48-ek-lLY"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                <color key="textColor" red="0.12941176470588234" green="0.58823529411764708" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.9137254901960784" green="0.92156862745098034" blue="0.96078431372549022" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -90,13 +95,16 @@
                             <constraint firstItem="bcV-yU-NHi" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="8GJ-ke-UHQ"/>
                             <constraint firstItem="xpv-Gz-rXX" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="11.5" id="91o-dn-kUH"/>
                             <constraint firstItem="r44-EB-UCd" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="12" id="Dww-QW-h4d"/>
+                            <constraint firstItem="baV-eL-vGR" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" symbolic="YES" id="EOJ-k4-OM0"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" relation="greaterThanOrEqual" secondItem="r44-EB-UCd" secondAttribute="bottom" constant="180" id="M6V-wB-8VJ"/>
                             <constraint firstItem="xpv-Gz-rXX" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XGS-dK-H80"/>
                             <constraint firstItem="bcV-yU-NHi" firstAttribute="top" secondItem="xpv-Gz-rXX" secondAttribute="bottom" constant="11" id="Xju-PT-gWr"/>
                             <constraint firstItem="bcV-yU-NHi" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="11.5" id="fB2-Jp-1KC"/>
+                            <constraint firstItem="baV-eL-vGR" firstAttribute="top" secondItem="YVG-JG-EQh" secondAttribute="bottom" constant="10" id="gta-Bd-CZ3"/>
                             <constraint firstItem="r44-EB-UCd" firstAttribute="top" secondItem="bcV-yU-NHi" secondAttribute="bottom" constant="21" id="hkv-pX-vYm"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="WCy-Le-jP1" secondAttribute="bottom" constant="25" id="huN-Nn-Nnf"/>
                             <constraint firstItem="YVG-JG-EQh" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="sUh-Pk-c5H"/>
+                            <constraint firstItem="baV-eL-vGR" firstAttribute="trailing" secondItem="YVG-JG-EQh" secondAttribute="trailing" id="tqv-sX-a1I"/>
                         </constraints>
                     </view>
                     <connections>

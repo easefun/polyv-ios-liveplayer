@@ -14,10 +14,14 @@
 
 @protocol BCKeyBoardDelegate <NSObject>
 
-/** 回调返回发送的文字 */
+/**
+ 发送的文字
+ */
 - (void)didSendText:(NSString *)text;
 
-/** 回调返回高度 */
+/**
+ keyBoard每次改变高度时调用
+ */
 - (void)returnHeight:(CGFloat)height;
 
 @end

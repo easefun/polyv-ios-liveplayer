@@ -9,8 +9,12 @@
 #import <UIKit/UIKit.h>
 #import <PLVLiveAPI/PLVLiveAPI.h>
 
+/**
+ 直播页面控制器
+ */
 @interface LivePlayerViewController : UIViewController
 
 @property (nonatomic, strong) PLVChannel *channel;
+@property (nonatomic, assign) NSInteger channelId;
 
 @end

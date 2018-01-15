@@ -27,11 +27,11 @@ extern NSString * const PLVLivePlayerWillExitFullScreenNotification;        // �
 
 /** 播放器点击事件回调*/
 // ^returnButtonClickBlcok：小屏状态下点击reture按钮才会触发，全屏状态下点击return则回到小屏状态
-@property (nonatomic, copy) void(^returnButtonClickBlcok)();
-@property (nonatomic, copy) void(^playButtonClickBlcok)();
-@property (nonatomic, copy) void(^pauseButtonClickBlcok)();
-@property (nonatomic, copy) void(^fullScreenButtonClickBlcok)();
-@property (nonatomic, copy) void(^smallScreenButtonClickBlcok)();
+@property (nonatomic, copy) void(^returnButtonClickBlcok)(void);
+@property (nonatomic, copy) void(^playButtonClickBlcok)(void);
+@property (nonatomic, copy) void(^pauseButtonClickBlcok)(void);
+@property (nonatomic, copy) void(^fullScreenButtonClickBlcok)(void);
+@property (nonatomic, copy) void(^smallScreenButtonClickBlcok)(void);
 
 
 // 初始化方法 默认拉流地址为FLV 格式
