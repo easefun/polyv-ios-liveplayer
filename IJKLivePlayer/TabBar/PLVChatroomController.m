@@ -10,12 +10,12 @@
 #import "PLVLiveManager.h"
 #import "BCKeyBoard.h"
 
-#define CHAT_FONT_SIZE 14.0       // 聊天发言文字大小
-#define ChAT_MAX_WIDTH 200.0f     // 聊天发言文字最大长度
-#define CHAT_FONT_SIZE2 12.0      // 聊天室其他消息文字大小
-#define ChAT_MAX_WIDTH2 250.0f    // 聊天室其他消息最大长度
+#define SPEAK_FONT_SIZE 14.0       // 聊天发言文字大小
+#define SYSTEM_FONT_SIZE 12.0      // 系统样式文字大小
+#define SPEAK_MAX_WIDTH 200.0f     // 聊天发言消息最大长度
+#define SYSTEM_MAX_WIDTH 250.0f    // 系统样式消息最大长度
 
-#define TOOL_BAR_HEIGHT 46.0      // 工具栏高度
+#define TOOL_BAR_HEIGHT 46.0       // 工具栏高度
 
 static NSString * const reuseChatCellIdentifier = @"ChatCell";
 
@@ -87,42 +87,6 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     [self.tableView reloadData];
 }
 
-#pragma mark - <UITableViewDelegate>
-/// 返回单元格高度
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.isPrivateChatMode) {
-        PLVSocketChatRoomObject *chatObject = self.privateChatObjects[indexPath.row];
-        NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_S_QUESTION_content];
-        CGSize size = [self autoCalculateSizeWithString:content];
-        if (chatObject.eventType == PLVSocketChatRoomEventType_S_QUESTION) {
-            return size.height + 30;
-        }else {
-            return size.height + 50;
-        }
-    }else {
-        id chatroomObject = self.chatroomObjects[indexPath.row];
-        if ([chatroomObject isKindOfClass:[PLVSocketChatRoomObject class]]) {
-            PLVSocketChatRoomObject *chatroom = (PLVSocketChatRoomObject *)chatroomObject;
-            if (chatroom.eventType == PLVSocketChatRoomEventType_SPEAK) {
-                NSString *speakContent = [chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
-                CGSize size = [self autoCalculateSizeWithString:speakContent];
-                if (chatroom.isLocalMessage) {
-                    return size.height + 30;
-                }else {
-                    return size.height + 50;
-                }
-            }
-        }else if ([chatroomObject isKindOfClass:[NSString class]]) {
-            NSString *content = (NSString *)chatroomObject;
-            UIFont *font = [UIFont systemFontOfSize:CHAT_FONT_SIZE2 weight:UIFontWeightMedium];
-            NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:content attributes:@{NSFontAttributeName:font}];
-            CGSize size = [self autoCalculateWidth:ChAT_MAX_WIDTH2 orHeight:MAXFLOAT attributedContent:attributeString];
-            return size.height + 20;
-        }
-        return 40.0;
-    }
-}
-
 #pragma mark - <UITableViewDataSource>
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -146,11 +110,10 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     if (self.isPrivateChatMode) {
         PLVSocketChatRoomObject *chatObject = self.privateChatObjects[indexPath.row];
         NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_S_QUESTION_content];
-        NSMutableAttributedString *attributeString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:content font:[UIFont systemFontOfSize:CHAT_FONT_SIZE]];
         switch (chatObject.eventType) {
             case PLVSocketChatRoomEventType_S_QUESTION:
                 if (chatObject.isLocalMessage) {            // 自己提交的发言信息
-                    [cell addSubview:[self bubbleViewForSelfWithContent:attributeString position:5]];
+                    [cell addSubview:[self bubbleViewForSelfWithContent:content position:5]];
                 } break;
             case PLVSocketChatRoomEventType_T_ANSWER: {
                 NSString *nickname = chatObject.jsonDict[PLVSocketIOChatRoomUserKey][PLVSocketIOChatRoomUserNickKey];
@@ -158,54 +121,76 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
                 if (![nickImg containsString:@"http"]) {
                     nickImg = [@"https:" stringByAppendingString:nickImg];
                 }
-                [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:attributeString position:5]];
+                [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:content position:5]];
             } break;
             default: break;
         }
     }else {
         id chatroomObject = self.chatroomObjects[indexPath.row];
-        if ([chatroomObject isKindOfClass:[NSString class]]) {
+        if ([chatroomObject isKindOfClass:[PLVSocketChatRoomObject class]]) {
+            PLVSocketChatRoomObject *chatroom = (PLVSocketChatRoomObject *)chatroomObject;
+            if (chatroom.eventType == PLVSocketChatRoomEventType_SPEAK) {
+                NSString *content = [chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
+                if (chatroom.isLocalMessage) {
+                    [cell addSubview:[self bubbleViewForSelfWithContent:content position:5]];
+                }else {
+                    NSString *nickname = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserNickKey];
+                    NSString *nickImg = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserPicKey];
+                    if (![nickImg containsString:@"http:"]) {
+                        nickImg = [@"https:" stringByAppendingString:nickImg];
+                    }
+                    [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:content position:5]];
+                }
+            }
+        }else if ([chatroomObject isKindOfClass:[NSString class]]) {
             NSString *content = (NSString *)chatroomObject;
-            UIFont *font = [UIFont systemFontOfSize:CHAT_FONT_SIZE2 weight:UIFontWeightMedium];
+            CGSize size = [self autoCalculateSystemTypeWithContent:content];
             
             UILabel *contentLB = [[UILabel alloc] init];
             contentLB.backgroundColor = [UIColor darkGrayColor];
             contentLB.text = content;
             contentLB.textAlignment = NSTextAlignmentCenter;
-            contentLB.font = font;
+            contentLB.font = [UIFont systemFontOfSize:SYSTEM_FONT_SIZE weight:UIFontWeightMedium];
             contentLB.textColor = [UIColor whiteColor];
             contentLB.layer.cornerRadius = 4.0;
             contentLB.layer.masksToBounds = YES;
             contentLB.numberOfLines = 0;
-            
-            NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:content attributes:@{NSFontAttributeName:font}];
-            CGSize size = [self autoCalculateWidth:ChAT_MAX_WIDTH2 orHeight:MAXFLOAT attributedContent:attributeString];
             contentLB.frame = CGRectMake(0, 0, size.width+20, size.height+10);
             contentLB.center = cell.contentView.center;
-            
             [cell addSubview:contentLB];
-        }else if ([chatroomObject isKindOfClass:[PLVSocketChatRoomObject class]]) {
-            PLVSocketChatRoomObject *chatroom = (PLVSocketChatRoomObject *)chatroomObject;
-            if (chatroom.eventType == PLVSocketChatRoomEventType_SPEAK) {
-                NSString *speakContent = [chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
-                if (speakContent) {
-                    NSMutableAttributedString *attributeString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:speakContent font:[UIFont systemFontOfSize:CHAT_FONT_SIZE]];
-                    if (chatroom.isLocalMessage) {
-                        [cell addSubview:[self bubbleViewForSelfWithContent:attributeString position:5]];
-                    }else {
-                        NSString *nickname = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserNickKey];
-                        NSString *nickImg = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserPicKey];
-                        if (![nickImg containsString:@"http:"]) {
-                            nickImg = [@"https:" stringByAppendingString:nickImg];
-                        }
-                        [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:attributeString position:5]];
-                    }
-                }
-            }
-        }else {
         }
     }
     return cell;
+}
+
+#pragma mark - <UITableViewDelegate>
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.isPrivateChatMode) {
+        PLVSocketChatRoomObject *chatObject = self.privateChatObjects[indexPath.row];
+        NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_S_QUESTION_content];
+        if (chatObject.eventType == PLVSocketChatRoomEventType_S_QUESTION) {
+            return [self autoCalculateSpeakTypeSizeWithContent:content].height + 25;
+        }else {
+            return [self autoCalculateSpeakTypeSizeWithContent:content].height + 50;
+        }
+    }else {
+        id chatroomObject = self.chatroomObjects[indexPath.row];
+        if ([chatroomObject isKindOfClass:[PLVSocketChatRoomObject class]]) {
+            PLVSocketChatRoomObject *chatroom = (PLVSocketChatRoomObject *)chatroomObject;
+            if (chatroom.eventType == PLVSocketChatRoomEventType_SPEAK) {
+                NSString *content = [chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
+                if (chatroom.isLocalMessage) {
+                    return [self autoCalculateSpeakTypeSizeWithContent:content].height + 25;
+                }else {
+                    return [self autoCalculateSpeakTypeSizeWithContent:content].height + 50;
+                }
+            }
+        }else if ([chatroomObject isKindOfClass:[NSString class]]) {
+            return [self autoCalculateSystemTypeWithContent:(NSString *)chatroomObject].height + 20;
+        }
+        return 40.0;
+    }
 }
 
 #pragma mark - <BCKeyBoardDelegate>
@@ -230,9 +215,22 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
         }
     }
     
-    if (self.delegate && [self.delegate respondsToSelector:@selector(sendMessage:privateChatMode:)]) {
-        [self.delegate sendMessage:text privateChatMode:self.isPrivateChatMode];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(emitChatroomObject:withMessage:)]) {
+        PLVLiveManager *liveManager = [PLVLiveManager sharedLiveManager];
+        if (self.isPrivateChatMode) {
+            PLVSocketChatRoomObject *sQuestion = [PLVSocketChatRoomObject chatRoomObjectForStudentQuestionEventTypeWithLoginObject:liveManager.login content:text];
+            [liveManager.privateChatObjects addObject:sQuestion];
+            [self.delegate emitChatroomObject:sQuestion withMessage:nil];
+        }else {
+            PLVSocketChatRoomObject *mySpeak = [PLVSocketChatRoomObject chatRoomObjectForSpeakEventTypeWithRoomId:liveManager.channelId.integerValue content:text];
+            [liveManager.chatroomObjects addObject:mySpeak];
+            [self.delegate emitChatroomObject:mySpeak withMessage:text];
+        }
+        [self updateChatroom];
     }
+    //if (self.delegate && [self.delegate respondsToSelector:@selector(sendMessage:privateChatMode:)]) {
+    //  [self.delegate sendMessage:text privateChatMode:self.isPrivateChatMode];
+    //}
 }
 
 - (void)returnHeight:(CGFloat)height {
@@ -243,16 +241,68 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 }
 
 #pragma mark - Private methods
-
-- (UIView *)bubbleViewForOtherWithNickname:(NSString *)nickname nickImg:(NSString *)nickImg content:(NSAttributedString *)attributedText position:(int)position {
-    // 计算文字大小
-    CGSize fontSize = [self autoCalculateWidth:ChAT_MAX_WIDTH orHeight:MAXFLOAT attributedContent:attributedText];
-    CGSize bubbleSize = CGSizeMake(fontSize.width + 10, fontSize.height + 10);
-    
-    // build single chat bubble cell with given text
+/// 自己发言样式
+- (UIView *)bubbleViewForSelfWithContent:(NSString *)content position:(int)position {
     UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
     returnView.backgroundColor = [UIColor clearColor];
+    if (!content || !content.length) {
+        return returnView;
+    }
+    
+    // 计算生成属性字符串及计算文字大小
+    NSMutableAttributedString *attributedString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:content font:[UIFont systemFontOfSize:SPEAK_FONT_SIZE]];
+    CGSize fontSize = [self autoCalculateWidth:SPEAK_MAX_WIDTH orHeight:MAXFLOAT attributedContent:attributedString];
+    CGSize bubbleSize = CGSizeMake(fontSize.width + 30, fontSize.height + 15);
+    
+    returnView.frame = CGRectMake(CGRectGetWidth(self.view.bounds)-position-bubbleSize.width, 0, bubbleSize.width, bubbleSize.height);
+    
+    // 聊天背景
+    UIImage *bubble = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_chatfrom_mine"];
+    UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[bubble stretchableImageWithLeftCapWidth:floorf(bubble.size.width/2) topCapHeight:floorf(bubble.size.height/2)]];
+    bubbleImageView.frame = CGRectMake(0, 0, bubbleSize.width, bubbleSize.height);
+    
+    // 聊天内容
+    UILabel *bubbleText = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, fontSize.width, fontSize.height)];
+    bubbleText.backgroundColor = [UIColor clearColor];
+    bubbleText.numberOfLines = 0;
+    bubbleText.lineBreakMode = NSLineBreakByWordWrapping;
+    bubbleText.attributedText =  attributedString;
+    [bubbleImageView addSubview:bubbleText];
+    
+    [returnView addSubview:bubbleImageView];
+    return returnView;
+}
+
+/// 别人发言样式
+- (UIView *)bubbleViewForOtherWithNickname:(NSString *)nickname nickImg:(NSString *)nickImg content:(NSString *)content position:(int)position {
+    UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
+    returnView.backgroundColor = [UIColor clearColor];
+    if (!content || !content.length) {
+        return returnView;
+    }
+    
+    // 计算生成属性字符串及计算文字大小
+    NSMutableAttributedString *attributedString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:content font:[UIFont systemFontOfSize:SPEAK_FONT_SIZE]];
+    CGSize fontSize = [self autoCalculateWidth:SPEAK_MAX_WIDTH orHeight:MAXFLOAT attributedContent:attributedString];
+    CGSize bubbleSize = CGSizeMake(fontSize.width + 30, fontSize.height + 15);
+    
     returnView.frame = CGRectMake(position, 0, bubbleSize.width, bubbleSize.height + 20);
+    
+    // 用户头像
+    UIImageView *avatarView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 35, 35)];
+    avatarView.layer.cornerRadius = 35/2.0;
+    avatarView.layer.masksToBounds = YES;
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:nickImg] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:6.0];
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+                avatarView.image = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_missing_face"];
+            }else {
+                UIImage *image = [UIImage imageWithData:data];
+                if (image) avatarView.image = image;
+            }
+        });
+    }] resume];
     
     // 昵称
     UILabel *nicknameLB = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, CGRectGetWidth(returnView.bounds), 20)];
@@ -264,78 +314,45 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     nicknameLB.font = [UIFont boldSystemFontOfSize:12.0];
     nicknameLB.textAlignment = NSTextAlignmentLeft;
     
-    NSError *error; // asynchronous
-    NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:nickImg] options:NSDataReadingMappedIfSafe error:&error];
-    // 用户头像
-    UIImageView *avatarView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 35, 35)];
-    avatarView.layer.cornerRadius = 35/2.0;
-    avatarView.layer.masksToBounds = YES;
-    if (error) {
-        avatarView.image = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_missing_face"];
-    }else {
-        avatarView.image = [UIImage imageWithData:imgData];
-    }
-    
-    // 聊天文字背景
+    // 聊天背景
     UIImage *bubble = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_chatfrom_other"];
     UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[bubble stretchableImageWithLeftCapWidth:floorf(bubble.size.width/2) topCapHeight:floorf(bubble.size.height*2/3)]];
-    bubbleImageView.frame = CGRectMake(30, 25, bubbleSize.width+20, bubbleSize.height+5);
+    bubbleImageView.frame = CGRectMake(30, 25, bubbleSize.width, bubbleSize.height);
     
-    // 文本
-    UILabel *bubbleText = [[UILabel alloc] initWithFrame:CGRectMake(50, 30, fontSize.width, fontSize.height)];
+    // 聊天内容
+    UILabel *bubbleText = [[UILabel alloc] initWithFrame:CGRectMake(20, 5, fontSize.width, fontSize.height)];
     bubbleText.backgroundColor = [UIColor clearColor];
-    bubbleText.font = [UIFont systemFontOfSize:CHAT_FONT_SIZE];
     bubbleText.numberOfLines = 0;
     bubbleText.lineBreakMode = NSLineBreakByWordWrapping;
-    bubbleText.attributedText =  attributedText;
+    bubbleText.attributedText = attributedString;
+    [bubbleImageView addSubview:bubbleText];
     
     [returnView addSubview:avatarView];
     [returnView addSubview:nicknameLB];
     [returnView addSubview:bubbleImageView];
-    [returnView addSubview:bubbleText];
     return returnView;
 }
 
-- (UIView *)bubbleViewForSelfWithContent:(NSAttributedString *)attributedText position:(int)position {
-    // 计算文字大小
-    CGSize fontSize = [self autoCalculateWidth:ChAT_MAX_WIDTH orHeight:MAXFLOAT attributedContent:attributedText];
-    CGSize bubbleSize = CGSizeMake(fontSize.width + 30, fontSize.height + 10);
-    
-    // build single chat bubble cell with given text
-    UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
-    returnView.backgroundColor = [UIColor clearColor];
-    returnView.frame = CGRectMake(CGRectGetWidth(self.view.bounds)-position-bubbleSize.width, 0, bubbleSize.width, bubbleSize.height);
-    
-    // 聊天文字背景
-    UIImage *bubble = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_chatfrom_mine"];
-    UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[bubble stretchableImageWithLeftCapWidth:floorf(bubble.size.width/2) topCapHeight:floorf(bubble.size.height/2)]];
-    bubbleImageView.frame = CGRectMake(0, 0, bubbleSize.width, bubbleSize.height+5);
-    
-    // 文本
-    UILabel *bubbleText = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, fontSize.width, fontSize.height)];
-    bubbleText.backgroundColor = [UIColor clearColor];
-    bubbleText.font = [UIFont systemFontOfSize:CHAT_FONT_SIZE];
-    bubbleText.numberOfLines = 0;
-    bubbleText.lineBreakMode = NSLineBreakByWordWrapping;
-    bubbleText.attributedText =  attributedText;
-    
-    [returnView addSubview:bubbleImageView];
-    [returnView addSubview:bubbleText];
-    return returnView;
-}
-
-- (CGSize)autoCalculateSizeWithString:(NSString *)string {
-    if (!string) {
+/// 计算发言样式Size
+- (CGSize)autoCalculateSpeakTypeSizeWithContent:(NSString *)content {
+    if (!content || !content.length) {
         return CGSizeZero;
     }
-    //NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:string attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:CHAT_FONT_SIZE]}];
-    NSMutableAttributedString *attributeString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:string font:[UIFont systemFontOfSize:CHAT_FONT_SIZE]];
-    return [self autoCalculateWidth:ChAT_MAX_WIDTH orHeight:MAXFLOAT attributedContent:attributeString];
+    NSMutableAttributedString *attributedString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:content font:[UIFont systemFontOfSize:SPEAK_FONT_SIZE]];
+    return [self autoCalculateWidth:SPEAK_MAX_WIDTH orHeight:MAXFLOAT attributedContent:attributedString];
+}
+
+/// 计算系统样式Size
+- (CGSize)autoCalculateSystemTypeWithContent:(NSString *)content {
+    if (!content || !content.length) {
+        return CGSizeZero;
+    }
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:content attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:SYSTEM_FONT_SIZE weight:UIFontWeightMedium]}];
+    return [self autoCalculateWidth:SYSTEM_MAX_WIDTH orHeight:MAXFLOAT attributedContent:attributedString];
 }
 
 /// 计算属性字符串文本的宽或高
-- (CGSize)autoCalculateWidth:(float)width orHeight:(float)height attributedContent:(NSAttributedString *)attributedContent
-{
+- (CGSize)autoCalculateWidth:(float)width orHeight:(float)height attributedContent:(NSAttributedString *)attributedContent {
     CGRect rect = [attributedContent boundingRectWithSize:CGSizeMake(width, height)
                                                   options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
                                                   context:nil];

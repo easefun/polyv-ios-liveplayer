@@ -68,7 +68,6 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
     NSDictionary *userInfo = self.onlineList[indexPath.row];
     
     PLVUserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseUserCellIdentifier forIndexPath:indexPath];

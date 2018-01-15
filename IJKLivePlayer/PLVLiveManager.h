@@ -7,14 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <PLVSocketAPI/PLVSocketAPI.h>
 
-@class PLVSocketChatRoomObject;
 @interface PLVLiveManager : NSObject
 
 /// 当前房间号/频道号
 @property (nonatomic, strong, readonly) NSString *channelId;
 /// 当前用户Id
 @property (nonatomic, strong, readonly) NSString *userId;
+
+/// Socket 登录对象
+@property (nonatomic, strong) PLVSocketObject *login;
 
 /// 聊天室对象数据源(PLVSocketChatRoomObject, NSString)
 @property (nonatomic, strong) NSMutableArray *chatroomObjects;
@@ -29,6 +32,15 @@
 - (void)setupChannelId:(NSString *)channelId userId:(NSString *)userId;
 
 /**
+ 处理聊天室信息
+ 
+ @param chatroomObject 聊天室信息
+ @param completion 处理成功，不能为nil（isChatroom：YES，公共聊天室信息；NO，私有聊天室信息）
+ @return 聊天室信息（弹幕信息）
+ */
+- (NSString *)handleChatroomObject:(PLVSocketChatRoomObject *)chatroomObject completion:(void(^)(BOOL isChatroom))completion;
+
+/**
  生成在线用户列表
  
  @param jsonDict 服务器返回json数据
@@ -37,14 +49,5 @@
 
 /// 重置数据
 - (void)resetData;
-
-/**
- 处理聊天室信息
-
- @param chatroomObject 聊天室对象
- @param message 回调的聊天室信息
- @return 是否处理，处理成功会添加至聊天室或咨询提问的数据源
- */
-//- (BOOL)handleChatroomObject:(PLVSocketChatRoomObject *)chatroomObject messgae:(NSString **)message;
 
 @end

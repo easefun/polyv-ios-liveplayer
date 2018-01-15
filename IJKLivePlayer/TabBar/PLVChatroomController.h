@@ -11,15 +11,14 @@
 
 @protocol PLVChatroomDelegate <NSObject>
 
-- (void)sendMessage:(NSString *)message privateChatMode:(BOOL)privateChatMode;
-
-//- (void)sendMessage:(NSString *)message withchatroomObject:(PLVSocketChatRoomObject *)chatRoomObject;
+- (void)emitChatroomObject:(PLVSocketChatRoomObject *)chatRoomObject withMessage:(NSString *)message;
 
 @end
 
 @interface PLVChatroomController : UIViewController
 
 @property (nonatomic, weak) id<PLVChatroomDelegate> delegate;
+/// 私有聊天室模式(咨询提问)
 @property (nonatomic, getter=isPrivateChatMode) BOOL privateChatMode;
 
 - (instancetype)initWithFrame:(CGRect)frame;

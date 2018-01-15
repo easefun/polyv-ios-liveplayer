@@ -7,7 +7,6 @@
 //
 
 #import "PLVLiveManager.h"
-#import <PLVSocketAPI/PLVSocketAPI.h>
 
 static PLVLiveManager *liveManager = nil;
 
@@ -38,16 +37,48 @@ static PLVLiveManager *liveManager = nil;
 }
 
 /// 处理聊天室信息
-- (BOOL)handleChatroomObject:(PLVSocketChatRoomObject *)chatroomObject messgae:(NSString *__autoreleasing *)message {
-    /*NSString *message;
-    BOOL isHandle = [[PLVLiveManager sharedLiveManager] handleChatroomObject:chatObject messgae:&message];
-    if (isHandle) {
-        [self.chatroomController updateChatroom];
+- (NSString *)handleChatroomObject:(PLVSocketChatRoomObject *)chatroomObject completion:(void(^)(BOOL isChatroom))completion {
+    switch (chatroomObject.eventType) {
+        // ------------------ 1.聊天室内容
+        case PLVSocketChatRoomEventType_LOGIN: {    // 1.1.用户登录
+            NSString *nickname = chatroomObject.jsonDict[PLVSocketIOChatRoom_LOGIN_userKey][PLVSocketIOChatRoomUserNickKey];
+            [self.chatroomObjects addObject:[NSString stringWithFormat:@"欢迎%@加入",nickname]];
+            completion(YES);
+        } break;
+        case PLVSocketChatRoomEventType_GONGGAO: {  // 1.2.管理员发言/跑马灯公告
+            NSString *content = chatroomObject.jsonDict[PLVSocketIOChatRoom_GONGGAO_content];
+            [self.chatroomObjects addObject:[@"管理员发言:\n" stringByAppendingString:content]];
+            completion(YES);
+        } break;
+        case PLVSocketChatRoomEventType_BULLETIN: { // 1.3.公告
+            NSString *content = chatroomObject.jsonDict[PLVSocketIOChatRoom_BULLETIN_content];
+            [self.chatroomObjects addObject:[@"公告:\n" stringByAppendingString:content]];
+            completion(YES);
+        } break;
+        case PLVSocketChatRoomEventType_SPEAK: {    // 1.4.用户发言
+            NSDictionary *user = chatroomObject.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey];
+            if (user) {     // use不存在可能为严禁词类型
+                NSString *userId = user[PLVSocketIOChatRoomUserUserIdKey];
+                // 非自己发言内容(开启聊天审核后会收到自己数据)
+                if (![userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
+                    [self.chatroomObjects addObject:chatroomObject];
+                    completion(YES);
+                    return [chatroomObject.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
+                }
+            }
+        } break;
+        // ------------------  2.提问内容(私有聊天)
+        //case PLVSocketChatRoomEventType_S_QUESTION:
+        case PLVSocketChatRoomEventType_T_ANSWER: { // 2.1.讲师发言
+            NSString *userId = chatroomObject.jsonDict[PLVSocketIOChatRoom_T_ANSWER_sUserId];
+            if ([userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
+                [self.privateChatObjects addObject:chatroomObject];
+                completion(NO);
+            }
+        } break;
+        default: break;
     }
-    if (message) {
-        [self.danmuLayer insertDML:message];
-    }*/
-    return NO;
+    return nil;
 }
 
 /// 生成在线用户列表
@@ -55,7 +86,7 @@ static PLVLiveManager *liveManager = nil;
     if (!jsonDict) {
         return nil;
     }
-    NSInteger count = [jsonDict[@"count"] integerValue];
+    //NSInteger count = [jsonDict[@"count"] integerValue];
     NSArray *userlist = jsonDict[@"userlist"];
     NSMutableArray *mArr = [NSMutableArray array];
     for (NSDictionary *userDict in userlist) {
@@ -66,7 +97,7 @@ static PLVLiveManager *liveManager = nil;
         [mArr addObject:userDict];
     }
     [PLVLiveManager sharedLiveManager].onlineList = mArr;
-    NSLog(@"聊天室在线列表信息：处理前人数 %ld, 处理后人数 %ld",count,mArr.count);
+    //NSLog(@"聊天室在线列表信息：处理前人数 %ld, 处理后人数 %ld",count,mArr.count);
     return mArr;
 }
 
