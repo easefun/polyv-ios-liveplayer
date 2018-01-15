@@ -112,6 +112,12 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
                     return size.height + 50;
                 }
             }
+        }else if ([chatroomObject isKindOfClass:[NSString class]]) {
+            NSString *content = (NSString *)chatroomObject;
+            UIFont *font = [UIFont systemFontOfSize:CHAT_FONT_SIZE2 weight:UIFontWeightMedium];
+            NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:content attributes:@{NSFontAttributeName:font}];
+            CGSize size = [self autoCalculateWidth:ChAT_MAX_WIDTH2 orHeight:MAXFLOAT attributedContent:attributeString];
+            return size.height + 20;
         }
         return 40.0;
     }
@@ -170,6 +176,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
             contentLB.textColor = [UIColor whiteColor];
             contentLB.layer.cornerRadius = 4.0;
             contentLB.layer.masksToBounds = YES;
+            contentLB.numberOfLines = 0;
             
             NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:content attributes:@{NSFontAttributeName:font}];
             CGSize size = [self autoCalculateWidth:ChAT_MAX_WIDTH2 orHeight:MAXFLOAT attributedContent:attributeString];
@@ -181,16 +188,18 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
             PLVSocketChatRoomObject *chatroom = (PLVSocketChatRoomObject *)chatroomObject;
             if (chatroom.eventType == PLVSocketChatRoomEventType_SPEAK) {
                 NSString *speakContent = [chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
-                NSMutableAttributedString *attributeString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:speakContent font:[UIFont systemFontOfSize:CHAT_FONT_SIZE]];
-                if (chatroom.isLocalMessage) {
-                    [cell addSubview:[self bubbleViewForSelfWithContent:attributeString position:5]];
-                }else {
-                    NSString *nickname = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserNickKey];
-                    NSString *nickImg = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserPicKey];
-                    if (![nickImg containsString:@"http:"]) {
-                        nickImg = [@"https:" stringByAppendingString:nickImg];
+                if (speakContent) {
+                    NSMutableAttributedString *attributeString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:speakContent font:[UIFont systemFontOfSize:CHAT_FONT_SIZE]];
+                    if (chatroom.isLocalMessage) {
+                        [cell addSubview:[self bubbleViewForSelfWithContent:attributeString position:5]];
+                    }else {
+                        NSString *nickname = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserNickKey];
+                        NSString *nickImg = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserPicKey];
+                        if (![nickImg containsString:@"http:"]) {
+                            nickImg = [@"https:" stringByAppendingString:nickImg];
+                        }
+                        [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:attributeString position:5]];
                     }
-                    [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:attributeString position:5]];
                 }
             }
         }else {
@@ -259,6 +268,8 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     NSData *imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:nickImg] options:NSDataReadingMappedIfSafe error:&error];
     // 用户头像
     UIImageView *avatarView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 35, 35)];
+    avatarView.layer.cornerRadius = 35/2.0;
+    avatarView.layer.masksToBounds = YES;
     if (error) {
         avatarView.image = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_missing_face"];
     }else {

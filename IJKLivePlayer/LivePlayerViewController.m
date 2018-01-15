@@ -33,6 +33,7 @@
 @property (nonatomic, strong) PLVSocketObject *login;                       // Socket 登录对象
 @property (nonatomic, assign) BOOL loginSuccess;                            // Socket 登录成功
 
+@property (nonatomic, strong) FTPageController *pageController;             // 页控制器
 @property (nonatomic, strong) PLVChatroomController *chatroomController;    // 互动聊天室(房间内公共聊天)
 @property (nonatomic, strong) PLVOnlineListController *onlineListController;// 在线列表控制器
 @property (nonatomic, strong) PLVChatroomController *privateChatController; // 咨询提问聊天室(房间内私有聊天)
@@ -119,11 +120,11 @@
 }
 
 - (void)setupPageControllerWithTitles:(NSArray *)titles controllers:(NSArray *)controllers frame:(CGRect)frame {
-    FTPageController *pageController = [[FTPageController alloc] initWithTitles:titles controllers:controllers];
-    pageController.view.backgroundColor = [UIColor colorWithRed:233/255.0 green:235/255.0 blue:245/255.0 alpha:1.0];
-    pageController.view.frame = frame;
-    [self addChildViewController:pageController];
-    [self.view addSubview:pageController.view];
+    self.pageController = [[FTPageController alloc] initWithTitles:titles controllers:controllers];
+    self.pageController.view.backgroundColor = [UIColor colorWithRed:233/255.0 green:235/255.0 blue:245/255.0 alpha:1.0];
+    self.pageController.view.frame = frame;
+    [self addChildViewController:self.pageController];
+    [self.view addSubview:self.pageController.view];
 }
 
 // 注册播放器通知
@@ -190,12 +191,13 @@
 
 - (void)livePlayerWillChangeToFullScreenNotification {
     NSLog(@"将要全屏啦");
-    //[self.chatRoomManager setHiddenView:YES];
+    [self.pageController.view setHidden:YES];
+    [self.view endEditing:YES];
 }
 
 - (void)livePlayerWillExitFullScreenNotification {
     NSLog(@"将要退出全屏啦");
-    //[self.chatRoomManager setHiddenView:NO];
+    [self.pageController.view setHidden:NO];
 }
 
 #pragma mark - private methods
@@ -227,7 +229,7 @@
 /// 连接成功
 - (void)socketIO:(PLVSocketIO *)socketIO didConnectWithInfo:(NSString *)info {
     NSLog(@"%@--%@",NSStringFromSelector(_cmd),info);
-    [socketIO emitMessageWithSocketObject:self.login];  // 登录聊天室
+    [socketIO emitMessageWithSocketObject:self.login];       // 登录聊天室
 }
 
 /// 收到聊天室信息
@@ -237,7 +239,7 @@
         case PLVSocketChatRoomEventType_LOGOUT: {
             [self.onlineListController updateOnlineList];
         } break;
-        case PLVSocketChatRoomEventType_LOGIN:             // 聊天室内容
+        case PLVSocketChatRoomEventType_LOGIN:               // 1.聊天室内容
             [self.onlineListController updateOnlineList];
         case PLVSocketChatRoomEventType_SPEAK:
         case PLVSocketChatRoomEventType_GONGGAO:
@@ -247,24 +249,25 @@
                 NSString *nickname = chatObject.jsonDict[PLVSocketIOChatRoom_LOGIN_userKey][PLVSocketIOChatRoomUserNickKey];
                 [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:[NSString stringWithFormat:@"欢迎%@加入",nickname]];
             }else if (chatObject.eventType == PLVSocketChatRoomEventType_SPEAK) {
-                // 移除自己的数据，开启聊天室审核后会收到自己数据
-                [self.danmuLayer insertDML:[chatObject.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject]];
-                [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:chatObject];
+                NSString *userId = chatObject.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserUserIdKey];
+                if (![userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {   // 非自己发言内容(开启聊天审核后会收到自己数据)
+                    [self.danmuLayer insertDML:[chatObject.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject]];
+                    [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:chatObject];
+                }
             }else if (chatObject.eventType == PLVSocketChatRoomEventType_GONGGAO) {
                 NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_GONGGAO_content];
-                [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:[@"管理员发言:" stringByAppendingString:content]];
+                [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:[@"管理员:" stringByAppendingString:content]];
             }else {
                 NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_BULLETIN_content];
                 [[PLVLiveManager sharedLiveManager].chatroomObjects addObject:[@"公告:" stringByAppendingString:content]];
             }
             [self.chatroomController updateChatroom];
         } break;
-        //case PLVSocketChatRoomEventType_S_QUESTION:       // 提问内容(私有聊天)
+        //case PLVSocketChatRoomEventType_S_QUESTION:       // 2.提问内容(私有聊天)
         case PLVSocketChatRoomEventType_T_ANSWER: {
             if (!self.privateChatController) break;
             NSString *userId = chatObject.jsonDict[PLVSocketIOChatRoom_T_ANSWER_sUserId];
             if ([userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
-                // 更新提问私聊数据源
                 [[PLVLiveManager sharedLiveManager].privateChatObjects addObject:chatObject];
                 [self.privateChatController updateChatroom];
             }
@@ -316,7 +319,6 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // 退出键盘
     [self.view endEditing:YES];
-    //[self.chatRoomManager returnKeyBoard];
 }
 
 

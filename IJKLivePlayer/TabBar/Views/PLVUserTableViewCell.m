@@ -39,10 +39,11 @@
     
     // 异步请求头像
     __weak typeof(self)weakSelf = self;
-    [[[NSURLSession sharedSession] dataTaskWithURL:[NSURL URLWithString:_imgUrl] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:_imgUrl] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:6.0];
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error) {
-                NSLog(@"头像请求出错:%@",error.localizedDescription);
+                //NSLog(@"头像请求出错:%@",error.localizedDescription);
             }else {
                 UIImage *image = [UIImage imageWithData:data];
                 //NSLog(@"image:%@",image);

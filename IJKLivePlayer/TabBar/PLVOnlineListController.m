@@ -28,6 +28,13 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     
     [self setupUI];
     self.onlineList = [PLVLiveManager sharedLiveManager].onlineList;
+    [self updateOnlineList];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self updateOnlineList];
 }
 
 - (void)setupUI {
@@ -65,6 +72,7 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     NSDictionary *userInfo = self.onlineList[indexPath.row];
     
     PLVUserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseUserCellIdentifier forIndexPath:indexPath];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.nicknameLB.text = userInfo[@"nick"];
     cell.imgUrl = userInfo[@"pic"];
 //    if (cell) {
