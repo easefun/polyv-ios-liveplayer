@@ -57,14 +57,20 @@ static PLVLiveManager *liveManager = nil;
         } break;
         case PLVSocketChatRoomEventType_SPEAK: {    // 1.4.用户发言
             NSDictionary *user = chatroomObject.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey];
-            if (user) {     // use不存在可能为严禁词类型
-                NSString *userId = user[PLVSocketIOChatRoomUserUserIdKey];
-                // 非自己发言内容(开启聊天审核后会收到自己数据)
-                if (![userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
-                    [self.chatroomObjects addObject:chatroomObject];
-                    completion(YES);
-                    return [chatroomObject.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
+            if (user) {     // use不存在时可能为严禁词类型；开启聊天审核后会收到自己数据
+                id userId = user[PLVSocketIOChatRoomUserUserIdKey];
+                if ([userId isKindOfClass:[NSString class]]) {
+                    if ([(NSString *)userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
+                        break;
+                    }
+                }else if ([userId isKindOfClass:[NSNumber class]]) {
+                    if ([(NSNumber *)userId unsignedLongValue] == self.login.userId) {
+                        break;
+                    }
                 }
+                [self.chatroomObjects addObject:chatroomObject];
+                completion(YES);
+                return [chatroomObject.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
             }
         } break;
         // ------------------  2.提问内容(私有聊天)
