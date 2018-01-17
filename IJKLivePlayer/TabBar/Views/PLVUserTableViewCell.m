@@ -29,7 +29,7 @@
     // 头像地址处理
     if ([imgUrl isKindOfClass:[NSNull class]]) {                // null地址类型
         _imgUrl = @"https://live.polyv.cn/assets/wimages/missing_face.png";
-    } else if ([imgUrl hasPrefix:@"http"]) {                    // HTTP强转HTTPS(包括微信头像和"live.polyv.cn"域名)
+    } else if ([imgUrl hasPrefix:@"http:"]) {                   // HTTP强转HTTPS(包括微信头像和"live.polyv.cn"域名)
         _imgUrl = [imgUrl stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
     } else if ([imgUrl hasPrefix:@"//"]) {                      // 处理"//"类型开头的地址
         _imgUrl = [@"https:" stringByAppendingString:imgUrl];

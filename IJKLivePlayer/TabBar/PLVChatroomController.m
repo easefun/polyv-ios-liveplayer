@@ -222,7 +222,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
             [liveManager.privateChatObjects addObject:sQuestion];
             [self.delegate emitChatroomObject:sQuestion withMessage:nil];
         }else {
-            PLVSocketChatRoomObject *mySpeak = [PLVSocketChatRoomObject chatRoomObjectForSpeakEventTypeWithRoomId:liveManager.channelId.integerValue content:text];
+            PLVSocketChatRoomObject *mySpeak = [PLVSocketChatRoomObject chatRoomObjectForSpeakEventTypeWithRoomId:liveManager.login.roomId content:text];
             [liveManager.chatroomObjects addObject:mySpeak];
             [self.delegate emitChatroomObject:mySpeak withMessage:text];
         }
