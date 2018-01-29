@@ -34,6 +34,7 @@ xcuserdata/
 # https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
 #
 Pods/
+*.xcworkspace
 
 # Carthage
 #
@@ -58,6 +59,3 @@ fastlane/screenshots
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
-
-#
-IJKLivePlayer.xcworkspace

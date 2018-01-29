@@ -147,6 +147,7 @@
     [_livePlayer setReturnButtonClickBlcok:^{
         NSLog(@"返回按钮点击了...");
         [weakSelf.socketIO disconnect];
+        [weakSelf.socketIO removeAllHandlers];
         [[PLVLiveManager sharedLiveManager] resetData];
         [weakSelf dismissViewControllerAnimated:YES completion:nil];
     }];
@@ -256,6 +257,7 @@
     
     if (chatObject.eventType == PLVSocketChatRoomEventType_LOGIN
         || chatObject.eventType == PLVSocketChatRoomEventType_LOGOUT) {
+        self.loginSuccess = YES;
         [self.onlineListController updateOnlineList];
     }
 }
