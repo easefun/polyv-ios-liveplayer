@@ -98,7 +98,6 @@
 
 - (void)setupUI {
     self.view.backgroundColor = [UIColor whiteColor];
-
     CGRect pageCtrlFrame = CGRectMake(0, CGRectGetMaxY(self.displayView.frame), SCREEN_WIDTH, SCREEN_HEIGHT-CGRectGetMaxY(self.displayView.frame));
     
     // 初始化互动聊天室
@@ -148,6 +147,7 @@
     [_livePlayer setReturnButtonClickBlcok:^{
         NSLog(@"返回按钮点击了...");
         [weakSelf.socketIO disconnect];
+        [weakSelf.socketIO removeAllHandlers];
         [[PLVLiveManager sharedLiveManager] resetData];
         [weakSelf dismissViewControllerAnimated:YES completion:nil];
     }];
@@ -257,6 +257,7 @@
     
     if (chatObject.eventType == PLVSocketChatRoomEventType_LOGIN
         || chatObject.eventType == PLVSocketChatRoomEventType_LOGOUT) {
+        self.loginSuccess = YES;
         [self.onlineListController updateOnlineList];
     }
 }

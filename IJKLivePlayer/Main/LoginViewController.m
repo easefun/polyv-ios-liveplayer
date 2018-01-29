@@ -9,7 +9,6 @@
 #import "LoginViewController.h"
 #import "LivePlayerViewController.h"
 #import <MBProgressHUD/MBProgressHUD.h>
-#import <PLVLiveAPI/PLVSettings.h>
 #import "PLVLiveManager.h"
 
 @interface LoginViewController ()

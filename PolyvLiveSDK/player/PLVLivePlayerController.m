@@ -85,6 +85,8 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     /** FFmpeg 参数配置*/
     // 打开硬解
     [options setPlayerOptionIntValue:1 forKey:@"videotoolbox"];
+    // 视频处理不及时时丢帧处理
+    [options setPlayerOptionIntValue:5 forKey:@"framedrop"];
     // specify how many microseconds are analyzed to probe the input (from 0 to I64_MAX)
     [options setFormatOptionValue:@"500000" forKey:@"analyzeduration"];
     // set probing size (from 32 to I64_MAX)

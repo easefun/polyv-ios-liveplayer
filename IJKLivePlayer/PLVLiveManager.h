@@ -29,6 +29,9 @@
 
 + (instancetype)sharedLiveManager;
 
+/**
+ 生成channelId和userId
+ */
 - (void)setupChannelId:(NSString *)channelId userId:(NSString *)userId;
 
 /**
