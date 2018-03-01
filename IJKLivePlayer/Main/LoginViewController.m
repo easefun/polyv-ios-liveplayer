@@ -46,19 +46,18 @@
     NSString *userId = self.userIdTF.text;
     NSString *channelId = self.channelIdTF.text;
     
-    // 请求拉流地址
-    [PLVChannel loadVideoJsonWithUserId:userId channelId:channelId completionHandler:^(PLVChannel *channel) {
+    // 获取直播频道信息
+    [PLVLiveAPI loadChannelInfoWithUserId:userId channelId:channelId.integerValue completion:^(PLVLiveChannel *channel) {
         [hud hideAnimated:YES];
-        [[PLVLiveManager sharedLiveManager] setupChannelId:channelId userId:userId];
         
+        [[PLVLiveManager sharedLiveManager] setupChannelId:channelId userId:userId];
         LivePlayerViewController *livePlayerVC = [LivePlayerViewController new];
         livePlayerVC.channel = channel;
-        livePlayerVC.channelId = channelId.integerValue;
         [self presentViewController:livePlayerVC animated:YES completion:nil];
-    } failureHandler:^(NSString *errorName, NSString *errorDescription) {
+    } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:errorName message:errorDescription preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"登录失败" message:description preferredStyle:UIAlertControllerStyleAlert];
         [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
         [self presentViewController:alertController animated:YES completion:nil];
     }];

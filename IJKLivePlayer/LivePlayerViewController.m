@@ -38,6 +38,9 @@
 @property (nonatomic, strong) PLVOnlineListController *onlineListController;// 在线列表控制器
 @property (nonatomic, strong) PLVChatroomController *privateChatController; // 咨询提问聊天室(房间内私有聊天)
 
+@property (nonatomic, strong) NSString *userId;
+@property (nonatomic, assign) NSUInteger channelId;
+
 @end
 
 @implementation LivePlayerViewController {
@@ -63,6 +66,9 @@
 #pragma mark - initialize
 
 - (void)initPlayer {
+    self.userId = self.channel.userId;
+    self.channelId = self.channel.channelId.unsignedIntegerValue;
+    
     [IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];    // IJK日志输出等级
     
     self.livePlayer = [self getLivePlayer];
@@ -74,7 +80,7 @@
 
 - (void)initSocketIO {
     __weak typeof(self)weakSelf = self;
-    [PLVChannel requestAuthorizationForLinkingSocketWithChannelId:self.channelId Appld:[PLVSettings sharedInstance].getAppId appSecret:[PLVSettings sharedInstance].getAppSecret success:^(NSDictionary *responseDict) {
+    [PLVLiveAPI requestAuthorizationForLinkingSocketWithChannelId:self.channelId Appld:[PLVLiveConfig sharedInstance].appId appSecret:[PLVLiveConfig sharedInstance].appSecret success:^(NSDictionary *responseDict) {
         NSString *chatToken = responseDict[@"chat_token"];
         
         // 初始化 socketIO 连接对象
@@ -110,7 +116,7 @@
     NSMutableArray *controllers = [NSMutableArray arrayWithObjects:self.chatroomController,self.onlineListController,nil];
 
     __weak typeof(self)weakSelf = self;
-    [PLVChannel getChannelInfoWithQuestionMenuStatus:self.channelId completion:^(BOOL isOn) {
+    [PLVLiveAPI getChannelInfoWithQuestionMenuStatus:self.channelId completion:^(BOOL isOn) {
         if (isOn) { // 初始化咨询提问聊天室
             weakSelf.privateChatController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
             weakSelf.privateChatController.privateChatMode = YES;
@@ -173,8 +179,7 @@
     hud.label.text = @"加载JSON...";
     
     __weak typeof(self)weakSelf = self;
-    PLVLiveManager *liveManager = [PLVLiveManager sharedLiveManager];
-    [PLVChannel loadVideoJsonWithUserId:liveManager.userId channelId:liveManager.channelId completionHandler:^(PLVChannel *channel) {
+    [PLVLiveAPI loadChannelInfoWithUserId:self.userId channelId:self.channelId completion:^(PLVLiveChannel *channel) {
         weakSelf.channel = channel;
         
         hud.label.text = @"JSON加载成功";
@@ -187,10 +192,10 @@
         if (weakSelf.danmuLayer) {
             [weakSelf.livePlayer insertDanmuView:self.danmuLayer];
         }
-    } failureHandler:^(NSString *errorName, NSString *errorDescription) {
+    } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         hud.label.text = @"JSON加载失败";
         [hud hideAnimated:YES];
-        DLog("errorName:%@, errorDescription:%@",errorName,errorDescription)
+        NSLog(@"errorName:%ld, errorDescription:%@",errorCode,description);
     }];
 }
 
@@ -314,7 +319,7 @@
 }
 
 - (void)dealloc {
-    DLog()
+    //DLog()
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
 }

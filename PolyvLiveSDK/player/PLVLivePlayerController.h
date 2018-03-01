@@ -20,7 +20,7 @@ extern NSString * const PLVLivePlayerWillExitFullScreenNotification;        // �
 @interface PLVLivePlayerController : IJKFFMoviePlayerController
 
 // 当前播放器的frame值
-@property (nonatomic, strong) PLVChannel *channel;
+@property (nonatomic, strong) PLVLiveChannel *channel;
 @property (nonatomic, assign, readonly) CGRect frame;
 @property (nonatomic, strong, readonly) NSURL *contentURL;
 @property (nonatomic, assign, readonly) PLVLiveStreamState streamState;
@@ -35,14 +35,14 @@ extern NSString * const PLVLivePlayerWillExitFullScreenNotification;        // �
 
 
 // 初始化方法 默认拉流地址为FLV 格式
-- (instancetype)initWithChannel:(PLVChannel *)channel displayView:(UIView *)displayView;
-- (instancetype)initWithChannel:(PLVChannel *)channel displayView:(UIView *)displayView playHLS:(BOOL)playHLS __deprecated;
+- (instancetype)initWithChannel:(PLVLiveChannel *)channel displayView:(UIView *)displayView;
+- (instancetype)initWithChannel:(PLVLiveChannel *)channel displayView:(UIView *)displayView playHLS:(BOOL)playHLS __deprecated;
 
 - (instancetype)initWithContentURL:(NSURL *)aUrl displayView:(UIView *)displayView;
 - (instancetype)initWithContentURLString:(NSString *)aUrlString displayView:(UIView *)displayView;
 
 // 设置播放器的channel信息
-- (void)setChannel:(PLVChannel *)channel;
+- (void)setChannel:(PLVLiveChannel *)channel;
 
 /** 直播服务质量相关 设置额外参数，用来提交更多信息*/
 - (void)setParam1:(NSString *)param1;

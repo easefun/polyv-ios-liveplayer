@@ -14,7 +14,6 @@
  */
 @interface LivePlayerViewController : UIViewController
 
-@property (nonatomic, strong) PLVChannel *channel;
-@property (nonatomic, assign) NSInteger channelId;
+@property (nonatomic, strong) PLVLiveChannel *channel;
 
 @end

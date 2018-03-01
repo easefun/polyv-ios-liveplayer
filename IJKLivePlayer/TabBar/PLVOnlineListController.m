@@ -8,7 +8,7 @@
 
 #import "PLVOnlineListController.h"
 #import "PLVLiveManager.h"
-#import <PLVLiveAPI/PLVChannel.h>
+#import <PLVLiveAPI/PLVLiveAPI.h>
 #import "PLVUserTableViewCell.h"
 
 @interface PLVOnlineListController () <UITableViewDelegate,UITableViewDataSource>
@@ -53,7 +53,7 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
 - (void)updateOnlineList {
     NSInteger channelId = [PLVLiveManager sharedLiveManager].channelId.integerValue;
     __weak typeof(self)weakSelf = self;
-    [PLVChannel requestChatRoomListUsersWithRoomId:channelId completion:^(NSDictionary *listUsers) {
+    [PLVLiveAPI requestChatRoomListUsersWithRoomId:channelId completion:^(NSDictionary *listUsers) {
         weakSelf.onlineList = [PLVLiveManager handleOnlineListWithJsonDictionary:listUsers];
         [weakSelf.tableView reloadData];
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
