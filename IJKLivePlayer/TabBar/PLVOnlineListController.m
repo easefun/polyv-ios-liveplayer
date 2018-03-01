@@ -51,9 +51,9 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
 }
 
 - (void)updateOnlineList {
-    NSInteger channelId = [PLVLiveManager sharedLiveManager].channelId.integerValue;
+    //NSInteger channelId = [PLVLiveManager sharedLiveManager].channelId.integerValue;
     __weak typeof(self)weakSelf = self;
-    [PLVLiveAPI requestChatRoomListUsersWithRoomId:channelId completion:^(NSDictionary *listUsers) {
+    [PLVLiveAPI requestChatRoomListUsersWithRoomId:self.channelId completion:^(NSDictionary *listUsers) {
         weakSelf.onlineList = [PLVLiveManager handleOnlineListWithJsonDictionary:listUsers];
         [weakSelf.tableView reloadData];
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {

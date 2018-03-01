@@ -11,11 +11,6 @@
 
 @interface PLVLiveManager : NSObject
 
-/// 当前房间号/频道号
-@property (nonatomic, strong, readonly) NSString *channelId;
-/// 当前用户Id
-@property (nonatomic, strong, readonly) NSString *userId;
-
 /// Socket 登录对象
 @property (nonatomic, strong) PLVSocketObject *login;
 
@@ -28,11 +23,6 @@
 @property (nonatomic, strong) NSArray<NSDictionary *> *onlineList;
 
 + (instancetype)sharedLiveManager;
-
-/**
- 生成channelId和userId
- */
-- (void)setupChannelId:(NSString *)channelId userId:(NSString *)userId;
 
 /**
  处理聊天室信息

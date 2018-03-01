@@ -10,6 +10,8 @@
 
 @interface PLVOnlineListController : UIViewController
 
+@property (nonatomic, assign) NSUInteger channelId;
+
 - (void)updateOnlineList;
 
 @end

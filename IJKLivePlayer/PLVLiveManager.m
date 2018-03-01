@@ -12,8 +12,10 @@ static PLVLiveManager *liveManager = nil;
 
 @interface PLVLiveManager ()
 
-@property (nonatomic, strong) NSString *channelId;
-@property (nonatomic, strong) NSString *userId;
+/// 当前房间号/频道号
+//@property (nonatomic, strong) NSString *channelId;
+/// 当前用户Id
+//@property (nonatomic, strong) NSString *userId;
 
 @end
 
@@ -31,10 +33,13 @@ static PLVLiveManager *liveManager = nil;
     return liveManager;
 }
 
-- (void)setupChannelId:(NSString *)channelId userId:(NSString *)userId {
-    self.channelId = channelId;
-    self.userId = userId;
-}
+/**
+ 生成channelId和userId
+ */
+//- (void)setupChannelId:(NSString *)channelId userId:(NSString *)userId {
+//    self.channelId = channelId;
+//    self.userId = userId;
+//}
 
 /// 处理聊天室信息
 - (NSString *)handleChatroomObject:(PLVSocketChatRoomObject *)chatroomObject completion:(void(^)(BOOL isChatroom))completion {

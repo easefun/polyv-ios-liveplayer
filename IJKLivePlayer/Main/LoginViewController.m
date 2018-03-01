@@ -9,7 +9,6 @@
 #import "LoginViewController.h"
 #import "LivePlayerViewController.h"
 #import <MBProgressHUD/MBProgressHUD.h>
-#import "PLVLiveManager.h"
 
 @interface LoginViewController ()
 
@@ -49,8 +48,7 @@
     // 获取直播频道信息
     [PLVLiveAPI loadChannelInfoWithUserId:userId channelId:channelId.integerValue completion:^(PLVLiveChannel *channel) {
         [hud hideAnimated:YES];
-        
-        [[PLVLiveManager sharedLiveManager] setupChannelId:channelId userId:userId];
+
         LivePlayerViewController *livePlayerVC = [LivePlayerViewController new];
         livePlayerVC.channel = channel;
         [self presentViewController:livePlayerVC animated:YES completion:nil];

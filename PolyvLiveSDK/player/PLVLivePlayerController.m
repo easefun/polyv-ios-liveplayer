@@ -8,7 +8,6 @@
 
 #import "PLVLivePlayerController.h"
 #import "PLVLivePlayerControllerSkin.h"
-#import <PLVLiveAPI/PLVLiveReporter.h>
 
 NSString * const PLVLivePlayerReconnectNotification = @"PLVLivePlayerReconnectNotification";
 NSString * const PLVLivePlayerWillChangeToFullScreenNotification = @"PLVLivePlayerWillChangeToFullScreenNotification";
@@ -99,6 +98,10 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     self = [super initWithContentURL:aUrl withOptions:options];
     
     if (self) {
+        [PLVLiveConfig setPlayerVersion:PlayerVersion];
+        [[PLVLiveConfig sharedInstance] resetPlayerId];
+        _pid = [PLVLiveConfig sharedInstance].playerId;
+        
         [self prepareToPlay];
         
         self.displayView = displayView;
@@ -130,10 +133,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         
         // 开启活动指示器
         [self.playerSkin.indicatorView startAnimating];
-        // 获取播放器ID
-        _pid = [PLVLiveConfig sharedInstance].playerId;
         
-        [PLVLiveConfig setPlayerVersion:PlayerVersion];
         [self.playerSkin addVideoInfoWithDescription:@"播放器初始化完成"];
     }
     
@@ -470,7 +470,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     _isFirstLoadTimeSent = YES;
     
     double diffTime = [[NSDate date] timeIntervalSinceDate:_firstLoadStartDate];
-    [PLVLiveReporter reportLoading:_pid uid:self.channel.userId channelId:self.channel.channelId time:(int)floor(diffTime*1000)  session_id:_sessionId param1:_param1 param2:_param2 param3:_param3 param4:_param4 param5:_param5];
+    [PLVLiveReporter reportLoading:_pid uid:self.channel.userId channelId:self.channel.channelId.stringValue time:(int)floor(diffTime*1000)  session_id:_sessionId param1:_param1 param2:_param2 param3:_param3 param4:_param4 param5:_param5];
 }
 
 - (void)reportSecondBuffer {
@@ -478,7 +478,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     _isSecondBufferTimeSent = YES;
     
     double diffTime = [[NSDate date] timeIntervalSinceDate:_secondBufferStartDate];
-    [PLVLiveReporter reportBuffer:_pid uid:self.channel.userId channelId:self.channel.channelId time:(int)floor(diffTime*1000) session_id:_sessionId param1:_param1 param2:_param2 param3:_param3 param4:_param4 param5:_param5];
+    [PLVLiveReporter reportBuffer:_pid uid:self.channel.userId channelId:self.channel.channelId.stringValue time:(int)floor(diffTime*1000) session_id:_sessionId param1:_param1 param2:_param2 param3:_param3 param4:_param4 param5:_param5];
 }
 
 // MARK: 播放出错分析报告
@@ -505,7 +505,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         }else {
             errorCode = @"other_error";             // 其他播放问题
         }
-        [PLVLiveReporter reportError:_pid uid:_channel.userId channelId:_channel.channelId session_id:_sessionId param1:_param1 param2:_param2 param3:_param3 param4:_param4 param5:_param5 uri:self.contentURL.absoluteString status:[NSString stringWithFormat:@"%ld",(long)responseCode] errorcode:errorCode errormsg:[NSString stringWithFormat:@"code:%ld,reason:%@",(long)playErr.code,playErr.localizedDescription]];
+        [PLVLiveReporter reportError:_pid uid:_channel.userId channelId:self.channel.channelId.stringValue session_id:_sessionId param1:_param1 param2:_param2 param3:_param3 param4:_param4 param5:_param5 uri:self.contentURL.absoluteString status:[NSString stringWithFormat:@"%ld",(long)responseCode] errorcode:errorCode errormsg:[NSString stringWithFormat:@"code:%ld,reason:%@",(long)playErr.code,playErr.localizedDescription]];
     }];
     [dataTask resume];
 }
@@ -515,7 +515,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     if (self.playbackState & IJKMPMoviePlaybackStatePlaying) {
         ++ _watchTimeDuration;
         if ( _watchTimeDuration%_reportFreq == 0) {
-            [PLVLiveReporter stat:_pid uid:self.channel.userId cid:self.channel.channelId flow:0 pd:_watchTimeDuration sd:_stayTimeDuration cts:[self currentPlaybackTime] duration:[self duration]];
+            [PLVLiveReporter stat:_pid uid:self.channel.userId cid:self.channel.channelId.stringValue flow:0 pd:_watchTimeDuration sd:_stayTimeDuration cts:[self currentPlaybackTime] duration:[self duration]];
         }
     }
 }

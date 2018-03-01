@@ -30,8 +30,8 @@
 @property (nonatomic, strong) ZJZDanMu *danmuLayer;                         // 弹幕
 
 @property (nonatomic, strong) PLVSocketIO *socketIO;                        // 即时通信
+@property (nonatomic, strong) PLVSocketObject *login;                       // Socket 登录对象
 @property (nonatomic, assign) BOOL loginSuccess;                            // Socket 登录成功
-//@property (nonatomic, strong) PLVSocketObject *login;                       // Socket 登录对象
 
 @property (nonatomic, strong) FTPageController *pageController;             // 页控制器
 @property (nonatomic, strong) PLVChatroomController *chatroomController;    // 互动聊天室(房间内公共聊天)
@@ -50,6 +50,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.userId = self.channel.userId;
+    self.channelId = self.channel.channelId.unsignedIntegerValue;
+    
     [self initPlayer];
     [self initSocketIO];
     [self configDanmu];
@@ -66,9 +69,6 @@
 #pragma mark - initialize
 
 - (void)initPlayer {
-    self.userId = self.channel.userId;
-    self.channelId = self.channel.channelId.unsignedIntegerValue;
-    
     [IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];    // IJK日志输出等级
     
     self.livePlayer = [self getLivePlayer];
@@ -90,7 +90,8 @@
         //weakSelf.socketIO.debugMode = YES;
         
         // 初始化一个socket登录对象（昵称和头像使用默认设置）
-        [PLVLiveManager sharedLiveManager].login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:nil avatar:nil userType:PLVSocketObjectUserTypeStudent];
+        self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:nil avatar:nil userType:PLVSocketObjectUserTypeStudent];
+        [PLVLiveManager sharedLiveManager].login = self.login;
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         NSLog(@"获取Socket授权失败:%ld,%@",errorCode,description);
     }];
@@ -111,6 +112,7 @@
     self.chatroomController.delegate = self;
     // 在线列表控制器
     self.onlineListController = [[PLVOnlineListController alloc] init];
+    self.onlineListController.channelId = self.channelId;
     [self.onlineListController updateOnlineList];
     NSMutableArray *titles = [NSMutableArray arrayWithObjects:@"互动聊天",@"在线列表",nil];
     NSMutableArray *controllers = [NSMutableArray arrayWithObjects:self.chatroomController,self.onlineListController,nil];
@@ -195,7 +197,7 @@
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         hud.label.text = @"JSON加载失败";
         [hud hideAnimated:YES];
-        NSLog(@"errorName:%ld, errorDescription:%@",errorCode,description);
+        NSLog(@"errorCode:%ld, description:%@",errorCode,description);
     }];
 }
 
@@ -239,7 +241,7 @@
 /// 连接成功
 - (void)socketIO:(PLVSocketIO *)socketIO didConnectWithInfo:(NSString *)info {
     NSLog(@"%@--%@",NSStringFromSelector(_cmd),info);
-    [socketIO emitMessageWithSocketObject:[PLVLiveManager sharedLiveManager].login];       // 登录聊天室
+    [socketIO emitMessageWithSocketObject:self.login];       // 登录聊天室
 }
 
 /// 收到聊天室信息

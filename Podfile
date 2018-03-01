@@ -6,7 +6,7 @@ use_frameworks!
 target 'IJKLivePlayer' do
     
     pod 'Masonry', '~> 1.1'
-    pod 'MBProgressHUD', '~> 1.0.0'
+    pod 'MBProgressHUD', '~> 1.1.0'
     
     pod 'PolyvLiveAPI', '~> 0.2.0'      # Polyv live api.
     pod 'PolyvSocketAPI', '~> 0.3.0'    # Polyv socket.io api.
