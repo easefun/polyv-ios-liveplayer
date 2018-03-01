@@ -1,16 +1,15 @@
 # polyv-ios-liveplayer
 
-​	参考文档： [Wiki](https://github.com/easefun/polyv-ios-liveplayer/wiki)
+  参考文档：[Wiki](https://github.com/easefun/polyv-ios-liveplayer/wiki)
 
 ## 最近更新
+
 - `IJKMediaFramework.framework`、`PLVLiveAPI.framework`、`PLVChatManager.framework` 可直接下载或通过 CocoaPods 安装
 - 从Github仓库中移除 `IJKMediaFramework.framework.zip`、`PLVLiveAPI.framework`、`PLVChatManager.framework` 包，减小下载体积
-
 
 ## 最新版本
 
 [Release](https://github.com/easefun/polyv-ios-liveplayer/releases)
-
 
 Pods库版本：
 
@@ -25,17 +24,14 @@ target 'IJKLivePlayer' do
 end
 ```
 
-完整可运行Pods项目：[v2.2.0-beta2](http://repo.polyv.net/ios/download/livesdk-demo/2.2.0-beat2/polyv-ios-liveplayer.zip)
-
-
+完整可运行Pods项目：[v2.2.0](http://repo.polyv.net/ios/download/livesdk-demo/2.2.0/polyv-ios-liveplayer.zip)
 
 ## Features
 
 - 直播播放
 - 竖屏小屏/横屏全屏
 - 弹幕
-
-
 - 聊天室
 - 咨询提问
 - 在线列表
+- 暖场视频(待)
