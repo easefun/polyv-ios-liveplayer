@@ -9,7 +9,6 @@
 #import "BCKeyBoard.h"
 #import "BCTextView.h"
 
-
 #define kBCTextViewHeight 36 /**< 底部textView的高度 */
 #define kHorizontalPadding 8 /**< 横向间隔 */
 #define kVerticalPadding 5 /**< 纵向间隔 */
@@ -28,6 +27,7 @@
 
 @implementation BCKeyBoard {
     CGRect _originFrame;
+    CGRect _lastKeyboardBeginFrame; // 键盘上次起始frame值
 }
 
 #pragma mark - Overwrite methods
@@ -154,27 +154,56 @@
 
 - (void)keyboardWillChangeFrame:(NSNotification *)notification {
     NSDictionary *userInfo = notification.userInfo;
+    //NSLog(@"userInfo:%@",userInfo);
     CGRect beginFrame = [userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
     CGRect endFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGFloat duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    
+    /*if (CGRectGetMinY(beginFrame) == SCREEN_HEIGHT) {   // 键盘从底部弹出
+     }else if (CGRectGetMinY(endFrame) == SCREEN_HEIGHT) { // 键盘收回至底部
+     }else {} // 键盘高度改变(切换键盘改变/自动更正改变) */
+    // 重复通知问题
+    if (CGRectEqualToRect(beginFrame, _lastKeyboardBeginFrame)) {
+        return;
+    }else {
+        _lastKeyboardBeginFrame = beginFrame;
+    }
+    
+    CGFloat yOffset = beginFrame.origin.y - endFrame.origin.y;
     void(^animations)(void) = ^{
-        if (CGRectGetMinY(beginFrame) > CGRectGetMinY(endFrame)) {
-            // 键盘弹出
-            CGRect frame = self.frame;
-            frame.origin.y = CGRectGetMinY(frame) - endFrame.size.height;
-            self.frame = frame;
-            if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
-                [self.delegate returnHeight:CGRectGetHeight(endFrame)+CGRectGetHeight(_originFrame)];
-            }
-        }else {
+        if (CGRectGetMinY(endFrame) == SCREEN_HEIGHT) { // 键盘收回至底部
             if (!self.activeView) {
                 self.frame = _originFrame;
                 if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
                     [self.delegate returnHeight:CGRectGetHeight(_originFrame)];
                 }
             }
+        }else { // 键盘高度改变
+            CGRect frame = self.frame;
+            frame.origin.y = CGRectGetMinY(frame) - yOffset;
+            //NSLog(@"self.frame:%@,frame:%@,endFrame:%@",NSStringFromCGRect(self.frame),NSStringFromCGRect(frame),NSStringFromCGRect(endFrame));
+            self.frame = frame;
+            if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
+                [self.delegate returnHeight:CGRectGetHeight(endFrame)+CGRectGetHeight(_originFrame)];
+            }
         }
+        /* 1.0 版本（存在bug）
+        if (CGRectGetMinY(beginFrame) > CGRectGetMinY(endFrame)) {  // 键盘弹出
+            CGRect frame = self.frame;
+            frame.origin.y = CGRectGetMinY(frame) - endFrame.size.height;
+            self.frame = frame;
+            if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
+                [self.delegate returnHeight:CGRectGetHeight(endFrame)+CGRectGetHeight(_originFrame)];
+            }
+        }else {  // 键盘隐藏
+            if (!self.activeView) {
+                self.frame = _originFrame;
+                if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
+                    [self.delegate returnHeight:CGRectGetHeight(_originFrame)];
+                }
+            }
+        }*/
     };
     //void(^completion)(BOOL) = ^(BOOL finished){
     //    NSLog(@"finished:%d",finished);

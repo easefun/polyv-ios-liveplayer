@@ -19,16 +19,15 @@
     
     self = [super initWithFrame:frame];
     if (self) {
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChanged:)
                                                      name:UITextViewTextDidChangeNotification
                                                    object:nil];
-        
+        // 禁用自动更正行为
+        self.autocorrectionType = UITextAutocorrectionTypeNo;
         self.autoresizesSubviews = NO;
         //默认字和颜色
         self.placeholder = @"";
         self.placeholderColor = [UIColor lightGrayColor];
-        
     }
     return self;
 }

@@ -50,9 +50,17 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     self.privateChatObjects = [PLVLiveManager sharedLiveManager].privateChatObjects;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    self.bcKeyBoard.delegate = self;
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
+    // 防止销毁后继续执行代理事件
+    self.bcKeyBoard.delegate = nil;
     [self.bcKeyBoard hideTheKeyBoard];
 }
 
@@ -70,7 +78,6 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     // 表情键盘
     self.bcKeyBoard = [[BCKeyBoard alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(frame)-TOOL_BAR_HEIGHT, CGRectGetWidth(frame), TOOL_BAR_HEIGHT)];
     [self.view addSubview:self.bcKeyBoard];
-    self.bcKeyBoard.delegate = self;
     self.bcKeyBoard.placeholder = @"我也来聊几句...";
     self.bcKeyBoard.placeholderColor = [UIColor colorWithRed:133/255 green:133/255 blue:133/255 alpha:0.5];
     self.bcKeyBoard.backgroundColor = [UIColor clearColor];
@@ -85,6 +92,10 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
         self.chatroomObjects = [PLVLiveManager sharedLiveManager].chatroomObjects;
     }
     [self.tableView reloadData];
+}
+
+- (void)hideEmojiKeyBoard {
+    [self.bcKeyBoard hideTheKeyBoard];
 }
 
 #pragma mark - <UITableViewDataSource>
@@ -237,7 +248,12 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     //NSLog(@"keyboard height:%f",height);
     CGRect frame = self.view.frame;
     frame.size.height -= height;
-    [self.tableView setFrame:frame];
+    // 多个对象时会收到多次返回
+    if (self.privateChatMode) {
+        [self.tableView setFrame:frame];
+    }else {
+        [self.tableView setFrame:frame];
+    }
 }
 
 #pragma mark - Private methods
