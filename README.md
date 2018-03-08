@@ -4,8 +4,8 @@
 
 ## 最近更新
 
-- `IJKMediaFramework.framework`、`PLVLiveAPI.framework`、`PLVChatManager.framework` 可直接下载或通过 CocoaPods 安装
-- 从Github仓库中移除 `IJKMediaFramework.framework.zip`、`PLVLiveAPI.framework`、`PLVChatManager.framework` 包，减小下载体积
+- 修复使用中文键盘时自动补正功能导致输入框位置错误的问题
+- 修复在iPhone 5s iOS 11下，进入观看页当前显示表情键盘时退出可能存在的问题
 
 ## 最新版本
 
@@ -24,7 +24,7 @@ target 'IJKLivePlayer' do
 end
 ```
 
-完整可运行Pods项目：[v2.2.0](http://repo.polyv.net/ios/download/livesdk-demo/2.2.0/polyv-ios-liveplayer.zip)
+完整可运行Pods项目：[v2.2.1](http://repo.polyv.net/ios/download/livesdk-demo/polyv-ios-liveplayer_2.2.1+180308.zip)
 
 ## Features
 
