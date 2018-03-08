@@ -44,15 +44,6 @@ extern NSString * const PLVLivePlayerWillExitFullScreenNotification;        // �
 // 设置播放器的channel信息
 - (void)setChannel:(PLVLiveChannel *)channel;
 
-/** 直播服务质量相关 设置额外参数，用来提交更多信息*/
-- (void)setParam1:(NSString *)param1;
-- (void)setParam2:(NSString *)param2;
-- (void)setParam3:(NSString *)param3;
-- (void)setParam4:(NSString *)param4;
-- (void)setParam5:(NSString *)param5;
-// 设置播放场次
-- (void)setSessionId:(NSString *)sessionId;
-
 // 播放器销毁前须调用
 - (void)clearPlayer;
 

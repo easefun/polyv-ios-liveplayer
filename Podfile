@@ -8,7 +8,7 @@ target 'IJKLivePlayer' do
     pod 'Masonry', '~> 1.1'
     pod 'MBProgressHUD', '~> 1.1.0'
     
-    pod 'PolyvLiveAPI', '~> 0.2.0'      # Polyv live api.
+    pod 'PolyvLiveAPI', '~> 0.3.0'      # Polyv live api.
     pod 'PolyvSocketAPI', '~> 0.3.0'    # Polyv socket.io api.
     pod 'PolyvIJKPlayer', '~> 0.0.3'    # Polyv ijkPlayer.
 end

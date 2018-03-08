@@ -16,6 +16,8 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 #define PlayerErrorDomain @"net.polyv.live"
 #define PlayerVersion @"iOS-livePlayerSDK2.3.0+180301"
 
+#define PLAY_MODE @"live"   // 统计后台live/vod
+
 @interface PLVLivePlayerController ()
 
 @property (nonatomic, strong) NSURL *contentURL;
@@ -42,13 +44,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     NSInteger _reportFreq;
     int _watchTimeDuration;
     int _stayTimeDuration;
-    // 自定义参数
-    NSString *_param1;
-    NSString *_param2;
-    NSString *_param3;
-    NSString *_param4;
-    NSString *_param5;
-    NSString *_sessionId;
 }
 
 #pragma mark - 初始化方法
@@ -470,7 +465,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     _isFirstLoadTimeSent = YES;
     
     double diffTime = [[NSDate date] timeIntervalSinceDate:_firstLoadStartDate];
-    [PLVLiveReporter reportLoading:_pid uid:self.channel.userId channelId:self.channel.channelId.stringValue time:(int)floor(diffTime*1000)  session_id:_sessionId param1:_param1 param2:_param2 param3:_param3 param4:_param4 param5:_param5];
+    [PLVLiveReporter reportLoadingWithChannel:self.channel pid:_pid time:(int)floor(diffTime*1000)];
 }
 
 - (void)reportSecondBuffer {
@@ -478,7 +473,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     _isSecondBufferTimeSent = YES;
     
     double diffTime = [[NSDate date] timeIntervalSinceDate:_secondBufferStartDate];
-    [PLVLiveReporter reportBuffer:_pid uid:self.channel.userId channelId:self.channel.channelId.stringValue time:(int)floor(diffTime*1000) session_id:_sessionId param1:_param1 param2:_param2 param3:_param3 param4:_param4 param5:_param5];
+    [PLVLiveReporter reportBufferWithChannel:self.channel pid:_pid time:(int)floor(diffTime*1000)];
 }
 
 // MARK: 播放出错分析报告
@@ -505,7 +500,8 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         }else {
             errorCode = @"other_error";             // 其他播放问题
         }
-        [PLVLiveReporter reportError:_pid uid:_channel.userId channelId:self.channel.channelId.stringValue session_id:_sessionId param1:_param1 param2:_param2 param3:_param3 param4:_param4 param5:_param5 uri:self.contentURL.absoluteString status:[NSString stringWithFormat:@"%ld",(long)responseCode] errorcode:errorCode errormsg:[NSString stringWithFormat:@"code:%ld,reason:%@",(long)playErr.code,playErr.localizedDescription]];
+        NSString *errormsg = [NSString stringWithFormat:@"code:%ld,reason:%@",(long)playErr.code,playErr.localizedDescription];
+        [PLVLiveReporter reportErrorWithChannel:self.channel pid:_pid uri:self.contentURL.absoluteString status:[NSString stringWithFormat:@"%ld",(long)responseCode] errorcode:errorCode errormsg:errormsg];
     }];
     [dataTask resume];
 }
@@ -515,35 +511,9 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     if (self.playbackState & IJKMPMoviePlaybackStatePlaying) {
         ++ _watchTimeDuration;
         if ( _watchTimeDuration%_reportFreq == 0) {
-            [PLVLiveReporter stat:_pid uid:self.channel.userId cid:self.channel.channelId.stringValue flow:0 pd:_watchTimeDuration sd:_stayTimeDuration cts:[self currentPlaybackTime] duration:[self duration]];
+            [PLVLiveReporter playStatusWithChannel:self.channel pid:_pid flow:0 pd:_watchTimeDuration sd:_stayTimeDuration param3:PLAY_MODE];
         }
     }
-}
-
-#pragma mark 设置额外提交的参数
-
-- (void)setParam1:(NSString *)param1 {
-    if (param1) _param1 = param1;
-}
-
-- (void)setParam2:(NSString *)param2 {
-    if (param2) _param2 = param2;
-}
-
-- (void)setParam3:(NSString *)param3 {
-    if (param3) _param3 = param3;
-}
-
-- (void)setParam4:(NSString *)param4 {
-    if (param4) _param4 = param4;
-}
-
-- (void)setParam5:(NSString *)param5 {
-    if (param5) _param5 = param5;
-}
-
-- (void)setSessionId:(NSString *)sessionId {
-    if (_sessionId) _sessionId = sessionId;
 }
 
 #pragma mark - 清除性操作

@@ -50,9 +50,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.userId = self.channel.userId;
-    self.channelId = self.channel.channelId.unsignedIntegerValue;
-    
+    [self configData];
     [self initPlayer];
     [self initSocketIO];
     [self configDanmu];
@@ -67,6 +65,13 @@
 }
 
 #pragma mark - initialize
+
+- (void)configData {
+    self.userId = self.channel.userId;
+    self.channelId = self.channel.channelId.unsignedIntegerValue;
+    // 配置统计后台参数
+    [PLVLiveConfig setViewLogParam:@"test userId" param2:@"test userNick" param4:nil param5:nil];
+}
 
 - (void)initPlayer {
     [IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];    // IJK日志输出等级
