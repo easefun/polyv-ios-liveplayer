@@ -30,7 +30,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 @end
 
 @implementation PLVLivePlayerController {
-    
     NSTimer *_liveStatusTimer;
     NSTimer *_playerPollingTimer;
     
@@ -46,7 +45,58 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     int _stayTimeDuration;
 }
 
-#pragma mark - 初始化方法
+#pragma mark - Property/rewrite
+
+- (void)play {
+    [super play];
+    [self.playerSkin addVideoInfoWithDescription:@"视频加载中..."];
+}
+
+- (PLVLivePlayerControllerSkin *)playerSkin {
+    if (!_playerSkin) {
+        _playerSkin = [[PLVLivePlayerControllerSkin alloc] init];
+    }
+    return _playerSkin;
+}
+
+- (void)setFrame:(CGRect)frame {
+    _frame = frame;
+    self.displayView.frame = frame;
+}
+
+- (void)setChannel:(PLVLiveChannel *)channel {
+    _channel = channel;
+    _reportFreq = channel.reportFreq.integerValue;
+}
+
+- (void)setStreamState:(PLVLiveStreamState)streamState {
+    switch (streamState) {
+        case PLVLiveStreamStateNoStream: {
+            //DLog("直播未在进行")
+            if (self.playerSkin.noLiveImageView.isHidden) {
+                [self.playerSkin.noLiveImageView setHidden:NO];
+                [self.playerSkin.indicatorView stopAnimating];
+                [self.playerSkin hideVideoInfo];
+                [self shutdown];    // 播放器停止
+            }
+        } break;
+        case PLVLiveStreamStateLive: {
+            //DLog("直播中")
+            if (!self.playerSkin.noLiveImageView.isHidden && self.playbackState == IJKMPMoviePlaybackStateStopped) {
+                [self.playerSkin.noLiveImageView setHidden:YES];
+                // 发送播放器重连通知
+                [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerReconnectNotification object:nil];
+            }
+        } break;
+        case PLVLiveStreamStateUnknown:
+            //DLog("直播状态未知")
+            break;
+        default: break;
+    }
+    _streamState = streamState;
+}
+
+#pragma mark - Initialization methods
 
 - (instancetype)initWithChannel:(PLVLiveChannel *)channel displayView:(UIView *)displayView playHLS:(BOOL)playHLS {
     if (playHLS) {
@@ -66,7 +116,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 }
 
 - (instancetype)initWithContentURLString:(NSString *)aUrlString displayView:(UIView *)displayView {
-    
     NSURL *aUrl = [NSURL URLWithString:aUrlString];
     return [self initWithContentURL:aUrl displayView:displayView];
 }
@@ -76,10 +125,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     self.contentURL = aUrl;
     _firstLoadStartDate = [NSDate date];
     
-    // 此处可配置初始化IJK播放器的选项
     IJKFFOptions *options = [IJKFFOptions optionsByDefault];
-    /** FFmpeg 参数配置*/
-    // 打开硬解
     [options setPlayerOptionIntValue:1 forKey:@"videotoolbox"];
     // 视频处理不及时时丢帧处理
     [options setPlayerOptionIntValue:5 forKey:@"framedrop"];
@@ -91,7 +137,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     //[options setFormatOptionIntValue:3 forKey:@"reconnect"];
     
     self = [super initWithContentURL:aUrl withOptions:options];
-    
     if (self) {
         [PLVLiveConfig setPlayerVersion:PlayerVersion];
         [[PLVLiveConfig sharedInstance] resetPlayerId];
@@ -121,21 +166,17 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         [self setScalingMode:IJKMPMovieScalingModeAspectFit];
         //[self setPauseInBackground:NO];   // 后台播放模式(后台音频输出，还需在工程中打开后台音乐权限UIBackgroundModes：Audio，Airplay...)
     
-        // 添加手势事件
         [self addGestureActions];
-        // 添加定时器事件
         [self addTimerEvents];
         
-        // 开启活动指示器
         [self.playerSkin.indicatorView startAnimating];
         
         [self.playerSkin addVideoInfoWithDescription:@"播放器初始化完成"];
     }
-    
     return self;
 }
 
-#pragma mark - 初始化配置
+#pragma mark - Initial configuration
 
 - (void)configObservers {
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
@@ -174,21 +215,20 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     _playerPollingTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self
                                                          selector:@selector(playerPollingTimerTick) userInfo:nil repeats:YES];
     [_liveStatusTimer fire];
-    // 超时未加载出视频逻辑
+    // timeout logic
 }
 
-#pragma mark - 播放器通知内部方法处理
+#pragma mark - Notifications
 
+#pragma mark player
 // -----------------------------------------------------------------------------
 // Movie Property Notifications
-
 - (void)movieNaturalSizeAvailable:(NSNotification *)notification {
     DLog("获取到视频信息")
 }
 
 // -----------------------------------------------------------------------------
 //  MPMediaPlayback.h
-
 - (void)mediaPlaybackIsPreparedToPlay:(NSNotification *)notification {
     [self.playerSkin addVideoInfoWithDescription:@"视频即将播放"];
 }
@@ -268,8 +308,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     DLog()
 }
 
-#pragma mark - 旋屏通知
-
+#pragma mark device rotation
 - (void)deviceOrientationDidChange {
     UIInterfaceOrientation interfaceOrientation = (UIInterfaceOrientation)[[UIDevice currentDevice] orientation];
     switch (interfaceOrientation) {
@@ -288,7 +327,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 #pragma mark - 播放器点击事件处理
 
 - (void)returnButtonClick {
-    
     if (CGRectEqualToRect(self.view.frame, [UIScreen mainScreen].bounds)) {
         // 当前控制器旋转至竖屏
         [self setOrientation:UIInterfaceOrientationPortrait];
@@ -325,7 +363,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 }
 
 - (void)smallScreenButtonClick {
-    
     // 当前控制器旋转至竖屏
     [self setOrientation:UIInterfaceOrientationPortrait];
     
@@ -340,9 +377,9 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     }
 }
 
-#pragma mark - 外部接口方法
+#pragma mark - Public methods
+// set title、screen rotation notification/callback、fullscreen style
 
-// 设置标题；旋屏通知/回调；直接全屏样式
 + (NSArray *)getSDKVersion {
     return @[PlayerVersion];
 }
@@ -351,64 +388,25 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     [self.playerSkin insertSubview:danmuView belowSubview:self.playerSkin.topBar];
 }
 
-#pragma mark - 重写
-
-- (void)play {
-    [super play];
-    [self.playerSkin addVideoInfoWithDescription:@"视频加载中..."];
-}
-
-- (PLVLivePlayerControllerSkin *)playerSkin {
-    if (!_playerSkin) {
-        _playerSkin = [[PLVLivePlayerControllerSkin alloc] init];
+- (void)clearPlayer {
+    if (_liveStatusTimer) {
+        [_liveStatusTimer invalidate];
+        _liveStatusTimer = nil;
     }
-    return _playerSkin;
+    if (_playerPollingTimer) {
+        [_playerPollingTimer invalidate];
+        _playerPollingTimer = nil;
+    }
+    @try {
+        [self shutdown];
+        [self.view removeFromSuperview];
+    } @catch (NSException *exception) {
+        DLog("shutdown failure, exception name: %@, exception reason: %@",exception.name,exception.reason)
+    }
 }
 
-- (void)setFrame:(CGRect)frame {
-    _frame = frame;
-    self.displayView.frame = frame;
-}
+#pragma mark - Private methods
 
-- (void)setChannel:(PLVLiveChannel *)channel {
-    _channel = channel;
-    _reportFreq = channel.reportFreq.integerValue;
-}
-
-- (void)setStreamState:(PLVLiveStreamState)streamState {
-    switch (streamState) {
-        case PLVLiveStreamStateNoStream: {
-            DLog("直播未在进行")
-            if (self.playerSkin.noLiveImageView.isHidden) {
-                [self.playerSkin.noLiveImageView setHidden:NO];
-                [self.playerSkin.indicatorView stopAnimating];
-                [self.playerSkin hideVideoInfo];
-                [self shutdown];    // 播放器停止
-            }
-        }
-            break;
-        case PLVLiveStreamStateLive: {
-            DLog("直播中")
-            if (!self.playerSkin.noLiveImageView.isHidden && self.playbackState == IJKMPMoviePlaybackStateStopped) {
-                [self.playerSkin.noLiveImageView setHidden:YES];
-                // 发送播放器重连通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerReconnectNotification object:nil];
-            }
-        }
-            break;
-        case PLVLiveStreamStateUnknown:
-            DLog("直播状态未知")
-            break;
-        default:
-            break;
-        }
-    // 最后改变流状态
-    _streamState = streamState;
-}
-
-#pragma mark - 私有方法
-
-// 定时检查直播状态
 - (void)onTimeCheckLiveStreamState {
     [PLVLiveAPI isLiveWithStream:self.channel.stream completion:^(PLVLiveStreamState streamState) {
         [self setStreamState:streamState];
@@ -417,7 +415,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     }];
 }
 
-// 设置屏幕旋转方向
 - (void)setOrientation:(UIInterfaceOrientation)orientation {
     if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)]) {
         SEL selector = NSSelectorFromString(@"setOrientation:");
@@ -430,7 +427,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     }
 }
 
-// 设置横屏样式
 - (void)setOrientationLandscape {
     [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerWillChangeToFullScreenNotification object:self];    // 发送全屏通知
     [UIView animateWithDuration:0.3 animations:^{
@@ -443,7 +439,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     }];
 }
 
-// 设置竖屏样式
 - (void)setOrientationPortrait {
     [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerWillExitFullScreenNotification object:self];    // 发送退出全屏通知
     [UIView animateWithDuration:0.3 animations:^{
@@ -455,7 +450,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     }];
 }
 
-#pragma mark - 直播服务质量统计
+#pragma mark - 直播服务质量统计Qos/ViewLog
 
 - (void)reportFirstLoading {
     if (_isFirstLoadTimeSent) {
@@ -476,13 +471,12 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     [PLVLiveReporter reportBufferWithChannel:self.channel pid:_pid time:(int)floor(diffTime*1000)];
 }
 
-// MARK: 播放出错分析报告
 - (void)playbackFailureAnalysis {
     if (_isPlayerErrorSend) return;
     _isPlayerErrorSend = YES;
     
     NSURLRequest *request = [NSURLRequest requestWithURL:self.contentURL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:20.0];
-    NSURLSessionDataTask *dataTask = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         NSInteger responseCode = [(NSHTTPURLResponse *)response statusCode];    // 服务器响应的状态码
         NSString *errorCode = [NSString new];                                   // 播放错误代码
         NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"null" forKey:NSLocalizedDescriptionKey];
@@ -502,8 +496,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         }
         NSString *errormsg = [NSString stringWithFormat:@"code:%ld,reason:%@",(long)playErr.code,playErr.localizedDescription];
         [PLVLiveReporter reportErrorWithChannel:self.channel pid:_pid uri:self.contentURL.absoluteString status:[NSString stringWithFormat:@"%ld",(long)responseCode] errorcode:errorCode errormsg:errormsg];
-    }];
-    [dataTask resume];
+    }] resume];
 }
 
 - (void)playerPollingTimerTick {
@@ -516,27 +509,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     }
 }
 
-#pragma mark - 清除性操作
-
-// 播放器销毁前须调用
-- (void)clearPlayer {
-    if (_liveStatusTimer) {
-        [_liveStatusTimer invalidate];
-        _liveStatusTimer = nil;
-    }
-    if (_playerPollingTimer) {
-        [_playerPollingTimer invalidate];
-        _playerPollingTimer = nil;
-    }
-    @try {
-        [self shutdown];
-        [self.view removeFromSuperview];
-    } @catch (NSException *exception) {
-        DLog("shutdown failure, exception name: %@, exception reason: %@",exception.name,exception.reason)
-    }
-}
-
-
+#pragma mark - dealloc
 - (void)dealloc {
     DLog()
     

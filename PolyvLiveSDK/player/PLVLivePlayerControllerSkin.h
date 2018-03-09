@@ -32,7 +32,7 @@
 @property (nonatomic, strong, readonly) UIButton *fullScreenButton;
 @property (nonatomic, strong, readonly) UIButton *smallScreenButton;
 
-// 无直播背景占位图
+/// 无直播背景占位图
 @property (nonatomic, strong, readonly) UIImageView *noLiveImageView;
 
 @property (nonatomic, strong, readonly) UIActivityIndicatorView *indicatorView;
@@ -43,8 +43,15 @@
 - (void)changeToFullScreen;
 - (void)changeToSmallScreen;
 
-// 添加videoInfo 时会显示videoInfo 的视图；隐藏时会删除内容
+/**
+ 添加视频信息视图
+ @discussion 添加时会显示 videoInfo 视图
+ */
 - (void)addVideoInfoWithDescription:(NSString *)description;
+
+/**
+ 隐藏/删除视频信息视图
+ */
 - (void)hideVideoInfo;
 
 @end

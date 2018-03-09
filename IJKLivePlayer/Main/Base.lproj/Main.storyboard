@@ -41,8 +41,8 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="© 2010-2016 广州易方信息科技有限公司 版权所有" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WCy-Le-jP1">
-                                <rect key="frame" x="48.5" y="621" width="278.5" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="© 2013-2018 广州易方信息科技股份有限公司 版权所有" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WCy-Le-jP1">
+                                <rect key="frame" x="36.5" y="621" width="303" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="CiO-S7-PiY"/>
                                 </constraints>
@@ -95,6 +95,7 @@
                             <constraint firstItem="bcV-yU-NHi" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="8GJ-ke-UHQ"/>
                             <constraint firstItem="xpv-Gz-rXX" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="11.5" id="91o-dn-kUH"/>
                             <constraint firstItem="r44-EB-UCd" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="12" id="Dww-QW-h4d"/>
+                            <constraint firstItem="baV-eL-vGR" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="20" symbolic="YES" id="FaN-P1-CAa"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" relation="greaterThanOrEqual" secondItem="r44-EB-UCd" secondAttribute="bottom" constant="180" id="M6V-wB-8VJ"/>
                             <constraint firstItem="xpv-Gz-rXX" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XGS-dK-H80"/>
                             <constraint firstItem="bcV-yU-NHi" firstAttribute="top" secondItem="xpv-Gz-rXX" secondAttribute="bottom" constant="11" id="Xju-PT-gWr"/>

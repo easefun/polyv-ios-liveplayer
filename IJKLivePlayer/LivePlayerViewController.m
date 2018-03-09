@@ -69,12 +69,12 @@
 - (void)configData {
     self.userId = self.channel.userId;
     self.channelId = self.channel.channelId.unsignedIntegerValue;
-    // 配置统计后台参数
-    [PLVLiveConfig setViewLogParam:@"test userId" param2:@"test userNick" param4:nil param5:nil];
+    // 配置统计后台参数：用户Id、用户昵称、自定义参数4、自定义参数5
+    [PLVLiveConfig setViewLogParam:nil param2:nil param4:nil param5:nil];
 }
 
 - (void)initPlayer {
-    [IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];    // IJK日志输出等级
+    //[IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];    // IJK日志输出等级
     
     self.livePlayer = [self getLivePlayer];
     [self.livePlayer prepareToPlay];
@@ -99,6 +99,9 @@
         [PLVLiveManager sharedLiveManager].login = self.login;
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         NSLog(@"获取Socket授权失败:%ld,%@",errorCode,description);
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"聊天室连接失败" message:[NSString stringWithFormat:@"错误码:%ld, 信息:%@",errorCode,description] preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alertController animated:YES completion:nil];
     }];
 }
 

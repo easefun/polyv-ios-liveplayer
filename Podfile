@@ -10,7 +10,7 @@ target 'IJKLivePlayer' do
     
     pod 'PolyvLiveAPI', '~> 0.3.0'      # Polyv live api.
     pod 'PolyvSocketAPI', '~> 0.3.0'    # Polyv socket.io api.
-    pod 'PolyvIJKPlayer', '~> 0.0.3'    # Polyv ijkPlayer.
+    pod 'PolyvIJKPlayer', '~> 0.1.0'    # Polyv ijkPlayer.
 end
 
 # 以下设置 Pods 子 Target 的 Swift 版本为 4.0
