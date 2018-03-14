@@ -21,11 +21,13 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 @interface PLVLivePlayerController ()
 
 @property (nonatomic, strong) NSURL *contentURL;
-
 @property (nonatomic, strong) PLVLivePlayerControllerSkin *playerSkin;
 
 @property (nonatomic, weak) UIView *displayView;    // 引用外部的显示层
 @property (nonatomic, assign) CGRect originFrame;   // 初始设置的frame
+
+@property (nonatomic, getter=isShowCover) BOOL showCover;
+@property (nonatomic, strong) IJKFFMoviePlayerController *subPlayer;
 
 @end
 
@@ -70,28 +72,19 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 }
 
 - (void)setStreamState:(PLVLiveStreamState)streamState {
-    switch (streamState) {
-        case PLVLiveStreamStateNoStream: {
-            //DLog("直播未在进行")
-            if (self.playerSkin.noLiveImageView.isHidden) {
-                [self.playerSkin.noLiveImageView setHidden:NO];
-                [self.playerSkin.indicatorView stopAnimating];
-                [self.playerSkin hideVideoInfo];
-                [self shutdown];    // 播放器停止
-            }
-        } break;
-        case PLVLiveStreamStateLive: {
-            //DLog("直播中")
-            if (!self.playerSkin.noLiveImageView.isHidden && self.playbackState == IJKMPMoviePlaybackStateStopped) {
-                [self.playerSkin.noLiveImageView setHidden:YES];
-                // 发送播放器重连通知
-                [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerReconnectNotification object:nil];
-            }
-        } break;
-        case PLVLiveStreamStateUnknown:
-            //DLog("直播状态未知")
-            break;
-        default: break;
+    if (streamState == PLVLiveStreamStateNoStream) {
+        if (self.playerSkin.noLiveImageView.isHidden) {
+            [self.playerSkin.noLiveImageView setHidden:NO];
+            [self.playerSkin.indicatorView stopAnimating];
+            [self.playerSkin hideVideoInfo];
+            [self shutdown];    // 播放器停止
+        }
+        if (_streamState == PLVLiveStreamStateLive) {
+            [self playWithCover];
+        }
+    }else if (streamState == PLVLiveStreamStateLive && _streamState == PLVLiveStreamStateNoStream) {
+        [self.playerSkin.noLiveImageView setHidden:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerReconnectNotification object:nil];
     }
     _streamState = streamState;
 }
@@ -143,6 +136,9 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         _pid = [PLVLiveConfig sharedInstance].playerId;
         
         [self prepareToPlay];
+        [self setShouldAutoplay:YES];
+        [self setScalingMode:IJKMPMovieScalingModeAspectFit];
+        //[self setPauseInBackground:NO];   // 后台播放模式(后台音频输出，还需在工程中打开后台音乐权限UIBackgroundModes：Audio，Airplay...)
         
         self.displayView = displayView;
         self.originFrame = displayView.bounds;
@@ -159,18 +155,11 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         [self.view addSubview:self.playerSkin];
         
         [self addPlayerSkinActions];
-        
         [self configObservers];
-        
-        [self setShouldAutoplay:YES];
-        [self setScalingMode:IJKMPMovieScalingModeAspectFit];
-        //[self setPauseInBackground:NO];   // 后台播放模式(后台音频输出，还需在工程中打开后台音乐权限UIBackgroundModes：Audio，Airplay...)
-    
         [self addGestureActions];
         [self addTimerEvents];
         
         [self.playerSkin.indicatorView startAnimating];
-        
         [self.playerSkin addVideoInfoWithDescription:@"播放器初始化完成"];
     }
     return self;
@@ -180,17 +169,17 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 
 - (void)configObservers {
     NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-    [defaultCenter addObserver:self selector:@selector(movieNaturalSizeAvailable:) name:IJKMPMovieNaturalSizeAvailableNotification object:nil];
+    [defaultCenter addObserver:self selector:@selector(movieNaturalSizeAvailable:) name:IJKMPMovieNaturalSizeAvailableNotification object:self];
     
-    [defaultCenter addObserver:self selector:@selector(mediaPlaybackIsPreparedToPlay:) name:IJKMPMediaPlaybackIsPreparedToPlayDidChangeNotification object:nil];
+    [defaultCenter addObserver:self selector:@selector(mediaPlaybackIsPreparedToPlay:) name:IJKMPMediaPlaybackIsPreparedToPlayDidChangeNotification object:self];
     
-    [defaultCenter addObserver:self selector:@selector(moviePlayerLoadStateDidChange:) name:IJKMPMoviePlayerLoadStateDidChangeNotification object:nil];
-    [defaultCenter addObserver:self selector:@selector(moviePlayerPlaybackStateDidChange:) name:IJKMPMoviePlayerPlaybackStateDidChangeNotification object:nil];
-    [defaultCenter addObserver:self selector:@selector(moviePlayerPlaybackDidFinish:) name:IJKMPMoviePlayerPlaybackDidFinishNotification object:nil];
+    [defaultCenter addObserver:self selector:@selector(moviePlayerLoadStateDidChange:) name:IJKMPMoviePlayerLoadStateDidChangeNotification object:self];
+    [defaultCenter addObserver:self selector:@selector(moviePlayerPlaybackStateDidChange:) name:IJKMPMoviePlayerPlaybackStateDidChangeNotification object:self];
+    [defaultCenter addObserver:self selector:@selector(moviePlayerPlaybackDidFinish:) name:IJKMPMoviePlayerPlaybackDidFinishNotification object:self];
     
-    [defaultCenter addObserver:self selector:@selector(moviePlayerVideoDecoderOpen:) name:IJKMPMoviePlayerVideoDecoderOpenNotification object:nil];
-    [defaultCenter addObserver:self selector:@selector(moviePlayerFirstVideoFrameRendered:) name:IJKMPMoviePlayerFirstVideoFrameRenderedNotification object:nil];
-    [defaultCenter addObserver:self selector:@selector(moviePlayerFirstAudioFrameRendered:) name:IJKMPMoviePlayerFirstAudioFrameRenderedNotification object:nil];
+    [defaultCenter addObserver:self selector:@selector(moviePlayerVideoDecoderOpen:) name:IJKMPMoviePlayerVideoDecoderOpenNotification object:self];
+    //[defaultCenter addObserver:self selector:@selector(moviePlayerFirstVideoFrameRendered:) name:IJKMPMoviePlayerFirstVideoFrameRenderedNotification object:self];
+    //[defaultCenter addObserver:self selector:@selector(moviePlayerFirstAudioFrameRendered:) name:IJKMPMoviePlayerFirstAudioFrameRenderedNotification object:self];
     
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [defaultCenter addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -274,22 +263,19 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
             DLog("IJKMPMovieFinishReasonPlaybackEnded")
             [self.playerSkin.playButton setHidden:NO];
             [self.playerSkin.pauseButton setHidden:YES];
-        }
-            break;
+        } break;
         case IJKMPMovieFinishReasonPlaybackError: {
             DLog("IJKMPMovieFinishReasonPlaybackError")
             [self.playerSkin addVideoInfoWithDescription:@"出错啦~"];
             [self.playerSkin.indicatorView stopAnimating];
+            // 重连通知只能在Error类型下，end下可能播放完但还没获取到流状态 TODO：重试次数限制
+            [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerReconnectNotification object:nil];
             [self playbackFailureAnalysis];   // 播放器出错分析
-        }
-            break;
+        } break;
         case IJKMPMovieFinishReasonUserExited: {
             DLog("IJKMPMovieFinishReasonUserExited")
-        }
-            break;
-            
-        default:
-            break;
+        } break;
+        default: break;
     }
 }
 
@@ -315,7 +301,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         case UIInterfaceOrientationPortrait:
             [self setOrientationPortrait];
             break;
-            
         case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight:
             [self setOrientationLandscape];
@@ -370,15 +355,34 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 }
 
 - (void)screenBeClicked {
-    if (self.playerSkin.isSkinShowing) {
-        [self.playerSkin animateHideSkin];
+    if (self.isShowCover) {
+        if (self.coverImageBeClickedBlcok && self.channel.coverHref) {
+            self.coverImageBeClickedBlcok(self.channel.coverHref);
+        }
     }else {
-        [self.playerSkin animateShowSkin];
+        if (self.playerSkin.isSkinShowing) {
+            [self.playerSkin animateHideSkin];
+        }else {
+            [self.playerSkin animateShowSkin];
+        }
     }
 }
 
 #pragma mark - Public methods
 // set title、screen rotation notification/callback、fullscreen style
+
+ /// 播放暖场（视频/图片）
+- (void)playWithCover {
+    if (self.channel) {
+        self.showCover = YES;
+        if (self.channel.coverType == PLVLiveCoverTypeImage) {
+            [self playWithImageCover];
+        }else if (self.channel.coverType == PLVLiveCoverTypeVideo) {
+            [self playWithVideoCover];
+        }else {
+        }
+    }
+}
 
 + (NSArray *)getSDKVersion {
     return @[PlayerVersion];
@@ -389,6 +393,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 }
 
 - (void)clearPlayer {
+    [self clearSubPlayer];
     if (_liveStatusTimer) {
         [_liveStatusTimer invalidate];
         _liveStatusTimer = nil;
@@ -405,7 +410,76 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     }
 }
 
+#pragma mark - SubPlayer
+
+- (void)clearSubPlayer {
+    if (self.subPlayer) {
+        [self.subPlayer shutdown];
+        [self.subPlayer.view removeFromSuperview];
+    }
+}
+
 #pragma mark - Private methods
+
+- (void)playWithImageCover {
+    __weak typeof(self)weakSelf = self;
+    [[[NSURLSession sharedSession] dataTaskWithURL:[NSURL URLWithString:self.channel.coverUrl] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        if (error) {
+            [self.playerSkin addVideoInfoWithDescription:@"暖场图片请求失败"];
+            NSLog(@"暖场图片请求失败，%@",error);
+        }else if ([httpResponse statusCode] == 200){
+            UIImage *coverImg = [UIImage imageWithData:data];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIImageView *coverView = [[UIImageView alloc] initWithImage:coverImg];
+                coverView.frame = weakSelf.playerSkin.noLiveImageView.bounds;
+                coverView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+                [weakSelf.playerSkin.noLiveImageView addSubview:coverView];
+                [weakSelf.playerSkin.bottomBar setHidden:YES];
+            });
+        }else {
+            NSString *errDesc =[NSString stringWithFormat:@"暖场图片请求失败，响应非200 %ld",httpResponse.statusCode];
+            [self.playerSkin addVideoInfoWithDescription:errDesc];
+            NSLog(@"%@",errDesc);
+        }
+    }] resume];
+}
+
+- (void)playWithVideoCover {
+    if (self.channel.coverUrl) {
+        IJKFFOptions *options = [IJKFFOptions optionsByDefault];
+        [options setPlayerOptionIntValue:0 forKey:@"loop"];
+        [options setPlayerOptionIntValue:1 forKey:@"videotoolbox"];
+        [options setCodecOptionIntValue:IJK_AVDISCARD_DEFAULT forKey:@"skip_frame"];
+        [options setCodecOptionIntValue:IJK_AVDISCARD_DEFAULT forKey:@"skip_loop_filter"];
+        self.subPlayer = [[IJKFFMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:self.channel.coverUrl] withOptions:options];
+        self.subPlayer.view.frame = self.playerSkin.noLiveImageView.bounds;
+        self.subPlayer.view.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+        [self.playerSkin.noLiveImageView addSubview:self.subPlayer.view];
+        
+        self.subPlayer.scalingMode = IJKMPMovieScalingModeAspectFit;
+        self.subPlayer.shouldAutoplay = YES;
+        self.subPlayer.allowsMediaAirPlay = NO;
+        [self.subPlayer prepareToPlay];
+        [self.subPlayer play];
+        
+        [self.playerSkin.bottomBar setHidden:YES];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(subPlayerDidFinish:) name:IJKMPMoviePlayerPlaybackDidFinishNotification object:self.subPlayer];
+    }
+}
+
+- (void)subPlayerDidFinish:(NSNotification *)notification {
+    DLog()
+    NSDictionary *dict = [notification userInfo];
+    NSNumber *finishReason =  dict[IJKMPMoviePlayerPlaybackDidFinishReasonUserInfoKey];
+    if (finishReason.integerValue == IJKMPMovieFinishReasonPlaybackError) {
+        [self.playerSkin addVideoInfoWithDescription:@"暖场视频播放失败"];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self.playerSkin hideVideoInfo];
+        });
+    }
+}
 
 - (void)onTimeCheckLiveStreamState {
     [PLVLiveAPI isLiveWithStream:self.channel.stream completion:^(PLVLiveStreamState streamState) {

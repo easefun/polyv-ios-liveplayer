@@ -26,16 +26,18 @@ extern NSString * const PLVLivePlayerWillExitFullScreenNotification;        // �
 @property (nonatomic, assign, readonly) CGRect frame;
 /// 当前的资源地址
 @property (nonatomic, strong, readonly) NSURL *contentURL;
-/// 当期的直播流状态
+/// 当前的直播流状态
 @property (nonatomic, assign, readonly) PLVLiveStreamState streamState;
 
-/** 播放器点击事件回调*/
+/** 播放器交互事件回调*/
 // ^returnButtonClickBlcok：小屏状态下点击reture按钮才会触发，全屏状态下点击return则回到小屏状态
 @property (nonatomic, copy) void(^returnButtonClickBlcok)(void);
 @property (nonatomic, copy) void(^playButtonClickBlcok)(void);
 @property (nonatomic, copy) void(^pauseButtonClickBlcok)(void);
 @property (nonatomic, copy) void(^fullScreenButtonClickBlcok)(void);
 @property (nonatomic, copy) void(^smallScreenButtonClickBlcok)(void);
+/// 暖场图片被点击的回调
+@property (nonatomic, copy) void(^coverImageBeClickedBlcok)(NSString *coverHref);
 
 /**
  初始化方法 默认拉流地址为FLV 格式
@@ -50,6 +52,11 @@ extern NSString * const PLVLivePlayerWillExitFullScreenNotification;        // �
  设置播放器的channel信息
  */
 - (void)setChannel:(PLVLiveChannel *)channel;
+
+/**
+ 播放暖场（视频/图片）
+ */
+- (void)playWithCover;
 
 /**
  播放器销毁前须调用

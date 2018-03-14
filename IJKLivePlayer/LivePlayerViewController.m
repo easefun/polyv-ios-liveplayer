@@ -39,6 +39,7 @@
 @property (nonatomic, strong) PLVChatroomController *privateChatController; // 咨询提问聊天室(房间内私有聊天)
 
 @property (nonatomic, strong) NSString *userId;
+@property (nonatomic, strong) NSString *stream;
 @property (nonatomic, assign) NSUInteger channelId;
 
 @end
@@ -68,6 +69,7 @@
 
 - (void)configData {
     self.userId = self.channel.userId;
+    self.stream = self.channel.stream;
     self.channelId = self.channel.channelId.unsignedIntegerValue;
     // 配置统计后台参数：用户Id、用户昵称、自定义参数4、自定义参数5
     [PLVLiveConfig setViewLogParam:nil param2:nil param4:nil param5:nil];
@@ -77,10 +79,18 @@
     //[IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];    // IJK日志输出等级
     
     self.livePlayer = [self getLivePlayer];
-    [self.livePlayer prepareToPlay];
-    [self.livePlayer play];
-    
     [self configObservers];
+    
+    __weak typeof(self)weakSelf = self;
+    [PLVLiveAPI getStreamStatusWithChannelId:self.channelId stream:self.stream completion:^(PLVLiveStreamState streamState, NSString *mode) {
+        if (streamState == PLVLiveStreamStateNoStream) {
+            [weakSelf.livePlayer playWithCover];
+        }else {
+            [weakSelf.livePlayer play];
+        }
+    } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
+        [weakSelf.livePlayer play];
+    }];
 }
 
 - (void)initSocketIO {
@@ -179,6 +189,9 @@
     [_livePlayer setSmallScreenButtonClickBlcok:^{
         NSLog(@"小屏按钮点击了...");
     }];
+    [_livePlayer setCoverImageBeClickedBlcok:^(NSString *coverHref) {
+        NSLog(@"点击了暖场图片，链接：%@",coverHref);
+    }];
 }
 
 #pragma mark - notifications
@@ -196,7 +209,7 @@
         [hud hideAnimated:YES];
         
         weakSelf.livePlayer = [weakSelf getLivePlayer];
-        [weakSelf.livePlayer prepareToPlay];
+        //[weakSelf.livePlayer prepareToPlay];
         [weakSelf.livePlayer play];
         // 如果弹幕存在的话就重新插入弹幕层
         if (weakSelf.danmuLayer) {
