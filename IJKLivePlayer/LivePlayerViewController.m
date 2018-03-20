@@ -252,7 +252,7 @@
         // 初始化一个播放器显示层，用于显示直播内容（默认为竖屏模式，横屏模式需要按需修改）
         _displayView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, width*3.0/4.0)];
         _displayView.backgroundColor = [UIColor blackColor];
-        _displayView.layer.contents = (id)[UIImage imageNamed:PLAYER_BACKGROUND].CGImage;  // 播放器背景图
+        //_displayView.layer.contents = (id)[UIImage imageNamed:PLAYER_BACKGROUND].CGImage;  // 播放器背景图
         [self.view addSubview:_displayView];
     }
     return _displayView;

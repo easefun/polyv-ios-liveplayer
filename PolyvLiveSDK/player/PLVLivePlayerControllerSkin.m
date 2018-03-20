@@ -11,7 +11,6 @@
 
 #define BACKCOLOR [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7]
 
-
 @interface PLVLivePlayerControllerSkin ()
 
 @property (nonatomic, assign) BOOL isSkinShowing;
@@ -67,50 +66,41 @@
         make.leading.top.trailing.equalTo(self);
         make.height.mas_equalTo(60);
     }];
-    
     [self.bottomBar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.bottom.trailing.equalTo(self);
         make.height.mas_equalTo(50);
     }];
-    
     [self.indicatorView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.equalTo(self);
     }];
-    
     [self.videoInfoContainer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self).offset(10);
         make.bottom.equalTo(self.bottomBar.mas_top);
         make.width.mas_equalTo(130);
         make.height.mas_equalTo(100);
     }];
-    
     [self.noLiveImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self);
     }];
     
     // 上下边栏 ---------------------------------------------------
-    
     [self.returnButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(50);
         make.leading.equalTo(self.topBar);
         make.top.equalTo(self.topBar).offset(10);
     }];
-    
     [self.pauseButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(50);
         make.leading.bottom.equalTo(self.bottomBar);
     }];
-    
     [self.playButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(50);
         make.leading.bottom.equalTo(self.bottomBar);
     }];
-    
     [self.fullScreenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(50);
         make.bottom.trailing.equalTo(self.bottomBar);
     }];
-    
     [self.smallScreenButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(50);
         make.bottom.trailing.equalTo(self.bottomBar);
@@ -148,7 +138,6 @@
 - (void)changeToSmallScreen {
     //[self.topBar setBackgroundColor:[UIColor clearColor]];
 }
-
 
 - (void)addVideoInfoWithDescription:(NSString *)description {
     self.videoInfoContainer.alpha = 1.0;
@@ -193,7 +182,7 @@
 
 - (UIImageView *)noLiveImageView {
     if (!_noLiveImageView) {
-        _noLiveImageView = [[UIImageView alloc] initWithImage:[self playerSkinImageName:NOLIVEIMAGE]];
+        _noLiveImageView = [[UIImageView alloc] initWithImage:[self playerSkinImageName:NOLIVE_BG_IMAGE]];
         [_noLiveImageView setContentMode:UIViewContentModeScaleAspectFit];
         [_noLiveImageView setBackgroundColor:[UIColor blackColor]];
         _noLiveImageView.hidden = YES;
@@ -279,8 +268,7 @@
 
 #pragma mark - Private Method
 
-- (UIImage *)playerSkinImageName:(NSString *)name
-{
+- (UIImage *)playerSkinImageName:(NSString *)name {
     NSString *imageName = [@"PLVLivePlayerSkin.bundle" stringByAppendingPathComponent:name];
     return [UIImage imageNamed:imageName];
 }

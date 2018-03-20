@@ -14,7 +14,7 @@ NSString * const PLVLivePlayerWillChangeToFullScreenNotification = @"PLVLivePlay
 NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWillExitFullScreenNotification";
 
 #define PlayerErrorDomain @"net.polyv.live"
-#define PlayerVersion @"iOS-livePlayerSDK2.3.0+180301"
+#define PlayerVersion @"iOS-livePlayerSDK2.3.0+180320"
 
 #define PLAY_MODE @"live"   // 统计后台live/vod
 
@@ -120,14 +120,16 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     
     IJKFFOptions *options = [IJKFFOptions optionsByDefault];
     [options setPlayerOptionIntValue:1 forKey:@"videotoolbox"];
-    // 视频处理不及时时丢帧处理
+    [options setCodecOptionIntValue:IJK_AVDISCARD_DEFAULT forKey:@"skip_frame"];
+    [options setCodecOptionIntValue:IJK_AVDISCARD_DEFAULT forKey:@"skip_loop_filter"];
+    // drop frames when cpu is too slow
     [options setPlayerOptionIntValue:5 forKey:@"framedrop"];
+    // don't limit the input buffer size (useful with realtime streams)
+    [options setPlayerOptionIntValue:1 forKey:@"infbuf"]; // 无限读
     // specify how many microseconds are analyzed to probe the input (from 0 to I64_MAX)
-    [options setFormatOptionValue:@"500000" forKey:@"analyzeduration"];
+    [options setFormatOptionValue:@"500000" forKey:@"analyzeduration"]; // 播放前的探测时间
     // set probing size (from 32 to I64_MAX)
-    [options setFormatOptionValue:@"4096" forKey:@"probesize"];
-    //[options setFormatOptionValue:@"nobuffer" forKey:@"fflags"];
-    //[options setFormatOptionIntValue:3 forKey:@"reconnect"];
+    [options setFormatOptionValue:@"4096" forKey:@"probesize"]; // 播放前的探测Size，默认是1M
     
     self = [super initWithContentURL:aUrl withOptions:options];
     if (self) {

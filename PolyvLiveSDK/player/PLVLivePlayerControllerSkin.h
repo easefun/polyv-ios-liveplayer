@@ -12,11 +12,10 @@
 #   define DLog(...)
 #endif
 
-#define NOLIVEIMAGE @"plv_nolive"           // 播放器无直播背景占位图地址
-//#define RESTRICTIMAGE @"plv_xxxxxx"       // 人数超限背景占位图地址
+#define NOLIVE_BG_IMAGE @"plv_nolive"   // 播放器无直播背景占位图
+#define RESTRICT_BG_IMAGE @"plv_xxxx"   // 人数超限背景占位图
 
 #import <UIKit/UIKit.h>
-
 
 @interface PLVLivePlayerControllerSkin : UIView
 
