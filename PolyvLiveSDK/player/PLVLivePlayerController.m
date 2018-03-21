@@ -377,6 +377,9 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 - (void)playWithCover {
     if (self.channel) {
         self.showCover = YES;
+        if (!self.playerSkin.isSkinShowing) {
+            [self.playerSkin animateShowSkin];
+        }
         if (self.channel.coverType == PLVLiveCoverTypeImage) {
             [self playWithImageCover];
         }else if (self.channel.coverType == PLVLiveCoverTypeVideo) {
