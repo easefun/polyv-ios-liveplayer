@@ -83,7 +83,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
             [self playWithCover];
         }
     }else if (streamState == PLVLiveStreamStateLive && _streamState == PLVLiveStreamStateNoStream) {
-        [self.playerSkin.noLiveImageView setHidden:YES];
+        //[self.playerSkin.noLiveImageView setHidden:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerReconnectNotification object:nil];
     }
     _streamState = streamState;
