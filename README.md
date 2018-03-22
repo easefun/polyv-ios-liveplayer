@@ -14,7 +14,7 @@
 
 [Release](https://github.com/easefun/polyv-ios-liveplayer/releases)
 
-完整可运行Pods项目：[v2.2.1](http://repo.polyv.net/ios/download/livesdk-demo/polyv-ios-liveplayer_2.2.1+180308.zip)
+完整运行项目：[v2.3.0](http://repo.polyv.net/ios/download/livesdk-demo/liveplayer_2.3.0+180320.zip)
 
 #### Podfile：
 
