@@ -105,7 +105,6 @@
     self.chatroomController.delegate = self;
     // 在线列表控制器
     self.onlineListController = [[PLVOnlineListController alloc] init];
-    [self.onlineListController updateOnlineList];
     NSMutableArray *titles = [NSMutableArray arrayWithObjects:@"互动聊天",@"在线列表",nil];
     NSMutableArray *controllers = [NSMutableArray arrayWithObjects:self.chatroomController,self.onlineListController,nil];
 
@@ -258,7 +257,6 @@
     if (chatObject.eventType == PLVSocketChatRoomEventType_LOGIN
         || chatObject.eventType == PLVSocketChatRoomEventType_LOGOUT) {
         self.loginSuccess = YES;
-        [self.onlineListController updateOnlineList];
     }
 }
 

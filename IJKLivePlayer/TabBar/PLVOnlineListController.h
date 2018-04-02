@@ -10,6 +10,4 @@
 
 @interface PLVOnlineListController : UIViewController
 
-- (void)updateOnlineList;
-
 @end
