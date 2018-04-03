@@ -12,6 +12,6 @@
 
 @property (nonatomic, assign) NSUInteger channelId;
 
-- (void)updateOnlineList;
+- (void)invalidateTimer;
 
 @end

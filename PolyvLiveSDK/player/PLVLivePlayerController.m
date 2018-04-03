@@ -14,7 +14,7 @@ NSString * const PLVLivePlayerWillChangeToFullScreenNotification = @"PLVLivePlay
 NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWillExitFullScreenNotification";
 
 #define PlayerErrorDomain @"net.polyv.live"
-#define PlayerVersion @"iOS-livePlayerSDK2.3.0+180320"
+#define PlayerVersion @"iOS-livePlayerSDK2.3.1+180403"
 
 #define PLAY_MODE @"live"   // 统计后台live/vod
 
@@ -591,7 +591,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 #pragma mark - dealloc
 - (void)dealloc {
     DLog()
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }

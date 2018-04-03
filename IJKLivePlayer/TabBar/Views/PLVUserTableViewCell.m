@@ -55,4 +55,12 @@
     }] resume];
 }
 
+- (void)clearSubViews {
+    for (UIView *view in self.subviews) {
+        if (![view isKindOfClass:[UIImageView class]] && [view isKindOfClass:[UILabel class]]) {
+            [view removeFromSuperview];
+        }
+    }
+}
+
 @end

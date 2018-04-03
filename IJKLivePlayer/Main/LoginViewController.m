@@ -68,9 +68,12 @@
     [self.view endEditing:YES];
 }
 
-// 禁止当前控制器转屏
 - (BOOL)shouldAutorotate {
-    return NO;
+    return YES;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)didReceiveMemoryWarning {

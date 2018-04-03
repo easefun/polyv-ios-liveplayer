@@ -16,11 +16,24 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSArray<NSDictionary *> *onlineList;
 
+@property (nonatomic, strong) NSTimer *timer;
+
 @end
 
 static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
 
 @implementation PLVOnlineListController
+
+//- (void)dealloc {
+//    NSLog(@"-[%@ %@]",NSStringFromClass([self class]),NSStringFromSelector(_cmd));
+//}
+
+- (void)invalidateTimer {
+    if (self.timer) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -28,13 +41,17 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     
     [self setupUI];
     self.onlineList = [PLVLiveManager sharedLiveManager].onlineList;
-    [self updateOnlineList];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
     
-    [self updateOnlineList];
+    __weak typeof(self)weakSelf = self;
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:10.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        [PLVLiveAPI requestChatRoomListUsersWithRoomId:self.channelId completion:^(NSDictionary *listUsers) {
+            weakSelf.onlineList = [PLVLiveManager handleOnlineListWithJsonDictionary:listUsers];
+            [weakSelf.tableView reloadData];
+        } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
+            NSLog(@"聊天室在线列表获取失败:%@",description);
+        }];
+    }];
+    [self.timer fire];
 }
 
 - (void)setupUI {
@@ -50,8 +67,8 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     //[self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:reuseChatCellIdentifier];
 }
 
+/*// Deprecated
 - (void)updateOnlineList {
-    //NSInteger channelId = [PLVLiveManager sharedLiveManager].channelId.integerValue;
     __weak typeof(self)weakSelf = self;
     [PLVLiveAPI requestChatRoomListUsersWithRoomId:self.channelId completion:^(NSDictionary *listUsers) {
         weakSelf.onlineList = [PLVLiveManager handleOnlineListWithJsonDictionary:listUsers];
@@ -59,7 +76,7 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         NSLog(@"聊天室在线列表获取失败:%@",description);
     }];
-}
+}*/
 
 #pragma mark - <UITableViewDataSource>
 
@@ -68,19 +85,12 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *userInfo = self.onlineList[indexPath.row];
-    
     PLVUserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseUserCellIdentifier forIndexPath:indexPath];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.backgroundColor = [UIColor clearColor];
+    NSDictionary *userInfo = self.onlineList[indexPath.row];
     cell.nicknameLB.text = userInfo[@"nick"];
     cell.imgUrl = userInfo[@"pic"];
-//    if (cell) {
-//        for (UIView *view in cell.subviews) {
-//            [view removeFromSuperview];
-//        }
-//    }
-//    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//    cell.backgroundColor = [UIColor redColor];
     
     return cell;
 }
