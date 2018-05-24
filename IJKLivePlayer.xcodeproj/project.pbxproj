@@ -342,6 +342,8 @@
 		670B17461E1DE949009D0BAA /* IJKLivePlayer */ = {
 			isa = PBXGroup;
 			children = (
+				670B174A1E1DE949009D0BAA /* AppDelegate.h */,
+				670B174B1E1DE949009D0BAA /* AppDelegate.m */,
 				674B870C20076A2800AD8D2F /* Main */,
 				679A849B1E2F6B8400F142AA /* ZJZDanMu */,
 				674B87052007684500AD8D2F /* TabBar */,
@@ -411,8 +413,6 @@
 		674B870C20076A2800AD8D2F /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				670B174A1E1DE949009D0BAA /* AppDelegate.h */,
-				670B174B1E1DE949009D0BAA /* AppDelegate.m */,
 				670B174D1E1DE949009D0BAA /* LoginViewController.h */,
 				670B174E1E1DE949009D0BAA /* LoginViewController.m */,
 				670B17501E1DE949009D0BAA /* Main.storyboard */,

@@ -18,8 +18,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    NSString *appId =
-    NSString *appSecret =
+    NSString *appId = @"";
+    NSString *appSecret = @"";
     /** 配置appId 和 appSecret(保利威视后台“API设置中”获取 http://live.polyv.net/secure/user/app.htm )*/
     [PLVLiveConfig liveConfigWithAppId:appId appSecret:appSecret];
     // 设置日志等级
