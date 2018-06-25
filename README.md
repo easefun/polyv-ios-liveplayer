@@ -4,6 +4,7 @@
 
 ## 最近更新
 
+- 新增多码率切换功能
 - 新增暖场播放逻辑
 - 添加自定义设置后台统计参数
 - 直播接口更新（PolyvIJKPlayer、PolyvLiveAPI库升级）
@@ -14,8 +15,6 @@
 
 [Release](https://github.com/easefun/polyv-ios-liveplayer/releases)
 
-完整运行项目：[v2.3.0](http://repo.polyv.net/ios/download/livesdk-demo/liveplayer_2.3.0+180320.zip)
-
 #### Podfile：
 
 ```ruby
@@ -24,7 +23,7 @@ use_frameworks!
 
 target 'IJKLivePlayer' do
   pod 'PolyvIJKPlayer', '~> 0.1.0'    # Polyv ijkPlayer.
-  pod 'PolyvLiveAPI', '~> 0.3.0'      # Polyv live api.
+  pod 'PolyvLiveAPI', '~> 0.4.0'      # Polyv live api.
   pod 'PolyvSocketAPI', '~> 0.3.0'    # Polyv socket.io api.
 end
 ```
@@ -38,3 +37,4 @@ end
 - 聊天室
 - 咨询提问
 - 在线列表
+- 多码率切换
