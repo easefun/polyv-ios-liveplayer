@@ -47,6 +47,7 @@
 		6730CA7620B7A971002E83B9 /* PLVOnlineListController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6730CA7520B7A970002E83B9 /* PLVOnlineListController.m */; };
 		6730CA7B20B7A98E002E83B9 /* PLVUserTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6730CA7820B7A98D002E83B9 /* PLVUserTableViewCell.xib */; };
 		6730CA7C20B7A98E002E83B9 /* PLVUserTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6730CA7A20B7A98D002E83B9 /* PLVUserTableViewCell.m */; };
+		673845F420E9213100C01F53 /* PLVUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 673845F320E9213100C01F53 /* PLVUtils.m */; };
 		E1228DFF0A9ED48CFE0C4FB8 /* Pods_PolyvLiveSDKDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB2574FE0795685D18BB01CC /* Pods_PolyvLiveSDKDemo.framework */; };
 /* End PBXBuildFile section */
 
@@ -114,6 +115,8 @@
 		6730CA7820B7A98D002E83B9 /* PLVUserTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PLVUserTableViewCell.xib; sourceTree = "<group>"; };
 		6730CA7920B7A98D002E83B9 /* PLVUserTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PLVUserTableViewCell.h; sourceTree = "<group>"; };
 		6730CA7A20B7A98D002E83B9 /* PLVUserTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLVUserTableViewCell.m; sourceTree = "<group>"; };
+		673845F220E9213100C01F53 /* PLVUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLVUtils.h; sourceTree = "<group>"; };
+		673845F320E9213100C01F53 /* PLVUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLVUtils.m; sourceTree = "<group>"; };
 		7E0E1D7F275A1DAD72549440 /* Pods-PolyvLiveSDKDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PolyvLiveSDKDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		EB2574FE0795685D18BB01CC /* Pods_PolyvLiveSDKDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PolyvLiveSDKDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -186,6 +189,8 @@
 			isa = PBXGroup;
 			children = (
 				6730CA5720B7A6EC002E83B9 /* FTPageController */,
+				673845F220E9213100C01F53 /* PLVUtils.h */,
+				673845F320E9213100C01F53 /* PLVUtils.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -195,7 +200,7 @@
 			children = (
 				67308AF520B6BCA300C1F5A2 /* Player */,
 				67308AF320B6BC2D00C1F5A2 /* Login */,
-				67308AF420B6BC6200C1F5A2 /* Main */,
+				67308AF420B6BC6200C1F5A2 /* Watch */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -210,17 +215,17 @@
 			path = Login;
 			sourceTree = "<group>";
 		};
-		67308AF420B6BC6200C1F5A2 /* Main */ = {
+		67308AF420B6BC6200C1F5A2 /* Watch */ = {
 			isa = PBXGroup;
 			children = (
-				6730CA7020B7A957002E83B9 /* LincMic */,
 				6730CA6F20B7A94E002E83B9 /* Chatroom */,
+				6730CA7020B7A957002E83B9 /* OnlineList */,
 				6730CA6C20B7A939002E83B9 /* PLVLiveManager.h */,
 				6730CA6D20B7A939002E83B9 /* PLVLiveManager.m */,
 				6730CA6A20B7A92B002E83B9 /* LivePlayerViewController.h */,
 				6730CA6920B7A92B002E83B9 /* LivePlayerViewController.m */,
 			);
-			path = Main;
+			path = Watch;
 			sourceTree = "<group>";
 		};
 		67308AF520B6BCA300C1F5A2 /* Player */ = {
@@ -340,22 +345,22 @@
 			path = Chatroom;
 			sourceTree = "<group>";
 		};
-		6730CA7020B7A957002E83B9 /* LincMic */ = {
+		6730CA7020B7A957002E83B9 /* OnlineList */ = {
 			isa = PBXGroup;
 			children = (
 				6730CA7720B7A98D002E83B9 /* Views */,
 				6730CA7420B7A970002E83B9 /* PLVOnlineListController.h */,
 				6730CA7520B7A970002E83B9 /* PLVOnlineListController.m */,
 			);
-			path = LincMic;
+			path = OnlineList;
 			sourceTree = "<group>";
 		};
 		6730CA7720B7A98D002E83B9 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				6730CA7820B7A98D002E83B9 /* PLVUserTableViewCell.xib */,
 				6730CA7920B7A98D002E83B9 /* PLVUserTableViewCell.h */,
 				6730CA7A20B7A98D002E83B9 /* PLVUserTableViewCell.m */,
+				6730CA7820B7A98D002E83B9 /* PLVUserTableViewCell.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -489,6 +494,7 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/Socket.IO-Client-Swift/SocketIO.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 			);
@@ -496,6 +502,7 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MBProgressHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketIO.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 			);
@@ -535,6 +542,7 @@
 				6730CA7620B7A971002E83B9 /* PLVOnlineListController.m in Sources */,
 				6730CA7320B7A969002E83B9 /* PLVChatroomController.m in Sources */,
 				6730CA4520B7A6A2002E83B9 /* FacialView.m in Sources */,
+				673845F420E9213100C01F53 /* PLVUtils.m in Sources */,
 				67308ADC20B6A6E000C1F5A2 /* LoginViewController.m in Sources */,
 				6730CA4720B7A6A2002E83B9 /* DXFaceView.m in Sources */,
 				6730CA5E20B7A6ED002E83B9 /* FTPageController.m in Sources */,

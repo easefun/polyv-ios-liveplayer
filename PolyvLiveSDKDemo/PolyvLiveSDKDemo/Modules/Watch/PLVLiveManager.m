@@ -27,7 +27,6 @@ static PLVLiveManager *liveManager = nil;
         liveManager = [[PLVLiveManager alloc] init];
         liveManager.chatroomObjects = [NSMutableArray array];
         liveManager.privateChatObjects = [NSMutableArray array];
-        liveManager.onlineList = [NSArray array];
         [liveManager.privateChatObjects addObject:createTeacherAnswerObject()];
     });
     return liveManager;
@@ -92,32 +91,11 @@ static PLVLiveManager *liveManager = nil;
     return nil;
 }
 
-/// 生成在线用户列表
-+ (NSArray *)handleOnlineListWithJsonDictionary:(NSDictionary *)jsonDict {
-    if (!jsonDict) {
-        return nil;
-    }
-    //NSInteger count = [jsonDict[@"count"] integerValue];
-    NSArray *userlist = jsonDict[@"userlist"];
-    NSMutableArray *mArr = [NSMutableArray array];
-    for (NSDictionary *userDict in userlist) {
-        // 数据处理，teacher 重复问题
-        if ([userDict[@"userType"] isEqualToString:@"teacher"] && userDict[@"userSource"]) {
-            continue;
-        }
-        [mArr addObject:userDict];
-    }
-    [PLVLiveManager sharedLiveManager].onlineList = mArr;
-    //NSLog(@"聊天室在线列表信息：处理前人数 %ld, 处理后人数 %ld",count,mArr.count);
-    return mArr;
-}
-
 /// 重置数据
 - (void)resetData {
     [self.chatroomObjects removeAllObjects];
     [self.privateChatObjects removeAllObjects];
     [self.privateChatObjects addObject:createTeacherAnswerObject()];
-    self.onlineList = [NSArray array];
 }
 
 #pragma mark - Private functions
@@ -134,5 +112,27 @@ PLVSocketChatRoomObject *createTeacherAnswerObject() {
     teacherAnswer.localMessage = YES;
     return teacherAnswer;
 }
+
+#pragma mark - Deprecated
+
+/// 生成在线用户列表
+//+ (NSArray *)handleOnlineListWithJsonDictionary:(NSDictionary *)jsonDict {
+//    if (!jsonDict) {
+//        return nil;
+//    }
+//    //NSInteger count = [jsonDict[@"count"] integerValue];
+//    NSArray *userlist = jsonDict[@"userlist"];
+//    NSMutableArray *mArr = [NSMutableArray array];
+//    for (NSDictionary *userDict in userlist) {
+//        // 数据处理，teacher 重复问题
+//        if ([userDict[@"userType"] isEqualToString:@"teacher"] && userDict[@"userSource"]) {
+//            continue;
+//        }
+//        [mArr addObject:userDict];
+//    }
+//    [PLVLiveManager sharedLiveManager].onlineList = mArr;
+//    //NSLog(@"聊天室在线列表信息：处理前人数 %ld, 处理后人数 %ld",count,mArr.count);
+//    return mArr;
+//}
 
 @end

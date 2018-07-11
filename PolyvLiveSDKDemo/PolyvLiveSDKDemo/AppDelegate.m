@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import <PLVLiveAPI/PLVLiveConfig.h>
+#import <SDWebImage/SDWebImageManager.h>
 
 @interface AppDelegate ()
 
@@ -23,8 +24,15 @@
     NSString *appId =
     NSString *appSecret =
     
-    [PLVLiveConfig setLogLevel:k_PLV_LIVE_LOG_INFO];                // 设置接口日志等级
-    [PLVLiveConfig liveConfigWithAppId:appId appSecret:appSecret];  // 配置应用参数
+    // 1.配置应用参数，聊天室及连麦功能必须配置该参数
+    [PLVLiveConfig liveConfigWithAppId:appId appSecret:appSecret];
+    // 2.配置统计后台参数：用户Id、用户昵称及自定义参数
+    [PLVLiveConfig setViewLogParam:nil param2:nil param4:nil param5:nil];
+    // 3.设置接口本地日志输出等级
+    [PLVLiveConfig setLogLevel:k_PLV_LIVE_LOG_INFO];
+    
+    // 清除 SDWebImage 的磁盘缓存
+    //[[SDImageCache sharedImageCache] clearDiskOnCompletion:nil];
     
     return YES;
 }

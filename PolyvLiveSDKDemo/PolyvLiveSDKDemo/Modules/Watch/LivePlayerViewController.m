@@ -22,7 +22,7 @@
 /// 播放器背景图片路径
 #define PLAYER_BACKGROUND @"PLVLivePlayerSkin.bundle/plv_background"
 
-@interface LivePlayerViewController () <PLVSocketIODelegate, PLVChatroomDelegate>
+@interface LivePlayerViewController () <PLVSocketIODelegate, PLVChatroomDelegate, PLVOnlineListDelegate>
 
 @property (nonatomic, strong) PLVLivePlayerController *livePlayer;          // PLV播放器
 @property (nonatomic, strong) UIView *displayView;                          // 播放器显示层
@@ -48,12 +48,21 @@
     BOOL _allowLandscape;
 }
 
+#pragma mark - Lifecycle
+
+- (void)dealloc {
+    NSLog(@"-[%@ %@]",NSStringFromClass([self class]),NSStringFromSelector(_cmd));
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self configData];
+    [self initLocalData];
     [self initPlayer];
     [self initSocketIO];
+    
     [self configDanmu];
     [self setupUI];
 }
@@ -65,14 +74,42 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
 }
 
-#pragma mark - initialize
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
 
-- (void)configData {
+#pragma mark - Initialize
+
+- (void)initLocalData {
     self.userId = self.channel.userId;
     self.stream = self.channel.stream;
     self.channelId = self.channel.channelId.unsignedIntegerValue;
-    // 配置统计后台参数：用户Id、用户昵称、自定义参数4、自定义参数5
-    [PLVLiveConfig setViewLogParam:nil param2:nil param4:nil param5:nil];
+}
+
+- (void)initSocketIO {
+    /// 请求聊天室、连麦授权接口
+    __weak typeof(self)weakSelf = self;
+    [PLVLiveAPI requestAuthorizationForLinkingSocketWithChannelId:self.channelId Appld:[PLVLiveConfig sharedInstance].appId appSecret:[PLVLiveConfig sharedInstance].appSecret success:^(NSDictionary *responseDict) {
+        // 1.初始化 socketIO 连接对象
+        weakSelf.socketIO = [[PLVSocketIO alloc] initSocketIOWithConnectToken:responseDict[@"chat_token"] enableLog:NO];
+        weakSelf.socketIO.delegate = weakSelf;
+        [weakSelf.socketIO connect];
+        //weakSelf.socketIO.debugMode = YES;
+        
+        // 2.初始化一个socket登录对象（昵称和头像使用默认设置）
+        self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:nil avatar:nil userType:PLVSocketObjectUserTypeStudent];
+        
+        // 3.数据存储
+        PLVLiveManager *manager = [PLVLiveManager sharedLiveManager];
+        manager.login = self.login;
+        manager.linkMicParams = responseDict;
+    } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
+        NSLog(@"获取Socket授权失败:%ld,%@",errorCode,description);
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"聊天室连接失败" message:[NSString stringWithFormat:@"错误码:%ld, 信息:%@",errorCode,description] preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }];
 }
 
 - (void)initPlayer {
@@ -93,28 +130,6 @@
     }];
 }
 
-- (void)initSocketIO {
-    __weak typeof(self)weakSelf = self;
-    [PLVLiveAPI requestAuthorizationForLinkingSocketWithChannelId:self.channelId Appld:[PLVLiveConfig sharedInstance].appId appSecret:[PLVLiveConfig sharedInstance].appSecret success:^(NSDictionary *responseDict) {
-        NSString *chatToken = responseDict[@"chat_token"];
-        
-        // 初始化 socketIO 连接对象
-        weakSelf.socketIO = [[PLVSocketIO alloc] initSocketIOWithConnectToken:chatToken enableLog:NO];
-        weakSelf.socketIO.delegate = weakSelf;
-        [weakSelf.socketIO connect];
-        //weakSelf.socketIO.debugMode = YES;
-        
-        // 初始化一个socket登录对象（昵称和头像使用默认设置）
-        self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:nil avatar:nil userType:PLVSocketObjectUserTypeStudent];
-        [PLVLiveManager sharedLiveManager].login = self.login;
-    } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
-        NSLog(@"获取Socket授权失败:%ld,%@",errorCode,description);
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"聊天室连接失败" message:[NSString stringWithFormat:@"错误码:%ld, 信息:%@",errorCode,description] preferredStyle:UIAlertControllerStyleAlert];
-        [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
-        [self presentViewController:alertController animated:YES completion:nil];
-    }];
-}
-
 - (void)configDanmu {
     CGRect bounds = self.livePlayer.view.bounds;
     self.danmuLayer = [[ZJZDanMu alloc] initWithFrame:CGRectMake(0, 20, bounds.size.width, bounds.size.height-20)];
@@ -131,6 +146,7 @@
     // 在线列表控制器
     self.onlineListController = [[PLVOnlineListController alloc] init];
     self.onlineListController.channelId = self.channelId;
+    self.onlineListController.delegate = self;
     NSMutableArray *titles = [NSMutableArray arrayWithObjects:@"互动聊天",@"在线列表",nil];
     NSMutableArray *controllers = [NSMutableArray arrayWithObjects:self.chatroomController,self.onlineListController,nil];
 
@@ -150,6 +166,33 @@
     }];
 }
 
+#pragma mark - Setter/Getter
+
+- (PLVLivePlayerController *)getLivePlayer {
+    if (_livePlayer) {
+        [_livePlayer clearPlayer];
+        _livePlayer = nil ;
+    }
+    _livePlayer = [[PLVLivePlayerController alloc] initWithChannel:self.channel displayView:self.displayView];
+    [self configCallBackBlock];
+    
+    return _livePlayer;
+}
+
+- (UIView *)displayView {
+    if (!_displayView) {
+        CGFloat width = self.view.bounds.size.width;
+        // 初始化一个播放器显示层，用于显示直播内容（默认为竖屏模式，横屏模式需要按需修改）
+        _displayView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, width*9/16)];
+        _displayView.backgroundColor = [UIColor blackColor];
+        //_displayView.layer.contents = (id)[UIImage imageNamed:PLAYER_BACKGROUND].CGImage;  // 播放器背景图
+        [self.view addSubview:_displayView];
+    }
+    return _displayView;
+}
+
+#pragma mark - Private methods
+
 - (void)setupPageControllerWithTitles:(NSArray *)titles controllers:(NSArray *)controllers frame:(CGRect)frame {
     self.pageController = [[FTPageController alloc] initWithTitles:titles controllers:controllers];
     self.pageController.view.backgroundColor = [UIColor colorWithRed:233/255.0 green:235/255.0 blue:245/255.0 alpha:1.0];
@@ -165,12 +208,14 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(livePlayerWillExitFullScreenNotification) name:PLVLivePlayerWillExitFullScreenNotification object:nil];
 }
 
-#pragma mark - player callback
+#pragma mark - Player callback
 
 - (void)configCallBackBlock {
     __weak typeof(self)weakSelf = self;
     [_livePlayer setReturnButtonClickBlock:^{
         NSLog(@"返回按钮点击了...");
+        // clearController 方法调用需要在 disconnect前
+        [weakSelf.onlineListController clearController];
         [weakSelf.socketIO disconnect];
         [weakSelf.socketIO removeAllHandlers];
         [[PLVLiveManager sharedLiveManager] resetData];
@@ -193,7 +238,7 @@
     }];
 }
 
-#pragma mark - notifications
+#pragma mark - Notifications
 
 // 直播播断流后重新连接时创建一个新的播放器
 - (void)livePlayerReconnectNotification:(NSNotification *)notification {
@@ -236,31 +281,6 @@
     [self.pageController.view setHidden:NO];
 }
 
-#pragma mark - private methods
-
-- (PLVLivePlayerController *)getLivePlayer {
-    if (_livePlayer) {
-        [_livePlayer clearPlayer];
-        _livePlayer = nil ;
-    }
-    _livePlayer = [[PLVLivePlayerController alloc] initWithChannel:self.channel displayView:self.displayView];
-    [self configCallBackBlock];
-    
-    return _livePlayer;
-}
-
-- (UIView *)displayView {
-    if (!_displayView) {
-        CGFloat width = self.view.bounds.size.width;
-        // 初始化一个播放器显示层，用于显示直播内容（默认为竖屏模式，横屏模式需要按需修改）
-        _displayView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, width*9/16)];
-        _displayView.backgroundColor = [UIColor blackColor];
-        //_displayView.layer.contents = (id)[UIImage imageNamed:PLAYER_BACKGROUND].CGImage;  // 播放器背景图
-        [self.view addSubview:_displayView];
-    }
-    return _displayView;
-}
-
 #pragma mark - <PLVSocketIODelegate>
 /// 连接成功
 - (void)socketIO:(PLVSocketIO *)socketIO didConnectWithInfo:(NSString *)info {
@@ -290,6 +310,12 @@
         || chatObject.eventType == PLVSocketChatRoomEventType_LOGOUT) {
         self.loginSuccess = YES;
     }
+}
+
+/// 收到连麦消息
+- (void)socketIO:(PLVSocketIO *)socketIO didReceiveLinkMicMessage:(PLVSocketLinkMicObject *)linkMicObject {
+    NSLog(@"%@--type:%lu, event:%@",NSStringFromSelector(_cmd),linkMicObject.eventType,linkMicObject.event);
+    self.onlineListController.linkMicObject = linkMicObject;
 }
 
 /// 失去连接
@@ -324,7 +350,15 @@
     }
 }
 
-#pragma mark - view controller
+#pragma mark - <PLVOnlineListDelegate>
+
+- (void)emitLinkMicObject:(PLVSocketLinkMicObject *)linkMicObject {
+    if (self.socketIO) {
+        [self.socketIO emitMessageWithSocketObject:linkMicObject];
+    }
+}
+
+#pragma mark - View controller
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     // 退出键盘
@@ -341,18 +375,6 @@
     }else {
         return UIInterfaceOrientationMaskPortrait;
     }
-}
-
-- (void)dealloc {
-    NSLog(@"-[%@ %@]",NSStringFromClass([self class]),NSStringFromSelector(_cmd));
-    [self.onlineListController invalidateTimer];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 /*

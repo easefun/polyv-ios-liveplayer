@@ -12,7 +12,12 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *avatarView;
 @property (weak, nonatomic) IBOutlet UILabel *nicknameLB;
+@property (weak, nonatomic) IBOutlet UILabel *userTypeLB; // 用户头衔
 
-@property (nonatomic, strong) NSString *imgUrl;
+@property (weak, nonatomic) IBOutlet UIImageView *linkMicTypeView;
+@property (weak, nonatomic) IBOutlet UILabel *linkMicStatusLB;
+
+@property (nonatomic, strong) NSDictionary *userInfo;
+@property (nonatomic, strong) NSString *linkMicType;
 
 @end

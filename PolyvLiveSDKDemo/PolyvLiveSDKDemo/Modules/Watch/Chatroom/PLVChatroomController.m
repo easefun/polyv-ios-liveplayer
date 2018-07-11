@@ -7,8 +7,10 @@
 //
 
 #import "PLVChatroomController.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "PLVLiveManager.h"
 #import "BCKeyBoard.h"
+#import <Masonry/Masonry.h>
 
 #define SPEAK_FONT_SIZE 14.0       // 聊天发言文字大小
 #define SYSTEM_FONT_SIZE 12.0      // 系统样式文字大小
@@ -22,6 +24,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 @interface PLVChatroomController () <UITableViewDelegate,UITableViewDataSource,BCKeyBoardDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UIButton *showLatestMessageBtn;
 @property (nonatomic, strong) BCKeyBoard *bcKeyBoard;
 
 @property (nonatomic, strong) NSMutableArray *chatroomObjects;
@@ -31,6 +34,8 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 
 @implementation PLVChatroomController {
     NSDate *_lastSpeakTime;
+    BOOL _isSelfSpeak;
+    BOOL _isCellInBottom;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -46,6 +51,8 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
+    _isCellInBottom = YES;
+    // 指向同一块内存地址
     self.chatroomObjects = [PLVLiveManager sharedLiveManager].chatroomObjects;
     self.privateChatObjects = [PLVLiveManager sharedLiveManager].privateChatObjects;
 }
@@ -81,17 +88,41 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     self.bcKeyBoard.placeholder = @"我也来聊几句...";
     self.bcKeyBoard.placeholderColor = [UIColor colorWithRed:133/255 green:133/255 blue:133/255 alpha:0.5];
     self.bcKeyBoard.backgroundColor = [UIColor clearColor];
+    
+    self.showLatestMessageBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+    [self.showLatestMessageBtn setTitle:@"有更多新消息，点击查看" forState:UIControlStateNormal];
+    [self.showLatestMessageBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.showLatestMessageBtn.titleLabel setFont:[UIFont systemFontOfSize:12 weight:UIFontWeightMedium]];
+    self.showLatestMessageBtn.backgroundColor = [UIColor colorWithRed:90/255.0 green:200/255.0 blue:250/255.0 alpha:1];
+    self.showLatestMessageBtn.clipsToBounds = YES;
+    self.showLatestMessageBtn.layer.cornerRadius = 15.0;
+    [self.view addSubview:self.showLatestMessageBtn];
+    [self.showLatestMessageBtn addTarget:self action:@selector(scrollTableViewToBottom) forControlEvents:UIControlEventTouchUpInside];
+    self.showLatestMessageBtn.hidden = YES;
+    
+    [self.showLatestMessageBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(185, 30));
+        make.centerX.equalTo(self.view);
+        make.bottom.equalTo(self.bcKeyBoard.mas_top).offset(-10);
+    }];
 }
 
 #pragma mark - Public interface
-
+/// !!!:当前数据更新只存在新增数据一种情况
 - (void)updateChatroom {
-    if (self.privateChatMode) {
-        self.privateChatObjects = [PLVLiveManager sharedLiveManager].privateChatObjects;
-    }else {
-        self.chatroomObjects = [PLVLiveManager sharedLiveManager].chatroomObjects;
-    }
     [self.tableView reloadData];
+    if (_isSelfSpeak || self.privateChatMode) {
+        _isSelfSpeak = NO;
+        [self scrollTableViewToBottom];
+    }else {
+        if (_isCellInBottom) {
+            [self scrollTableViewToBottom];
+        }else {
+            self.showLatestMessageBtn.hidden = NO;
+        }
+    }
+    //[self.tableView visibleCells];  // apple bugs.
+    //[self.tableView.indexPathsForVisibleRows lastObject];
 }
 
 - (void)hideEmojiKeyBoard {
@@ -158,7 +189,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
             CGSize size = [self autoCalculateSystemTypeWithContent:content];
             
             UILabel *contentLB = [[UILabel alloc] init];
-            contentLB.backgroundColor = [UIColor darkGrayColor];
+            contentLB.backgroundColor = [UIColor colorWithWhite:51/255.0 alpha:0.65];
             contentLB.text = content;
             contentLB.textAlignment = NSTextAlignmentCenter;
             contentLB.font = [UIFont systemFontOfSize:SYSTEM_FONT_SIZE weight:UIFontWeightMedium];
@@ -204,6 +235,21 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     }
 }
 
+#pragma mark - <UIScrollViewDelegate>
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (self.privateChatMode) return;
+    CGFloat height = scrollView.frame.size.height;
+    CGFloat contentOffsetY = scrollView.contentOffset.y;
+    CGFloat bottomOffset = scrollView.contentSize.height - contentOffsetY;
+    //NSLog(@"bottomOffset:%lf,%lf",bottomOffset,height);
+    if (bottomOffset < height+1) { // tolerance
+        _isCellInBottom = YES;
+        self.showLatestMessageBtn.hidden = YES;
+    }else {
+        _isCellInBottom = NO;
+    }
+}
+
 #pragma mark - <BCKeyBoardDelegate>
 
 - (void)didSendText:(NSString *)text {
@@ -237,6 +283,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
             [liveManager.chatroomObjects addObject:mySpeak];
             [self.delegate emitChatroomObject:mySpeak withMessage:text];
         }
+        _isSelfSpeak = YES;
         [self updateChatroom];
     }
     //if (self.delegate && [self.delegate respondsToSelector:@selector(sendMessage:privateChatMode:)]) {
@@ -308,17 +355,19 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     UIImageView *avatarView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 35, 35)];
     avatarView.layer.cornerRadius = 35/2.0;
     avatarView.layer.masksToBounds = YES;
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:nickImg] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:6.0];
-    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (error) {
-                avatarView.image = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_missing_face"];
-            }else {
-                UIImage *image = [UIImage imageWithData:data];
-                if (image) avatarView.image = image;
-            }
-        });
-    }] resume];
+    [avatarView sd_setImageWithURL:[NSURL URLWithString:nickImg] placeholderImage:[UIImage imageNamed:@"plv_default_user"]];
+//    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:nickImg] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:6.0];
+//    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            if (error) {
+//                //avatarView.image = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_missing_face"];
+//                avatarView.image = [UIImage imageNamed:@"plv_default_user"];
+//            }else {
+//                UIImage *image = [UIImage imageWithData:data];
+//                if (image) avatarView.image = image;
+//            }
+//        });
+//    }] resume];
     
     // 昵称
     UILabel *nicknameLB = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, CGRectGetWidth(returnView.bounds), 20)];
@@ -373,6 +422,17 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
                                                   options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading
                                                   context:nil];
     return rect.size;
+}
+
+- (void)scrollTableViewToBottom {
+    if (self.privateChatMode) {
+        NSIndexPath *lastIndex = [NSIndexPath indexPathForRow:self.privateChatObjects.count-1 inSection:0];
+        [self.tableView scrollToRowAtIndexPath:lastIndex atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    }else {
+        self.showLatestMessageBtn.hidden = YES;
+        NSIndexPath *lastIndex = [NSIndexPath indexPathForRow:self.chatroomObjects.count-1 inSection:0];
+        [self.tableView scrollToRowAtIndexPath:lastIndex atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    }
 }
 
 #pragma mark -

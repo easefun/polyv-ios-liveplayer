@@ -14,7 +14,7 @@ NSString * const PLVLivePlayerWillChangeToFullScreenNotification = @"PLVLivePlay
 NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWillExitFullScreenNotification";
 
 #define PlayerErrorDomain @"net.polyv.live"
-#define PlayerVersion @"iOS-livePlayerSDK2.4.0+180622"
+#define PlayerVersion @"iOS-livePlayerSDK2.4.0+180702"
 
 #define PLAY_MODE @"live"   // 统计后台live/vod
 
@@ -45,6 +45,8 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     NSInteger _reportFreq;
     int _watchTimeDuration;
     int _stayTimeDuration;
+    
+    float _playbackVolume;
 }
 
 #pragma mark - Rewrite
@@ -218,6 +220,9 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [defaultCenter addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
+    // link mic
+    [defaultCenter addObserver:self selector:@selector(linkMicDidJoinNotification) name:PLVLiveLinkMicDidJoinNotification object:nil];
+    [defaultCenter addObserver:self selector:@selector(linkMicDidLeaveNotification) name:PLVLiveLinkMicDidLeaveNotification object:nil];
 }
 
 - (void)addPlayerSkinActions {
@@ -576,6 +581,18 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         [self.playerSkin.smallScreenButton setHidden:YES];
         [self.playerSkin.fullScreenButton setHidden:NO];
     }];
+}
+
+- (void)linkMicDidJoinNotification {
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+    _playbackVolume = self.playbackVolume;
+    self.playbackVolume = 0; // turn off player volume.
+}
+
+- (void)linkMicDidLeaveNotification {
+    // 退出连麦，恢复播放器声音
+    NSLog(@"%@",NSStringFromSelector(_cmd));
+    self.playbackVolume = _playbackVolume; // resume player volume.
 }
 
 #pragma mark - 直播服务质量统计Qos/ViewLog
