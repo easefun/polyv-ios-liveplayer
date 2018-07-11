@@ -2,6 +2,13 @@
 
   参考文档：[Wiki](https://github.com/easefun/polyv-ios-liveplayer/wiki)
 
+### 新消息提醒
+
+- 新增聊天室新消息提醒
+- 当前版本包含连麦功能(测试版本)，如果使用改功能请使用 PolyvLiveAPI ~ 0.4.1 及 PolyvSocketAPI ~ 0.4.1 版本（执行 pod update 命令即可）
+
+
+
 ## 最近更新
 
 - 新增多码率切换功能
