@@ -4,28 +4,26 @@
 
 ## 最近更新
 
-- 新增暖场播放逻辑
-- 添加自定义设置后台统计参数
-- 直播接口更新（PolyvIJKPlayer、PolyvLiveAPI库升级）
-- 修复使用中文键盘时自动补正功能导致输入框位置错误的问题
-- 修复在iPhone 5s iOS 11下，进入观看页当前显示表情键盘时退出可能存在的问题
+- 新增连麦功能
+- 新增多码率功能
+- 聊天室添加新消息提醒
+- 直播接口更新（PolyvIJKPlayer、PolyvLiveAPI）
 
 ## 最新版本
 
-[Release](https://github.com/easefun/polyv-ios-liveplayer/releases)
-
-完整运行项目：[v2.3.0](http://repo.polyv.net/ios/download/livesdk-demo/liveplayer_2.3.0+180320.zip)
+2.4.0 [Release](https://github.com/easefun/polyv-ios-liveplayer/releases)
 
 #### Podfile：
 
 ```ruby
-platform :ios, "8.0"
+platform :ios, "9.0"
 use_frameworks!
 
 target 'IJKLivePlayer' do
-  pod 'PolyvIJKPlayer', '~> 0.1.0'    # Polyv ijkPlayer.
-  pod 'PolyvLiveAPI', '~> 0.3.0'      # Polyv live api.
-  pod 'PolyvSocketAPI', '~> 0.3.0'    # Polyv socket.io api.
+  pod 'PolyvLiveAPI', '~> 0.4.1'      # Polyv live api
+  pod 'PolyvSocketAPI', '~> 0.4.1'    # Polyv socket.io api
+  pod 'PolyvIJKPlayer', '~> 0.1.0'    # Polyv ijkPlayer
+  pod 'AgoraRtcEngine_iOS', '~>2.0.0' # Agora rtc engine
 end
 ```
 
@@ -34,7 +32,18 @@ end
 - 直播播放
 - 暖场播放（视频/图片）
 - 竖屏小屏/横屏全屏
+- 多码率切换
 - 弹幕
 - 聊天室
 - 咨询提问
 - 在线列表
+- 音视频连麦
+
+
+### 下载安装
+
+手机扫码安装，密码：polyv
+
+![POLYV 直播观看](https://www.pgyer.com/app/qrcode/Cibx)
+
+[下载地址](https://www.pgyer.com/Cibx)
