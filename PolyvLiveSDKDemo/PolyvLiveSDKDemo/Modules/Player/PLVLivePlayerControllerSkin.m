@@ -8,6 +8,7 @@
 
 #import "PLVLivePlayerControllerSkin.h"
 #import "Masonry.h"
+#import "PLVRestrictView.h"
 
 #define BACK_COLOR [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7]
 
@@ -28,6 +29,7 @@
 
 @property (nonatomic, strong) UIView *definitionView;
 @property (nonatomic, strong) UIImageView *noLiveImageView;
+@property (nonatomic, strong) PLVRestrictView *restrictView;
 
 @property (nonatomic, strong) UIActivityIndicatorView *indicatorView;
 @property (nonatomic, strong) UIScrollView *videoInfoContainer;
@@ -49,12 +51,13 @@
     if (self) {
         /** 添加的先后顺序不可变*/
         [self addSubview:self.noLiveImageView];
-        [self addSubview:self.topBar];
         [self addSubview:self.bottomBar];
-        [self addSubview:self.indicatorView];
         [self addSubview:self.videoInfoContainer];
+        [self addSubview:self.indicatorView];
         [self addSubview:self.warningView];
         [self addSubview:self.definitionView];
+        [self addSubview:self.restrictView];
+        [self addSubview:self.topBar];
         
         [self.topBar addSubview:self.returnButton];
         
@@ -105,6 +108,9 @@
     }];
     
     [self.noLiveImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self);
+    }];
+    [self.restrictView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self);
     }];
     [self.definitionView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -219,6 +225,11 @@
     });
 }
 
+- (void)showRestrictPlayViewWithErrorCode:(NSString *)errorCode {
+    [self.restrictView setHidden:NO];
+    [self.restrictView.errorCodeLabel setText:errorCode];
+}
+
 #pragma mark - Rewrite
 #pragma mark getter
 - (UIImageView *)noLiveImageView {
@@ -229,6 +240,14 @@
         _noLiveImageView.hidden = YES;
     }
     return _noLiveImageView;
+}
+
+- (PLVRestrictView *)restrictView {
+    if (!_restrictView) {
+        _restrictView = [PLVRestrictView restrictViewFromXIB];
+        _restrictView.hidden = YES;
+    }
+    return _restrictView;
 }
 
 - (UIView *)topBar {
@@ -373,7 +392,7 @@
         [_recommendedButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.equalTo(label.mas_right).priorityHigh();
             make.top.bottom.right.equalTo(_warningView);
-            make.size.mas_equalTo(CGSizeMake(40, 20));
+            make.width.mas_equalTo(40);
         }];
     }
     return _warningView;

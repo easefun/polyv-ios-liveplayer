@@ -144,4 +144,16 @@ NSString *NSStringFromPrivacySettingType(PrivacySettingType type) {
     }
 }
 
++ (BOOL)isPhoneX {
+    return (CGSizeEqualToSize(CGSizeMake(375.f, 812.f), [UIScreen mainScreen].bounds.size) || CGSizeEqualToSize(CGSizeMake(812.f, 375.f), [UIScreen mainScreen].bounds.size));
+}
+
++ (CGFloat)statusBarHeight {
+    if ([PLVUtils isPhoneX]) {
+        return 44.0;
+    } else {
+        return 0.0;
+    }
+}
+
 @end

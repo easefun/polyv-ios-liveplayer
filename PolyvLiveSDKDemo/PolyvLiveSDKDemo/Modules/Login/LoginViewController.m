@@ -40,24 +40,25 @@
     }
 
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.label.text = @"登录中...";
+    [hud.label setText:@"登录中..."];
     
     NSString *userId = self.userIdTF.text;
     NSString *channelId = self.channelIdTF.text;
     
     // 获取直播频道信息
-    [PLVLiveAPI loadChannelInfoWithUserId:userId channelId:channelId.integerValue completion:^(PLVLiveChannel *channel) {
-        [hud hideAnimated:YES];
-
-        LivePlayerViewController *livePlayerVC = [LivePlayerViewController new];
-        livePlayerVC.channel = channel;
-        [self presentViewController:livePlayerVC animated:YES completion:nil];
+    __weak typeof(self)weakSelf = self;
+    [PLVLiveAPI loadChannelInfoRepeatedlyWithUserId:userId channelId:channelId.integerValue completion:^(PLVLiveChannel *channel) {
+        [channel updateChannelRestrictInfo:^(PLVLiveChannel *channel) {
+            [hud hideAnimated:YES];
+            LivePlayerViewController *livePlayerVC = [LivePlayerViewController new];
+            livePlayerVC.channel = channel;
+            [weakSelf presentViewController:livePlayerVC animated:YES completion:nil];
+        }];
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        
+        [hud hideAnimated:YES];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"登录失败" message:description preferredStyle:UIAlertControllerStyleAlert];
         [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
-        [self presentViewController:alertController animated:YES completion:nil];
+        [weakSelf presentViewController:alertController animated:YES completion:nil];
     }];
 }
 

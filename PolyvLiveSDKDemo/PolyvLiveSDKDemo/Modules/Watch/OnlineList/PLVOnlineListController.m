@@ -31,6 +31,7 @@ typedef NS_ENUM(NSUInteger, PLVLinkMicStatus) {
 @property (nonatomic, strong) AgoraRtcEngineKit *agoraKit;
 
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UIView *speakButtonBgView;
 @property (nonatomic, strong) UIButton *speakButton;
 
 @property (nonatomic, strong) NSMutableArray<NSDictionary *> *onlineList;
@@ -48,9 +49,7 @@ typedef NS_ENUM(NSUInteger, PLVLinkMicStatus) {
 
 static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
 
-@implementation PLVOnlineListController {
-    //BOOL _speakButtonDisable;
-}
+@implementation PLVOnlineListController
 
 #pragma mark - Lifecycle
 
@@ -91,16 +90,42 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     //[self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:reuseChatCellIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:@"PLVUserTableViewCell" bundle:nil] forCellReuseIdentifier:reuseUserCellIdentifier];
     
+    self.speakButtonBgView = [[UIView alloc] init];
+    self.speakButtonBgView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.speakButtonBgView];
+    self.speakButtonBgView.hidden = YES;
+    
     self.speakButton = [[UIButton alloc] init];
     [self.view addSubview:self.speakButton];
     [self.speakButton setShowsTouchWhenHighlighted:YES];
     [self.speakButton addTarget:self action:@selector(speakButtonBeClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.speakButton setHidden:YES];
     
-    [self.speakButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    CGFloat heightOfSpeakButtonBgView = 50.0;
+    if ([PLVUtils isPhoneX]) {
+        CGRect tableViewRect = self.tableView.frame;
+        tableViewRect.size.height -= 34.0;
+        self.tableView.frame = tableViewRect;
+        
+        heightOfSpeakButtonBgView = 84.0;
+        self.speakButton.layer.cornerRadius = 20.0;
+        [self.speakButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(self.view);
+            make.bottom.equalTo(self.view.mas_bottom).offset(-34.0);
+            make.width.mas_equalTo(250.0);
+            make.height.mas_equalTo(40.0);
+        }];
+    } else {
+        [self.speakButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.bottom.equalTo(self.view);
+            make.width.equalTo(self.view);
+            make.height.mas_equalTo(50.0);
+        }];
+    }
+    [self.speakButtonBgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.equalTo(self.view);
         make.width.equalTo(self.view);
-        make.height.mas_equalTo(50);
+        make.height.mas_equalTo(heightOfSpeakButtonBgView);
     }];
 }
 
@@ -267,14 +292,6 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         [PLVUtils showHUDWithTitle:@"聊天室在线列表获取失败！" detail:description view:self.view];
     }];
-    /*if (self.linkMicStatus == PLVLinkMicStatusJoining) {
-        if (_speakButtonDisable) {
-            _speakButtonDisable = NO;
-            self.linkMicStatus = PLVLinkMicStatusWait;
-        }else {
-            _speakButtonDisable = YES;
-        }
-    }*/
 }
 
 - (void)emitLinkMicObjectWithEventType:(PLVSocketLinkMicEventType)eventType {
@@ -286,13 +303,14 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
 
 /// 更新当前房间连麦状态
 - (void)updateRoomLinkMicStatus:(NSString *)status type:(NSString *)type {
-    NSLog(@"link mic status:%@, type:%@",status,type);
+    //NSLog(@"link mic status:%@, type:%@",status,type);
     self.linkMicType = type;
     if ([status isEqualToString:@"open"]) { // 服务器状态：连麦开启
         if (self.isLinkMicOpen && !self.speakButton.isHidden) {
             return;
         }else { // set link mic ui.
             self.linkMicOpen = YES;
+            self.speakButtonBgView.hidden = NO;
             [self.speakButton setHidden:NO];
             CGRect newFrame = self.tableView.frame;
             newFrame.size.height -= 50;
@@ -303,6 +321,7 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
             return;
         }else { // recover ui and handle
             self.linkMicOpen = NO;
+            self.speakButtonBgView.hidden = YES;
             [self.speakButton setHidden:YES];
             [self.tableView setFrame:self.view.bounds];
             switch (self.linkMicStatus) {
@@ -486,15 +505,5 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 60;
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

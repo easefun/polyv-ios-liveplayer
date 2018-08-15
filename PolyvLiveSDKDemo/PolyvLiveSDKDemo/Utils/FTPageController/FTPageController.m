@@ -26,7 +26,10 @@ static NSString *TitleCellIdentifier = @"PageTitleCell";
 
 @end
 
-@implementation FTPageController
+@implementation FTPageController {
+    CGFloat _titleItemWidth;
+    NSUInteger _selectedIndex;
+}
 
 - (instancetype)initWithTitles:(NSArray<NSString *> *)titles controllers:(NSArray<UIViewController *> *)controllers {
     self = [super init];
@@ -51,8 +54,17 @@ static NSString *TitleCellIdentifier = @"PageTitleCell";
     self.titleCollectionView.delegate = self;
     self.titleCollectionView.allowsSelection = YES;
     [self.view addSubview:self.titleCollectionView];
+    self.titleCollectionView.showsVerticalScrollIndicator = NO;
+    self.titleCollectionView.showsHorizontalScrollIndicator = NO;
     
     [self.titleCollectionView registerNib:[UINib nibWithNibName:@"FTTitleViewCell" bundle:nil] forCellWithReuseIdentifier:TitleCellIdentifier];
+    
+    if (self.titles.count < 4) {
+        _titleItemWidth = (kWidth-10)/(self.titles.count);
+    }else {
+        _titleItemWidth = (kWidth-10)/4;
+        self.titleCollectionView.contentSize = CGSizeMake(_titleItemWidth*self.titles.count+20, topBarHeight);
+    }
 }
 
 -(void)setupPageController {
@@ -91,7 +103,8 @@ static NSString *TitleCellIdentifier = @"PageTitleCell";
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     FTTitleViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:TitleCellIdentifier forIndexPath:indexPath];
     cell.titleLabel.text = self.titles[indexPath.item];
-    [cell setClicked:!indexPath.item];
+    [cell setClicked:(indexPath.item == _selectedIndex)];
+    
     return cell;
 }
 
@@ -102,21 +115,23 @@ static NSString *TitleCellIdentifier = @"PageTitleCell";
 }
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return  CGSizeMake((kWidth-20)/(self.titles.count), CGRectGetHeight(collectionView.bounds));
+    return  CGSizeMake(_titleItemWidth, CGRectGetHeight(collectionView.bounds));
 }
 
 -(UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
-    return UIEdgeInsetsMake(0, 10, 0, 10);
+    return UIEdgeInsetsMake(0, 5, 0, 5);
 }
 
 #pragma mark - UICollectionViewDeleaget
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    _selectedIndex = indexPath.item;
+    [collectionView reloadData];
     // 清除标题选中状态，滑动切换时遗留的状态
-    for (int i=0; i<self.titles.count; i++) {
-        FTTitleViewCell *cell = (FTTitleViewCell *)[collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
-        [cell setClicked:NO];
-    }
+    //for (int i=0; i<self.titles.count; i++) {
+        //FTTitleViewCell *cell = (FTTitleViewCell *)[collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+        //[cell setClicked:NO];
+    //}
     
     FTTitleViewCell *cell = (FTTitleViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
     [cell setClicked:YES];

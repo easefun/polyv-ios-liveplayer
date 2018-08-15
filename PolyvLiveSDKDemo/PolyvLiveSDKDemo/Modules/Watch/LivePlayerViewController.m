@@ -14,6 +14,7 @@
 #import "PLVLiveManager.h"
 #import "PLVChatroomController.h"
 #import "PLVOnlineListController.h"
+#import "PLVLiveInfoViewController.h"
 #import "ZJZDanMu.h"
 #import "PLVUtils.h"
 
@@ -25,12 +26,11 @@
 
 @interface LivePlayerViewController () <PLVSocketIODelegate, PLVChatroomDelegate, PLVOnlineListDelegate>
 
-@property (nonatomic, strong) PLVLivePlayerController *livePlayer;          // PLV播放器
 @property (nonatomic, strong) UIView *displayView;                          // 播放器显示层
-
 @property (nonatomic, strong) ZJZDanMu *danmuLayer;                         // 弹幕
+@property (nonatomic, strong) PLVLivePlayerController *livePlayer;          // PLV播放器
 
-@property (nonatomic, strong) PLVSocketIO *socketIO;                        // 即时通信
+@property (nonatomic, strong) PLVSocketIO *socketIO;
 @property (nonatomic, strong) PLVSocketObject *login;                       // Socket 登录对象
 @property (nonatomic, assign) BOOL loginSuccess;                            // Socket 登录成功
 
@@ -61,10 +61,9 @@
     [super viewDidLoad];
     
     [self initLocalData];
-    [self initPlayer];
     [self initSocketIO];
+    [self loadPlayer];
     
-    [self configDanmu];
     [self setupUI];
 }
 
@@ -72,7 +71,10 @@
     [super viewWillAppear:animated];
     
     _allowLandscape = YES;
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent animated:YES];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -86,38 +88,31 @@
     self.userId = self.channel.userId;
     self.stream = self.channel.stream;
     self.channelId = self.channel.channelId.unsignedIntegerValue;
+    [PLVLiveManager sharedLiveManager].channelId = self.channelId;
 }
 
 - (void)initSocketIO {
-    /// 请求聊天室、连麦授权接口
     __weak typeof(self)weakSelf = self;
     [PLVLiveAPI requestAuthorizationForLinkingSocketWithChannelId:self.channelId Appld:[PLVLiveConfig sharedInstance].appId appSecret:[PLVLiveConfig sharedInstance].appSecret success:^(NSDictionary *responseDict) {
         // 1.初始化 socketIO 连接对象
         weakSelf.socketIO = [[PLVSocketIO alloc] initSocketIOWithConnectToken:responseDict[@"chat_token"] enableLog:NO];
         weakSelf.socketIO.delegate = weakSelf;
         [weakSelf.socketIO connect];
-        //weakSelf.socketIO.debugMode = YES;
         
         // 2.初始化一个socket登录对象（昵称和头像使用默认设置）
-        self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:nil avatar:nil userType:PLVSocketObjectUserTypeStudent];
+        self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:self.nickName avatar:self.avatar userType:PLVSocketObjectUserTypeStudent];
         
         // 3.数据存储
         PLVLiveManager *manager = [PLVLiveManager sharedLiveManager];
         manager.login = self.login;
         manager.linkMicParams = responseDict;
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
-        NSLog(@"获取Socket授权失败:%ld,%@",errorCode,description);
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"聊天室连接失败" message:[NSString stringWithFormat:@"错误码:%ld, 信息:%@",errorCode,description] preferredStyle:UIAlertControllerStyleAlert];
-        [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:nil]];
-        [self presentViewController:alertController animated:YES completion:nil];
+        [PLVUtils showHUDWithTitle:@"聊天室连接失败！" detail:[NSString stringWithFormat:@"错误码:%ld, 信息:%@",errorCode,description] view:self.view];
     }];
 }
 
-- (void)initPlayer {
-    //[IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];    // IJK日志输出等级
-    
-    self.livePlayer = [self getLivePlayer];
-    [self configObservers];
+- (void)loadPlayer {
+    self.livePlayer = [self initializeLivePlayer];
     
     __weak typeof(self)weakSelf = self;
     [PLVLiveAPI getStreamStatusWithChannelId:self.channelId stream:self.stream completion:^(PLVLiveStreamState streamState, NSString *mode) {
@@ -129,12 +124,11 @@
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         [weakSelf.livePlayer play];
     }];
-}
-
-- (void)configDanmu {
-    CGRect bounds = self.livePlayer.view.bounds;
-    self.danmuLayer = [[ZJZDanMu alloc] initWithFrame:CGRectMake(0, 20, bounds.size.width, bounds.size.height-20)];
-    [self.livePlayer insertDanmuView:self.danmuLayer];
+    
+    // 注册播放器通知
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(livePlayerReconnectNotification:) name:PLVLivePlayerReconnectNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(livePlayerWillChangeToFullScreenNotification) name:PLVLivePlayerWillChangeToFullScreenNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(livePlayerWillExitFullScreenNotification) name:PLVLivePlayerWillExitFullScreenNotification object:nil];
 }
 
 - (void)setupUI {
@@ -148,44 +142,43 @@
     self.onlineListController = [[PLVOnlineListController alloc] init];
     self.onlineListController.channelId = self.channelId;
     self.onlineListController.delegate = self;
-    NSMutableArray *titles = [NSMutableArray arrayWithObjects:@"互动聊天",@"在线列表",nil];
-    NSMutableArray *controllers = [NSMutableArray arrayWithObjects:self.chatroomController,self.onlineListController,nil];
+    
+    NSMutableArray *titles = [NSMutableArray arrayWithObjects:@"互动聊天", @"在线列表", nil];
+    NSMutableArray *controllers = [NSMutableArray arrayWithObjects:self.chatroomController, self.onlineListController, nil];
 
     __weak typeof(self)weakSelf = self;
-    [PLVLiveAPI getChannelInfoWithQuestionMenuStatus:self.channelId completion:^(BOOL isOn) {
-        if (isOn) { // 初始化咨询提问聊天室
-            weakSelf.privateChatController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
-            weakSelf.privateChatController.privateChatMode = YES;
-            weakSelf.privateChatController.delegate = weakSelf;
-            [titles addObject:@"咨询提问"];
-            [controllers addObject:self.privateChatController];
+    [PLVLiveAPI getChannelMenuInfos:self.channelId completion:^(PLVChannelMenuInfo *channelMenuInfo) {
+        for (PLVChannelMenu *menu in channelMenuInfo.channelMenus) {
+            if ([@"desc" isEqualToString:menu.menuType] || [@"iframe" isEqualToString:menu.menuType] || [@"text" isEqualToString:menu.menuType]) {
+                PLVLiveInfoViewController *liveInfoController = [[PLVLiveInfoViewController alloc] init];
+                liveInfoController.channelMenuInfo = channelMenuInfo;
+                liveInfoController.menu = menu;
+                [titles addObject:menu.name];
+                [controllers addObject:liveInfoController];
+            } else if ([@"quiz" isEqualToString:menu.menuType]) {
+                weakSelf.privateChatController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
+                weakSelf.privateChatController.privateChatMode = YES;
+                weakSelf.privateChatController.delegate = weakSelf;
+                [titles insertObject:@"咨询提问" atIndex:2];
+                [controllers insertObject:self.privateChatController atIndex:2];
+            }
         }
         [weakSelf setupPageControllerWithTitles:titles controllers:controllers frame:pageCtrlFrame];
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
-        //NSLog(@"咨询提问状态获取失败:%ld,%@",errorCode,description);
-        [PLVUtils showHUDWithTitle:@"咨询提问状态获取失败！" detail:description view:self.view];
+        [PLVUtils showHUDWithTitle:@"频道菜单获取失败！" detail:description view:self.view];
         [weakSelf setupPageControllerWithTitles:titles controllers:controllers frame:pageCtrlFrame];
     }];
 }
 
-#pragma mark - Setter/Getter
-
-- (PLVLivePlayerController *)getLivePlayer {
-    if (_livePlayer) {
-        [_livePlayer clearPlayer];
-        _livePlayer = nil ;
-    }
-    _livePlayer = [[PLVLivePlayerController alloc] initWithChannel:self.channel displayView:self.displayView];
-    [self configCallBackBlock];
-    
-    return _livePlayer;
-}
+#pragma mark - Live Player
 
 - (UIView *)displayView {
     if (!_displayView) {
         CGFloat width = self.view.bounds.size.width;
         // 初始化一个播放器显示层，用于显示直播内容（默认为竖屏模式，横屏模式需要按需修改）
-        _displayView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, width*9/16)];
+        CGFloat y = [PLVUtils statusBarHeight];
+        CGRect rect = CGRectMake(0, 0, width, width * 9 / 16 + y);
+        _displayView = [[UIView alloc] initWithFrame:rect];
         _displayView.backgroundColor = [UIColor blackColor];
         //_displayView.layer.contents = (id)[UIImage imageNamed:PLAYER_BACKGROUND].CGImage;  // 播放器背景图
         [self.view addSubview:_displayView];
@@ -193,46 +186,32 @@
     return _displayView;
 }
 
-#pragma mark - Private methods
-
-- (void)setupPageControllerWithTitles:(NSArray *)titles controllers:(NSArray *)controllers frame:(CGRect)frame {
-    self.pageController = [[FTPageController alloc] initWithTitles:titles controllers:controllers];
-    self.pageController.view.backgroundColor = [UIColor colorWithRed:233/255.0 green:235/255.0 blue:245/255.0 alpha:1.0];
-    self.pageController.view.frame = frame;
-    [self addChildViewController:self.pageController];
-    [self.view addSubview:self.pageController.view];
-}
-
-// 注册播放器通知
-- (void)configObservers {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(livePlayerReconnectNotification:) name:PLVLivePlayerReconnectNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(livePlayerWillChangeToFullScreenNotification) name:PLVLivePlayerWillChangeToFullScreenNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(livePlayerWillExitFullScreenNotification) name:PLVLivePlayerWillExitFullScreenNotification object:nil];
-}
-
-- (int)emitSocketIOMessage:(PLVSocketObject *)socketObject {
-    if (self.socketIO) {
-        //NSLog(@"socketIOState:%ld",self.socketIO.socketIOState);
-        if (self.socketIO.socketIOState == PLVSocketIOStateConnected) {
-            [self.socketIO emitMessageWithSocketObject:socketObject];
-            return 1;
-        }else {
-            [PLVUtils showHUDWithTitle:@"消息发送失败！" detail:[NSString stringWithFormat:@"SocketIO state:%ld",self.socketIO.socketIOState] view:self.view];
-            return 0;
-        }
-    }else {
-        NSLog(@"socket.io not init.");
-        return 0;
+- (ZJZDanMu *)danmuLayer {
+    if (!_danmuLayer) {
+        _danmuLayer = [[ZJZDanMu alloc] initWithFrame:CGRectMake(0, 20, CGRectGetWidth(self.displayView.bounds), CGRectGetHeight(self.displayView.bounds) -20)];
     }
+    return _danmuLayer;
 }
 
-#pragma mark - Player callback
+- (PLVLivePlayerController *)initializeLivePlayer {
+    if (_livePlayer) {
+        [_livePlayer clearPlayer];
+        _livePlayer = nil ;
+    }
+    _livePlayer = [[PLVLivePlayerController alloc] initWithChannel:self.channel displayView:self.displayView];
+    //[IJKFFMoviePlayerController setLogLevel:k_IJK_LOG_INFO];    // 日志等级
+    [self configCallBackBlock];
+    
+    [_livePlayer insertDanmuView:self.danmuLayer]; // 添加弹幕层
+    
+    return _livePlayer;
+}
 
 - (void)configCallBackBlock {
     __weak typeof(self)weakSelf = self;
     [_livePlayer setReturnButtonClickBlock:^{
         NSLog(@"返回按钮点击了...");
-        // clearController 方法调用需要在 disconnect前
+        // clearController 方法需要在 socketIO disconnect前调用
         [weakSelf.onlineListController clearController];
         [weakSelf.socketIO disconnect];
         [weakSelf.socketIO removeAllHandlers];
@@ -256,31 +235,25 @@
     }];
 }
 
-#pragma mark - Notifications
+#pragma mark Notifications
 
 // 直播播断流后重新连接时创建一个新的播放器
 - (void)livePlayerReconnectNotification:(NSNotification *)notification {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.label.text = @"加载JSON...";
-    
+   
     __weak typeof(self)weakSelf = self;
-    [PLVLiveAPI loadChannelInfoWithUserId:self.userId channelId:self.channelId completion:^(PLVLiveChannel *channel) {
+    [PLVLiveAPI loadChannelInfoRepeatedlyWithUserId:self.userId channelId:self.channelId completion:^(PLVLiveChannel *channel) {
         weakSelf.channel = channel;
+        hud.label.text = @"JSON加载成功";
+        [hud hideAnimated:YES];
+        
         NSDictionary *userInfo = notification.userInfo;
         if (userInfo && userInfo[@"definition"]) {
             [weakSelf.channel updateDefaultDefinitionWithDefinition:userInfo[@"definition"]];
         }
-        
-        hud.label.text = @"JSON加载成功";
-        [hud hideAnimated:YES];
-        
-        weakSelf.livePlayer = [weakSelf getLivePlayer];
-        //[weakSelf.livePlayer prepareToPlay];
+        weakSelf.livePlayer = [weakSelf initializeLivePlayer];
         [weakSelf.livePlayer play];
-        // 如果弹幕存在的话就重新插入弹幕层
-        if (weakSelf.danmuLayer) {
-            [weakSelf.livePlayer insertDanmuView:self.danmuLayer];
-        }
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         hud.label.text = @"JSON加载失败";
         [hud hideAnimated:YES];
@@ -298,6 +271,38 @@
     NSLog(@"将要退出全屏啦");
     [self.pageController.view setHidden:NO];
 }
+
+#pragma mark - Private methods
+
+- (void)setupPageControllerWithTitles:(NSArray *)titles controllers:(NSArray *)controllers frame:(CGRect)frame {
+    self.pageController = [[FTPageController alloc] initWithTitles:titles controllers:controllers];
+    self.pageController.view.backgroundColor = [UIColor colorWithRed:233/255.0 green:235/255.0 blue:245/255.0 alpha:1.0];
+    self.pageController.view.frame = frame;
+    [self addChildViewController:self.pageController];
+    [self.view addSubview:self.pageController.view];
+}
+
+- (int)emitSocketIOMessage:(PLVSocketObject *)socketObject {
+    if (self.socketIO) {
+        //NSLog(@"socketIOState:%ld",self.socketIO.socketIOState);
+        if (self.loginSuccess && self.socketIO.socketIOState == PLVSocketIOStateConnected) {
+            [self.socketIO emitMessageWithSocketObject:socketObject];
+            return 1;
+        }else {
+            [PLVUtils showHUDWithTitle:@"消息发送失败！" detail:[NSString stringWithFormat:@"登录失败或连接失败，state:%ld",self.socketIO.socketIOState] view:self.view];
+            return 0;
+        }
+    }else {
+        NSLog(@"socket.io not init.");
+        return 0;
+    }
+}
+
+//- (void)configDanmu {
+//    CGRect bounds = self.livePlayer.view.bounds;
+//    self.danmuLayer = [[ZJZDanMu alloc] initWithFrame:CGRectMake(0, 20, bounds.size.width, bounds.size.height-20)];
+//    [self.livePlayer insertDanmuView:self.danmuLayer];
+//}
 
 #pragma mark - <PLVSocketIODelegate>
 /// 连接成功
@@ -390,15 +395,5 @@
         return UIInterfaceOrientationMaskPortrait;
     }
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

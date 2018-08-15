@@ -53,6 +53,9 @@
 /// 展示建议的清晰度提示
 - (void)showRecommendedDefinition:(NSString *)definition;
 
+/// 展示限制播放视图
+- (void)showRestrictPlayViewWithErrorCode:(NSString *)errorCode;
+
 /**
  添加视频信息视图
  @discussion 添加时会显示 videoInfo 视图

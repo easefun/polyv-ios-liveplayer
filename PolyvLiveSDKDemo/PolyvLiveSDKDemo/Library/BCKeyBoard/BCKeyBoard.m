@@ -212,27 +212,29 @@
 }
 
 #pragma mark - Private methods
+- (CGFloat)modifyFrame:(CGFloat)bottomHeight {
+    CGFloat toHeight = CGRectGetHeight(_originFrame) - 30.0 + self.textView.frame.size.height + bottomHeight;
+    CGRect toFrame = CGRectMake(self.frame.origin.x, (self.frame.origin.y + self.frame.size.height) - toHeight, self.frame.size.width, toHeight);
+    self.frame = toFrame;
+    self.backgroundImageView.frame = self.bounds;
+    return toHeight;
+}
 
 - (void)changeFrame:(CGFloat)height {
     if (height == _lastHeight) {
         return;
     }else {
-        CGFloat changeHeight = height - _lastHeight;
-        
-        CGRect rect = self.frame;
-        rect.size.height += changeHeight;
-        rect.origin.y -= changeHeight;
-        self.frame = rect;
-        
-        rect = self.backgroundImageView.frame;
-        rect.size.height += changeHeight;
-        self.backgroundImageView.frame = rect;
-        
         [self.textView setContentOffset:CGPointMake(0.0f, (self.textView.contentSize.height - self.textView.frame.size.height) / 2) animated:YES];
         
         CGRect frame = self.textView.frame;
         frame.size.height = height;
         self.textView.frame = frame;
+        
+        CGFloat bottomHeight = 0.0;
+        if (self.activeView) {
+            bottomHeight = self.activeView.frame.size.height;
+        }
+        [self modifyFrame:bottomHeight];
         
         _lastHeight = height;
         
@@ -243,11 +245,7 @@
 }
 
 - (void)willShowBottomHeight:(CGFloat)bottomHeight bottomView:(UIView *)bottomView {
-    CGRect fromFrame = self.frame;
-    CGFloat toHeight = CGRectGetHeight(self.backgroundImageView.frame) + bottomHeight;
-    CGRect toFrame = CGRectMake(fromFrame.origin.x, fromFrame.origin.y + (fromFrame.size.height - toHeight), fromFrame.size.width, toHeight);
-    self.frame = toFrame;
-    
+    CGFloat toHeight = [self modifyFrame:bottomHeight];
     if (bottomView) {
         if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
             [self.delegate returnHeight:toHeight];
@@ -262,7 +260,7 @@
         
         if (bottomView) {
             CGRect rect = bottomView.frame;
-            rect.origin.y = CGRectGetMaxY(self.backgroundImageView.frame);
+            rect.origin.y = self.textView.frame.origin.y + self.textView.frame.size.height + kHorizontalPadding;
             bottomView.frame = rect;
             [self addSubview:bottomView];
         }

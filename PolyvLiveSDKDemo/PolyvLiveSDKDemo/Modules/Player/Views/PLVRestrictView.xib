@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="PLVRestrictView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="210"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="当前直播无法播放，请重试或向管理员反馈" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="suZ-cD-dyc">
+                    <rect key="frame" x="70.5" y="118" width="233" height="14.5"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="14.5" id="Rpd-En-vXG"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The live stream is not available" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="B1z-5m-diZ">
+                    <rect key="frame" x="114" y="140" width="148.5" height="15"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="15" id="qcN-eT-9LZ"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="r7G-nQ-s8C">
+                    <rect key="frame" x="157" y="35" width="60" height="60"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="60" id="L6U-4A-MZS"/>
+                        <constraint firstAttribute="height" constant="60" id="gqc-32-UE7"/>
+                    </constraints>
+                </imageView>
+                <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="mOQ-PC-JSx">
+                    <rect key="frame" x="61" y="155" width="254" height="15"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="please retry or contact the Administrator" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XhZ-Mm-f8Y">
+                            <rect key="frame" x="0.0" y="0.0" width="196.5" height="15"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LIVE-#000" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ehO-3x-Bgc">
+                            <rect key="frame" x="201.5" y="0.0" width="52.5" height="15"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="15" id="V7j-J4-kDp"/>
+                    </constraints>
+                </stackView>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="suZ-cD-dyc" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="88H-YN-Jav"/>
+                <constraint firstItem="suZ-cD-dyc" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="20" id="F9c-SR-0KV"/>
+                <constraint firstItem="mOQ-PC-JSx" firstAttribute="top" secondItem="B1z-5m-diZ" secondAttribute="bottom" id="Tbg-EQ-CQi"/>
+                <constraint firstItem="r7G-nQ-s8C" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-40" id="XeW-2e-Em0"/>
+                <constraint firstItem="r7G-nQ-s8C" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="Zw6-D6-3bQ"/>
+                <constraint firstItem="mOQ-PC-JSx" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="lwR-KJ-6qh"/>
+                <constraint firstItem="B1z-5m-diZ" firstAttribute="top" secondItem="suZ-cD-dyc" secondAttribute="bottom" constant="8" id="nkg-dW-6gZ"/>
+                <constraint firstItem="B1z-5m-diZ" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="s2F-tR-hx4"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="errorCodeLabel" destination="ehO-3x-Bgc" id="T5f-7S-fvK"/>
+                <outlet property="warningImageView" destination="r7G-nQ-s8C" id="Fe1-dM-l9j"/>
+            </connections>
+            <point key="canvasLocation" x="25.5" y="53"/>
+        </view>
+    </objects>
+</document>

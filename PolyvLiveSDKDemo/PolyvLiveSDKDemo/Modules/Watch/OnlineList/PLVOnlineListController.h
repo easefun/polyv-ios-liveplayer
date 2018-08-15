@@ -28,6 +28,4 @@
  */
 - (void)clearController;
 
-//- (void)invalidateTimer;
-
 @end

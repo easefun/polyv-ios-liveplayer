@@ -11,6 +11,8 @@
 
 @interface PLVLiveManager : NSObject
 
+/// 当前房间号/频道号
+@property (nonatomic, assign) NSUInteger channelId;
 /// Socket 登录对象
 @property (nonatomic, strong) PLVSocketObject *login;
 
@@ -32,6 +34,13 @@
  @return 聊天室信息（弹幕信息）
  */
 - (NSString *)handleChatroomObject:(PLVSocketChatRoomObject *)chatroomObject completion:(void(^)(BOOL isChatroom))completion;
+
+/**
+ 处理聊天室历史消息
+
+ @param historyList 历史消息
+ */
+- (void)handleChatRoomHistoryMessage:(NSArray *)historyList;
 
 /**
  重置数据

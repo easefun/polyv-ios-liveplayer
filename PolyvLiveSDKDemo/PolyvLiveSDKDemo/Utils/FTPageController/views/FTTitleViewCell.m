@@ -13,6 +13,8 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
+    
+    self.clicked = NO;
 }
 
 - (void)setClicked:(BOOL)clicked {

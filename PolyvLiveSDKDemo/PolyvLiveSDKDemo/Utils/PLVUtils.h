@@ -26,4 +26,14 @@
  */
 + (void)requestVideoAndAudioAuthorizationWithViewController:(nullable __weak UIViewController *)viewcontroller;
 
+/**
+ 代码判断当前机器的类型是否iPhone X
+ */
++ (BOOL)isPhoneX;
+
+/**
+ 如果当前机器的类型是iPhone X，则返回statusBar的高度，否则返回0.0
+ */
++ (CGFloat)statusBarHeight;
+
 @end

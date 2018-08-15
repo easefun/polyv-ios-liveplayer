@@ -8,13 +8,14 @@
 
 #import "PLVLivePlayerController.h"
 #import "PLVLivePlayerControllerSkin.h"
+#import "PLVUtils.h"
 
 NSString * const PLVLivePlayerReconnectNotification = @"PLVLivePlayerReconnectNotification";
 NSString * const PLVLivePlayerWillChangeToFullScreenNotification = @"PLVLivePlayerWillChangeToFullScreenNotification";
 NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWillExitFullScreenNotification";
 
 #define PlayerErrorDomain @"net.polyv.live"
-#define PlayerVersion @"iOS-livePlayerSDK2.4.0+180717"
+#define PlayerVersion @"iOS-livePlayerSDK2.5.0+180815"
 
 #define PLAY_MODE @"live"   // 统计后台live/vod
 
@@ -52,8 +53,10 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 #pragma mark - Rewrite
 
 - (void)play {
-    [super play];
-    [self.playerSkin addVideoInfoWithDescription:@"视频加载中..."];
+    if (self.channel.restrictState != PLVLiveRestrictPlay) {
+        [super play];
+        [self.playerSkin addVideoInfoWithDescription:@"视频加载中..."];
+    }
 }
 
 - (PLVLivePlayerControllerSkin *)playerSkin {
@@ -156,7 +159,8 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         self.streamState = PLVLiveStreamStateUnknown;
         
         // 添加IJK播放器至displayView
-        self.view.frame = displayView.bounds;
+        CGFloat y = [PLVUtils statusBarHeight];
+        self.view.frame = CGRectMake(0.0, y, displayView.bounds.size.width, displayView.bounds.size.height - y);
         self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [displayView addSubview:self.view];
         
@@ -167,19 +171,18 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         
         [self setupPlayerSkin];
         [self addPlayerSkinActions];
-        [self configObservers];
-        [self addGestureActions];
-        [self addTimerEvents];
-        UIInterfaceOrientation interfaceOrientation= [UIApplication sharedApplication].statusBarOrientation;
-        if (interfaceOrientation == UIInterfaceOrientationLandscapeLeft
-            || interfaceOrientation == UIInterfaceOrientationLandscapeRight) {
-            CGSize size = [UIScreen mainScreen].bounds.size;
-            self.originFrame = CGRectMake(0, 0, size.height, size.height*9/16);
-            [self setOrientationLandscape];
+        if (self.channel.restrictState == PLVLiveRestrictPlay) {
+            [self.playerSkin showRestrictPlayViewWithErrorCode:self.channel.restrictInfo[@"errorCode"]];
+        }else {
+            [self configObservers];
+            [self addGestureActions];
+            [self addTimerEvents];
+            
+            [self.playerSkin.indicatorView startAnimating];
+            [self.playerSkin addVideoInfoWithDescription:@"播放器初始化完成"];
         }
-        
-        [self.playerSkin.indicatorView startAnimating];
-        [self.playerSkin addVideoInfoWithDescription:@"播放器初始化完成"];
+        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
     }
     return self;
 }
@@ -202,6 +205,14 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
             [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerReconnectNotification object:weakSelf userInfo:@{@"definition":definition}];
         }];
     }
+    
+    UIInterfaceOrientation interfaceOrientation= [UIApplication sharedApplication].statusBarOrientation;
+    if (interfaceOrientation == UIInterfaceOrientationLandscapeLeft
+        || interfaceOrientation == UIInterfaceOrientationLandscapeRight) {
+        CGSize size = [UIScreen mainScreen].bounds.size;
+        self.originFrame = CGRectMake(0, 0, size.height, size.height*9/16);
+        [self setOrientationLandscape];
+    }
 }
 
 - (void)configObservers {
@@ -218,8 +229,6 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     //[defaultCenter addObserver:self selector:@selector(moviePlayerFirstVideoFrameRendered:) name:IJKMPMoviePlayerFirstVideoFrameRenderedNotification object:self];
     //[defaultCenter addObserver:self selector:@selector(moviePlayerFirstAudioFrameRendered:) name:IJKMPMoviePlayerFirstAudioFrameRenderedNotification object:self];
     
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    [defaultCenter addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
     // link mic
     [defaultCenter addObserver:self selector:@selector(linkMicDidJoinNotification) name:PLVLiveLinkMicDidJoinNotification object:nil];
     [defaultCenter addObserver:self selector:@selector(linkMicDidLeaveNotification) name:PLVLiveLinkMicDidLeaveNotification object:nil];
@@ -239,7 +248,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 }
 
 - (void)addTimerEvents {
-    _liveStatusTimer = [NSTimer scheduledTimerWithTimeInterval:6.0 target:self
+    _liveStatusTimer = [NSTimer scheduledTimerWithTimeInterval:8.0 target:self
                                                       selector:@selector(onTimeCheckLiveStreamState) userInfo:nil repeats:YES];
     _playerPollingTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self
                                                          selector:@selector(playerPollingTimerTick) userInfo:nil repeats:YES];
@@ -427,7 +436,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 
  /// 播放暖场（视频/图片）
 - (void)playWithCover {
-    if (self.channel) {
+    if (self.channel && self.channel.restrictState != PLVLiveRestrictPlay) {
         self.showCover = YES;
         if (!self.playerSkin.isSkinShowing) {
             [self.playerSkin animateShowSkin];
@@ -446,7 +455,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 }
 
 - (void)insertDanmuView:(UIView *)danmuView {
-    [self.playerSkin insertSubview:danmuView belowSubview:self.playerSkin.topBar];
+    [self.playerSkin insertSubview:danmuView belowSubview:self.playerSkin.bottomBar];
 }
 
 - (void)clearPlayer {
@@ -564,6 +573,10 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerWillChangeToFullScreenNotification object:self];    // 发送全屏通知
     [UIView animateWithDuration:0.3 animations:^{
         self.frame = [UIScreen mainScreen].bounds;
+        if ([PLVUtils isPhoneX]) {
+            CGFloat y = [PLVUtils statusBarHeight];
+            self.view.frame = CGRectMake(y, 0.0, self.frame.size.width - y * 2.0, self.frame.size.height);
+        }
         [self.playerSkin changeToFullScreen];
         // 发送全屏通知
     } completion:^(BOOL finished) {
@@ -576,6 +589,8 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerWillExitFullScreenNotification object:self];    // 发送退出全屏通知
     [UIView animateWithDuration:0.3 animations:^{
         self.frame = self.originFrame;
+        CGFloat y = [PLVUtils statusBarHeight];
+        self.view.frame = CGRectMake(0.0, y, self.displayView.bounds.size.width, self.displayView.bounds.size.height - y);
         [self.playerSkin changeToSmallScreen];
     } completion:^(BOOL finished) {
         [self.playerSkin.smallScreenButton setHidden:YES];

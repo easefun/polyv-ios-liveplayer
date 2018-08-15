@@ -16,7 +16,7 @@
 @end
 
 @interface PLVChatroomController : UIViewController
-
+/// 代理
 @property (nonatomic, weak) id<PLVChatroomDelegate> delegate;
 /// 私有聊天室模式(咨询提问)
 @property (nonatomic, getter=isPrivateChatMode) BOOL privateChatMode;

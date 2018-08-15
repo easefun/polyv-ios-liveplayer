@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		22C5835520FEE0880083E9D3 /* PLVLiveInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C5835320FEE0880083E9D3 /* PLVLiveInfoViewController.m */; };
+		22C5835620FEE0880083E9D3 /* PLVLiveInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22C5835420FEE0880083E9D3 /* PLVLiveInfoViewController.xib */; };
 		67308AD920B6A6E000C1F5A2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 67308AD820B6A6E000C1F5A2 /* AppDelegate.m */; };
 		67308ADC20B6A6E000C1F5A2 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 67308ADB20B6A6E000C1F5A2 /* LoginViewController.m */; };
 		67308ADF20B6A6E000C1F5A2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 67308ADD20B6A6E000C1F5A2 /* Main.storyboard */; };
@@ -48,10 +50,28 @@
 		6730CA7B20B7A98E002E83B9 /* PLVUserTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6730CA7820B7A98D002E83B9 /* PLVUserTableViewCell.xib */; };
 		6730CA7C20B7A98E002E83B9 /* PLVUserTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6730CA7A20B7A98D002E83B9 /* PLVUserTableViewCell.m */; };
 		673845F420E9213100C01F53 /* PLVUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 673845F320E9213100C01F53 /* PLVUtils.m */; };
+		67386D4B210FF4B500F96656 /* PLVRestrictView.m in Sources */ = {isa = PBXBuildFile; fileRef = 67386D4A210FF4B500F96656 /* PLVRestrictView.m */; };
+		67386D4D210FF4E800F96656 /* PLVRestrictView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 67386D4C210FF4E800F96656 /* PLVRestrictView.xib */; };
 		E1228DFF0A9ED48CFE0C4FB8 /* Pods_PolyvLiveSDKDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB2574FE0795685D18BB01CC /* Pods_PolyvLiveSDKDemo.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		22AA03AC21008F2A00A440E3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		22C5835220FEE0880083E9D3 /* PLVLiveInfoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLVLiveInfoViewController.h; sourceTree = "<group>"; };
+		22C5835320FEE0880083E9D3 /* PLVLiveInfoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLVLiveInfoViewController.m; sourceTree = "<group>"; };
+		22C5835420FEE0880083E9D3 /* PLVLiveInfoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PLVLiveInfoViewController.xib; sourceTree = "<group>"; };
 		40274254698A9ABB701A482E /* Pods-PolyvLiveSDKDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PolyvLiveSDKDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo.release.xcconfig"; sourceTree = "<group>"; };
 		67308AD420B6A6E000C1F5A2 /* PolyvLiveSDKDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PolyvLiveSDKDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		67308AD720B6A6E000C1F5A2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -117,6 +137,9 @@
 		6730CA7A20B7A98D002E83B9 /* PLVUserTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PLVUserTableViewCell.m; sourceTree = "<group>"; };
 		673845F220E9213100C01F53 /* PLVUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLVUtils.h; sourceTree = "<group>"; };
 		673845F320E9213100C01F53 /* PLVUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLVUtils.m; sourceTree = "<group>"; };
+		67386D49210FF4B500F96656 /* PLVRestrictView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLVRestrictView.h; sourceTree = "<group>"; };
+		67386D4A210FF4B500F96656 /* PLVRestrictView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLVRestrictView.m; sourceTree = "<group>"; };
+		67386D4C210FF4E800F96656 /* PLVRestrictView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PLVRestrictView.xib; sourceTree = "<group>"; };
 		7E0E1D7F275A1DAD72549440 /* Pods-PolyvLiveSDKDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PolyvLiveSDKDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		EB2574FE0795685D18BB01CC /* Pods_PolyvLiveSDKDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PolyvLiveSDKDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -133,6 +156,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		22C5834F20FEE0500083E9D3 /* LiveInfos */ = {
+			isa = PBXGroup;
+			children = (
+				22C5835220FEE0880083E9D3 /* PLVLiveInfoViewController.h */,
+				22C5835320FEE0880083E9D3 /* PLVLiveInfoViewController.m */,
+				22C5835420FEE0880083E9D3 /* PLVLiveInfoViewController.xib */,
+			);
+			path = LiveInfos;
+			sourceTree = "<group>";
+		};
 		67308ACB20B6A6E000C1F5A2 = {
 			isa = PBXGroup;
 			children = (
@@ -218,8 +251,9 @@
 		67308AF420B6BC6200C1F5A2 /* Watch */ = {
 			isa = PBXGroup;
 			children = (
-				6730CA6F20B7A94E002E83B9 /* Chatroom */,
+				6730CA6F20B7A94E002E83B9 /* ChatRoom */,
 				6730CA7020B7A957002E83B9 /* OnlineList */,
+				22C5834F20FEE0500083E9D3 /* LiveInfos */,
 				6730CA6C20B7A939002E83B9 /* PLVLiveManager.h */,
 				6730CA6D20B7A939002E83B9 /* PLVLiveManager.m */,
 				6730CA6A20B7A92B002E83B9 /* LivePlayerViewController.h */,
@@ -231,6 +265,7 @@
 		67308AF520B6BCA300C1F5A2 /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				67386D45210FF43600F96656 /* Views */,
 				6730CA6320B7A70C002E83B9 /* PLVLivePlayerController.h */,
 				6730CA6520B7A70C002E83B9 /* PLVLivePlayerController.m */,
 				6730CA6120B7A70C002E83B9 /* PLVLivePlayerControllerSkin.h */,
@@ -255,10 +290,10 @@
 		6730CA2620B7A6A2002E83B9 /* BCKeyBoard */ = {
 			isa = PBXGroup;
 			children = (
-				6730CA2720B7A6A2002E83B9 /* BCTextView.h */,
-				6730CA2820B7A6A2002E83B9 /* BCKeyBoard.h */,
 				6730CA2920B7A6A2002E83B9 /* FaceVIew */,
+				6730CA2720B7A6A2002E83B9 /* BCTextView.h */,
 				6730CA3220B7A6A2002E83B9 /* BCTextView.m */,
+				6730CA2820B7A6A2002E83B9 /* BCKeyBoard.h */,
 				6730CA3320B7A6A2002E83B9 /* BCKeyBoard.m */,
 				6730CA3420B7A6A2002E83B9 /* resource */,
 			);
@@ -268,14 +303,14 @@
 		6730CA2920B7A6A2002E83B9 /* FaceVIew */ = {
 			isa = PBXGroup;
 			children = (
-				6730CA2A20B7A6A2002E83B9 /* PLVEmojiModel.m */,
-				6730CA2B20B7A6A2002E83B9 /* FacialView.m */,
+				6730CA3020B7A6A2002E83B9 /* Emoji.h */,
 				6730CA2C20B7A6A2002E83B9 /* Emoji.m */,
+				6730CA2F20B7A6A2002E83B9 /* FacialView.h */,
+				6730CA2B20B7A6A2002E83B9 /* FacialView.m */,
+				6730CA3120B7A6A2002E83B9 /* DXFaceView.h */,
 				6730CA2D20B7A6A2002E83B9 /* DXFaceView.m */,
 				6730CA2E20B7A6A2002E83B9 /* PLVEmojiModel.h */,
-				6730CA2F20B7A6A2002E83B9 /* FacialView.h */,
-				6730CA3020B7A6A2002E83B9 /* Emoji.h */,
-				6730CA3120B7A6A2002E83B9 /* DXFaceView.h */,
+				6730CA2A20B7A6A2002E83B9 /* PLVEmojiModel.m */,
 			);
 			path = FaceVIew;
 			sourceTree = "<group>";
@@ -336,13 +371,13 @@
 			path = views;
 			sourceTree = "<group>";
 		};
-		6730CA6F20B7A94E002E83B9 /* Chatroom */ = {
+		6730CA6F20B7A94E002E83B9 /* ChatRoom */ = {
 			isa = PBXGroup;
 			children = (
 				6730CA7220B7A969002E83B9 /* PLVChatroomController.h */,
 				6730CA7120B7A969002E83B9 /* PLVChatroomController.m */,
 			);
-			path = Chatroom;
+			path = ChatRoom;
 			sourceTree = "<group>";
 		};
 		6730CA7020B7A957002E83B9 /* OnlineList */ = {
@@ -361,6 +396,16 @@
 				6730CA7920B7A98D002E83B9 /* PLVUserTableViewCell.h */,
 				6730CA7A20B7A98D002E83B9 /* PLVUserTableViewCell.m */,
 				6730CA7820B7A98D002E83B9 /* PLVUserTableViewCell.xib */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		67386D45210FF43600F96656 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				67386D49210FF4B500F96656 /* PLVRestrictView.h */,
+				67386D4A210FF4B500F96656 /* PLVRestrictView.m */,
+				67386D4C210FF4E800F96656 /* PLVRestrictView.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -394,7 +439,8 @@
 				67308AD120B6A6E000C1F5A2 /* Frameworks */,
 				67308AD220B6A6E000C1F5A2 /* Resources */,
 				E1E45F245F6A3325E3556865 /* [CP] Embed Pods Frameworks */,
-				3DE92B09465026394A768432 /* [CP] Copy Pods Resources */,
+				22AA03AC21008F2A00A440E3 /* Embed Frameworks */,
+				A100FB9C6B80536FEE012BFC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -452,6 +498,7 @@
 				6730CA5520B7A6A2002E83B9 /* chatBar_faceSelected@2x.png in Resources */,
 				67308AE420B6A6E000C1F5A2 /* LaunchScreen.storyboard in Resources */,
 				67308AE120B6A6E000C1F5A2 /* Assets.xcassets in Resources */,
+				22C5835620FEE0880083E9D3 /* PLVLiveInfoViewController.xib in Resources */,
 				6730CA6620B7A70C002E83B9 /* PLVLivePlayerSkin.bundle in Resources */,
 				6730CA5420B7A6A2002E83B9 /* chatBar_keyboard@2x.png in Resources */,
 				6730CA5320B7A6A2002E83B9 /* chatBar_keyboardSelected@2x.png in Resources */,
@@ -460,6 +507,7 @@
 				6730CA5020B7A6A2002E83B9 /* chatBar_faceSelected.png in Resources */,
 				6730CA6020B7A6ED002E83B9 /* FTTitleViewCell.xib in Resources */,
 				6730CA4B20B7A6A2002E83B9 /* faceDelete@2x.png in Resources */,
+				67386D4D210FF4E800F96656 /* PLVRestrictView.xib in Resources */,
 				67308AEE20B6AB7200C1F5A2 /* README.md in Resources */,
 				6730CA7B20B7A98E002E83B9 /* PLVUserTableViewCell.xib in Resources */,
 				67308ADF20B6A6E000C1F5A2 /* Main.storyboard in Resources */,
@@ -470,7 +518,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3DE92B09465026394A768432 /* [CP] Copy Pods Resources */ = {
+		A100FB9C6B80536FEE012BFC /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -549,6 +597,8 @@
 				6730CA2520B7A68F002E83B9 /* ZJZDanMuLabel.m in Sources */,
 				6730CA6720B7A70C002E83B9 /* PLVLivePlayerControllerSkin.m in Sources */,
 				67308AE720B6A6E000C1F5A2 /* main.m in Sources */,
+				67386D4B210FF4B500F96656 /* PLVRestrictView.m in Sources */,
+				22C5835520FEE0880083E9D3 /* PLVLiveInfoViewController.m in Sources */,
 				6730CA4920B7A6A2002E83B9 /* BCKeyBoard.m in Sources */,
 				6730CA7C20B7A98E002E83B9 /* PLVUserTableViewCell.m in Sources */,
 				6730CA5F20B7A6ED002E83B9 /* FTTitleViewCell.m in Sources */,
@@ -695,6 +745,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ETRBR9HA5V;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/PolyvLiveSDKDemo/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -713,9 +767,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = ETRBR9HA5V;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/PolyvLiveSDKDemo/Supporting Files/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = net.polyv.IJKLivePlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;

@@ -10,18 +10,9 @@ target 'PolyvLiveSDKDemo' do
   pod 'MBProgressHUD', '~> 1.1.0'
   pod 'SDWebImage', '~> 4.4.0'
 
-  pod 'PolyvLiveAPI', '~> 0.4.1'      # Polyv live api
+  pod 'PolyvLiveAPI', '~> 0.6.0'      # Polyv live api
   pod 'PolyvSocketAPI', '~> 0.4.1'    # Polyv socket.io api
-  pod 'PolyvIJKPlayer', '~> 0.1.0'    # Polyv ijkPlayer
+  pod 'PolyvIJKPlayer', '~> 0.3.0'    # Polyv ijkPlayer
   pod 'AgoraRtcEngine_iOS', '~>2.0.0' # Agora rtc engine
 end
-
-# 以下设置 Pods 子 Target 的 Swift 版本为 4.0（PolyvSocketAPI 0.4.0版本下）
-#post_install do |installer|
-#    installer.pods_project.targets.each do |target|
-#        target.build_configurations.each do |configuration|
-#            configuration.build_settings['SWIFT_VERSION'] = "4.0"
-#        end
-#    end
-#end
 

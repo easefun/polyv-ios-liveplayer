@@ -11,6 +11,8 @@
 #import "PLVLiveManager.h"
 #import "BCKeyBoard.h"
 #import <Masonry/Masonry.h>
+#import "PLVUtils.h"
+#import <PLVLiveAPI/PLVLiveAPI.h>
 
 #define SPEAK_FONT_SIZE 14.0       // 聊天发言文字大小
 #define SYSTEM_FONT_SIZE 12.0      // 系统样式文字大小
@@ -27,6 +29,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 @property (nonatomic, strong) UIButton *showLatestMessageBtn;
 @property (nonatomic, strong) BCKeyBoard *bcKeyBoard;
 
+@property (nonatomic, assign) NSUInteger roomId;
 @property (nonatomic, strong) NSMutableArray *chatroomObjects;
 @property (nonatomic, strong) NSMutableArray<PLVSocketChatRoomObject *> *privateChatObjects;
 
@@ -36,6 +39,9 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     NSDate *_lastSpeakTime;
     BOOL _isSelfSpeak;
     BOOL _isCellInBottom;
+    BOOL _moreMessage;
+    BOOL _haveloaded;
+    NSUInteger _startIndex;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -52,7 +58,8 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     // Do any additional setup after loading the view.
 
     _isCellInBottom = YES;
-    // 指向同一块内存地址
+    _moreMessage = YES;
+    self.roomId = [PLVLiveManager sharedLiveManager].channelId;
     self.chatroomObjects = [PLVLiveManager sharedLiveManager].chatroomObjects;
     self.privateChatObjects = [PLVLiveManager sharedLiveManager].privateChatObjects;
 }
@@ -61,6 +68,10 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     [super viewWillAppear:animated];
     
     self.bcKeyBoard.delegate = self;
+    if (!_haveloaded && !self.privateChatMode) {
+        [self setupRefresh];
+        _haveloaded = YES;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -72,7 +83,12 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 }
 
 - (void)setupUIWithFrame:(CGRect)frame {
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame)-TOOL_BAR_HEIGHT) style:UITableViewStylePlain];
+    CGFloat keyBoardHeight = TOOL_BAR_HEIGHT;
+    if ([PLVUtils isPhoneX]) {
+        keyBoardHeight += 38.0;
+    }
+    
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame) - keyBoardHeight) style:UITableViewStylePlain];
     //self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:self.tableView];
     self.tableView.backgroundColor = [UIColor clearColor];
@@ -83,7 +99,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:reuseChatCellIdentifier];
     
     // 表情键盘
-    self.bcKeyBoard = [[BCKeyBoard alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(frame)-TOOL_BAR_HEIGHT, CGRectGetWidth(frame), TOOL_BAR_HEIGHT)];
+    self.bcKeyBoard = [[BCKeyBoard alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(frame) - keyBoardHeight, CGRectGetWidth(frame), keyBoardHeight)];
     [self.view addSubview:self.bcKeyBoard];
     self.bcKeyBoard.placeholder = @"我也来聊几句...";
     self.bcKeyBoard.placeholderColor = [UIColor colorWithRed:133/255 green:133/255 blue:133/255 alpha:0.5];
@@ -107,7 +123,41 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     }];
 }
 
-#pragma mark - Public interface
+// 下拉刷新控件
+- (void)setupRefresh {
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(refreshClick:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:refreshControl];
+    [self refreshClick:refreshControl]; // 主动触发一次
+}
+
+- (void)refreshClick:(UIRefreshControl *)refreshControl {
+    [refreshControl endRefreshing];
+    //NSLog(@"refreshClick:");
+    NSUInteger length = 20;
+    if (_moreMessage) {
+        __weak typeof(self)weakSelf = self;
+        [PLVLiveAPI requestChatRoomHistoryWithRoomId:self.roomId startIndex:_startIndex endIndex:_startIndex+length completion:^(NSArray *historyList) {
+            NSLog(@"historyList count:%ld",historyList.count);
+            [[PLVLiveManager sharedLiveManager] handleChatRoomHistoryMessage:historyList];
+            [weakSelf.tableView reloadData];
+            if (!_startIndex) {
+                [weakSelf.tableView scrollsToTop];
+            }
+            if (historyList.count > length) {
+                _startIndex += length;
+            }else {
+                _moreMessage = NO;
+            }
+        } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
+            [PLVUtils showHUDWithTitle:@"聊天室历史记录获取失败！" detail:description view:weakSelf.view];
+        }];
+    } else {
+        [PLVUtils showHUDWithTitle:@"没有更多数据了" detail:nil view:self.view];
+    }
+}
+
+#pragma mark - Public
 /// !!!:当前数据更新只存在新增数据一种情况
 - (void)updateChatroom {
     [self.tableView reloadData];
@@ -190,9 +240,12 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
             
             UILabel *contentLB = [[UILabel alloc] init];
             contentLB.backgroundColor = [UIColor colorWithWhite:51/255.0 alpha:0.65];
-            contentLB.text = content;
             contentLB.textAlignment = NSTextAlignmentCenter;
             contentLB.font = [UIFont systemFontOfSize:SYSTEM_FONT_SIZE weight:UIFontWeightMedium];
+            //NSAttributedString *attributedStr = [[NSAttributedString alloc] initWithData:[content dataUsingEncoding:NSUnicodeStringEncoding] options:@{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType } documentAttributes:nil error:nil];
+            //[attributedStr addAttribute:NSFontAttributeName value:contentLB.font range:NSMakeRange(0, attributedStr.length)];
+            //contentLB.attributedText = attributedStr; // 聊天室内容和公告内容转义
+            contentLB.text = content;
             contentLB.textColor = [UIColor whiteColor];
             contentLB.layer.cornerRadius = 4.0;
             contentLB.layer.masksToBounds = YES;
@@ -286,9 +339,6 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
         _isSelfSpeak = YES;
         [self updateChatroom];
     }
-    //if (self.delegate && [self.delegate respondsToSelector:@selector(sendMessage:privateChatMode:)]) {
-    //  [self.delegate sendMessage:text privateChatMode:self.isPrivateChatMode];
-    //}
 }
 
 - (void)returnHeight:(CGFloat)height {
@@ -303,7 +353,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     }
 }
 
-#pragma mark - Private methods
+#pragma mark - Private
 /// 自己发言样式
 - (UIView *)bubbleViewForSelfWithContent:(NSString *)content position:(int)position {
     UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -356,18 +406,6 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     avatarView.layer.cornerRadius = 35/2.0;
     avatarView.layer.masksToBounds = YES;
     [avatarView sd_setImageWithURL:[NSURL URLWithString:nickImg] placeholderImage:[UIImage imageNamed:@"plv_default_user"]];
-//    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:nickImg] cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:6.0];
-//    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            if (error) {
-//                //avatarView.image = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_missing_face"];
-//                avatarView.image = [UIImage imageNamed:@"plv_default_user"];
-//            }else {
-//                UIImage *image = [UIImage imageWithData:data];
-//                if (image) avatarView.image = image;
-//            }
-//        });
-//    }] resume];
     
     // 昵称
     UILabel *nicknameLB = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, CGRectGetWidth(returnView.bounds), 20)];

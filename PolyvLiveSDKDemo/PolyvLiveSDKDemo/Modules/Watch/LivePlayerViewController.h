@@ -16,4 +16,9 @@
 
 @property (nonatomic, strong) PLVLiveChannel *channel;
 
+/// 聊天室用户昵称
+@property (nonatomic, strong) NSString *nickName;
+/// 聊天室用户头像
+@property (nonatomic, strong) NSString *avatar;
+
 @end

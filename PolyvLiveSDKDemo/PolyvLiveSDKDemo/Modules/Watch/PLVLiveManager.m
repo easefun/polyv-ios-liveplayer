@@ -12,11 +12,6 @@ static PLVLiveManager *liveManager = nil;
 
 @interface PLVLiveManager ()
 
-/// 当前房间号/频道号
-//@property (nonatomic, strong) NSString *channelId;
-/// 当前用户Id
-//@property (nonatomic, strong) NSString *userId;
-
 @end
 
 @implementation PLVLiveManager
@@ -31,14 +26,6 @@ static PLVLiveManager *liveManager = nil;
     });
     return liveManager;
 }
-
-/**
- 生成channelId和userId
- */
-//- (void)setupChannelId:(NSString *)channelId userId:(NSString *)userId {
-//    self.channelId = channelId;
-//    self.userId = userId;
-//}
 
 /// 处理聊天室信息
 - (NSString *)handleChatroomObject:(PLVSocketChatRoomObject *)chatroomObject completion:(void(^)(BOOL isChatroom))completion {
@@ -56,6 +43,7 @@ static PLVLiveManager *liveManager = nil;
         } break;
         case PLVSocketChatRoomEventType_BULLETIN: { // 1.3.公告
             NSString *content = chatroomObject.jsonDict[PLVSocketIOChatRoom_BULLETIN_content];
+            content = [content stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"];
             [self.chatroomObjects addObject:[@"公告:\n" stringByAppendingString:content]];
             completion(YES);
         } break;
@@ -91,6 +79,27 @@ static PLVLiveManager *liveManager = nil;
     return nil;
 }
 
+- (void)handleChatRoomHistoryMessage:(NSArray *)historyList {
+    if (historyList && historyList.count) {
+        for (NSDictionary *messageDict in historyList) {
+            NSString *msgSource = messageDict[@"msgSource"];
+            if (msgSource) {    // redpaper（红包）、get_redpaper（领红包）
+            } else {
+                NSString *uid = messageDict[@"user"][@"uid"];
+                if (uid.integerValue == 1 || uid.integerValue == 2) {
+                    // uid = 1，打赏消息；uid = 2，自定义消息
+                }else { // 发言消息
+                    NSMutableDictionary *speakDict = [NSMutableDictionary dictionaryWithObject:PLVSocketIOChatRoom_SPEAK_EVENT forKey:PLV_EVENT];
+                    speakDict[PLVSocketIOChatRoom_SPEAK_values] = @[messageDict[@"content"]];
+                    speakDict[PLVSocketIOChatRoom_SPEAK_userKey] = messageDict[PLVSocketIOChatRoom_SPEAK_userKey];
+                    PLVSocketChatRoomObject *chatRoomObject = [PLVSocketChatRoomObject socketObjectWithJsonDict:speakDict];
+                    [self.chatroomObjects insertObject:chatRoomObject atIndex:0];
+                }
+            }
+        }
+    }
+}
+
 /// 重置数据
 - (void)resetData {
     [self.chatroomObjects removeAllObjects];
@@ -112,27 +121,5 @@ PLVSocketChatRoomObject *createTeacherAnswerObject() {
     teacherAnswer.localMessage = YES;
     return teacherAnswer;
 }
-
-#pragma mark - Deprecated
-
-/// 生成在线用户列表
-//+ (NSArray *)handleOnlineListWithJsonDictionary:(NSDictionary *)jsonDict {
-//    if (!jsonDict) {
-//        return nil;
-//    }
-//    //NSInteger count = [jsonDict[@"count"] integerValue];
-//    NSArray *userlist = jsonDict[@"userlist"];
-//    NSMutableArray *mArr = [NSMutableArray array];
-//    for (NSDictionary *userDict in userlist) {
-//        // 数据处理，teacher 重复问题
-//        if ([userDict[@"userType"] isEqualToString:@"teacher"] && userDict[@"userSource"]) {
-//            continue;
-//        }
-//        [mArr addObject:userDict];
-//    }
-//    [PLVLiveManager sharedLiveManager].onlineList = mArr;
-//    //NSLog(@"聊天室在线列表信息：处理前人数 %ld, 处理后人数 %ld",count,mArr.count);
-//    return mArr;
-//}
 
 @end
