@@ -13,6 +13,7 @@
 #import <Masonry/Masonry.h>
 #import "PLVUtils.h"
 #import <PLVLiveAPI/PLVLiveAPI.h>
+#import "PLVLivePlayerController.h"
 
 #define SPEAK_FONT_SIZE 14.0       // 聊天发言文字大小
 #define SYSTEM_FONT_SIZE 12.0      // 系统样式文字大小
@@ -36,12 +37,27 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 @end
 
 @implementation PLVChatroomController {
+    CGRect _originFrame;
     NSDate *_lastSpeakTime;
     BOOL _isSelfSpeak;
     BOOL _isCellInBottom;
     BOOL _moreMessage;
     BOOL _haveloaded;
     NSUInteger _startIndex;
+}
+
+#pragma mark - LifeCycle
+- (void)dealloc {
+    // 防止销毁后继续执行代理事件
+    if (self.bcKeyBoard) {
+        self.bcKeyBoard.delegate = nil;
+    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -62,12 +78,23 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     self.roomId = [PLVLiveManager sharedLiveManager].channelId;
     self.chatroomObjects = [PLVLiveManager sharedLiveManager].chatroomObjects;
     self.privateChatObjects = [PLVLiveManager sharedLiveManager].privateChatObjects;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideEmojiKeyBoard) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideEmojiKeyBoard) name:UIApplicationProtectedDataWillBecomeUnavailable object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideEmojiKeyBoard) name:PLVLivePlayerWillChangeToFullScreenNotification object:nil];
 }
+
+//- (void)statusBarOrientationDidChange:(NSNotification *)notification {
+//    UIInterfaceOrientation interfaceOritation = [[UIApplication sharedApplication] statusBarOrientation];
+//    if (interfaceOritation == UIInterfaceOrientationPortrait
+//        && self.bcKeyBoard.type != BCKeyBoardTypeFace) {
+//        [self.tableView setFrame:_originFrame];
+//    }
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
-    self.bcKeyBoard.delegate = self;
     if (!_haveloaded && !self.privateChatMode) {
         [self setupRefresh];
         _haveloaded = YES;
@@ -77,9 +104,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
-    // 防止销毁后继续执行代理事件
-    self.bcKeyBoard.delegate = nil;
-    [self.bcKeyBoard hideTheKeyBoard];
+    [self hideEmojiKeyBoard];
 }
 
 - (void)setupUIWithFrame:(CGRect)frame {
@@ -88,8 +113,8 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
         keyBoardHeight += 38.0;
     }
     
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame) - keyBoardHeight) style:UITableViewStylePlain];
-    //self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _originFrame = CGRectMake(0, 0, CGRectGetWidth(frame), CGRectGetHeight(frame) - keyBoardHeight);
+    self.tableView = [[UITableView alloc] initWithFrame:_originFrame style:UITableViewStylePlain];
     [self.view addSubview:self.tableView];
     self.tableView.backgroundColor = [UIColor clearColor];
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
@@ -104,6 +129,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     self.bcKeyBoard.placeholder = @"我也来聊几句...";
     self.bcKeyBoard.placeholderColor = [UIColor colorWithRed:133/255 green:133/255 blue:133/255 alpha:0.5];
     self.bcKeyBoard.backgroundColor = [UIColor clearColor];
+    self.bcKeyBoard.delegate = self;
     
     self.showLatestMessageBtn = [UIButton buttonWithType:UIButtonTypeSystem];
     [self.showLatestMessageBtn setTitle:@"有更多新消息，点击查看" forState:UIControlStateNormal];
@@ -177,6 +203,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 
 - (void)hideEmojiKeyBoard {
     [self.bcKeyBoard hideTheKeyBoard];
+    [self.tableView setFrame:_originFrame];
 }
 
 #pragma mark - <UITableViewDataSource>
@@ -343,6 +370,9 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 
 - (void)returnHeight:(CGFloat)height {
     //NSLog(@"keyboard height:%f",height);
+    if ([UIApplication sharedApplication].statusBarOrientation != UIInterfaceOrientationPortrait ) {
+        return;
+    }
     CGRect frame = self.view.frame;
     frame.size.height -= height;
     // 多个对象时会收到多次返回
@@ -472,26 +502,5 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
         [self.tableView scrollToRowAtIndexPath:lastIndex atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     }
 }
-
-#pragma mark -
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

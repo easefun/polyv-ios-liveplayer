@@ -53,6 +53,16 @@
     [super setFrame:frame];
 }
 
+- (BCKeyBoardType)type {
+    if (_faceBtn.selected) {
+        return BCKeyBoardTypeFace;
+    }else if (_textView.isFirstResponder) {
+        return BCKeyBoardTypeSystem;
+    }else {
+        return BCKeyBoardTypeNone;
+    }
+}
+
 #pragma mark - Initialize
 
 - (void)createUI {

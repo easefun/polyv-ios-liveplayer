@@ -29,6 +29,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 
 @property (nonatomic, getter=isShowCover) BOOL showCover;
 @property (nonatomic, strong) IJKFFMoviePlayerController *subPlayer;
+@property (nonatomic, assign) BOOL fullScreen;
 
 @end
 
@@ -375,10 +376,9 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 #pragma mark - 播放器点击事件处理
 
 - (void)returnButtonClick {
-    if (CGRectEqualToRect(self.view.frame, [UIScreen mainScreen].bounds)) {
-        // 当前控制器旋转至竖屏
+    if (self.fullScreen) {// 当前控制器旋转至竖屏
         [self setOrientation:UIInterfaceOrientationPortrait];
-    }else {
+    } else {
         [self clearPlayer];
         if (self.returnButtonClickBlock) self.returnButtonClickBlock();
     }
@@ -572,6 +572,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 - (void)setOrientationLandscape {
     [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerWillChangeToFullScreenNotification object:self];    // 发送全屏通知
     [UIView animateWithDuration:0.3 animations:^{
+        self.fullScreen = YES;
         self.frame = [UIScreen mainScreen].bounds;
         if ([PLVUtils isPhoneX]) {
             CGFloat y = [PLVUtils statusBarHeight];
@@ -588,6 +589,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 - (void)setOrientationPortrait {
     [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerWillExitFullScreenNotification object:self];    // 发送退出全屏通知
     [UIView animateWithDuration:0.3 animations:^{
+        self.fullScreen = NO;
         self.frame = self.originFrame;
         CGFloat y = [PLVUtils statusBarHeight];
         self.view.frame = CGRectMake(0.0, y, self.displayView.bounds.size.width, self.displayView.bounds.size.height - y);

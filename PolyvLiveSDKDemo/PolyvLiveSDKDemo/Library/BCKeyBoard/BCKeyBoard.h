@@ -26,9 +26,20 @@
 
 @end
 
+/// 键盘类型
+typedef NS_ENUM(NSInteger, BCKeyBoardType) {
+    /// 无键盘
+    BCKeyBoardTypeNone,
+    /// 表情键盘
+    BCKeyBoardTypeFace,
+    /// 系统键盘
+    BCKeyBoardTypeSystem
+};
+
 @interface BCKeyBoard : UIView
 
 @property (nonatomic, weak) id<BCKeyBoardDelegate> delegate;
+@property (nonatomic, assign) BCKeyBoardType type;            // 类型
 @property (nonatomic, strong) NSString *placeholder;          // 占位文字
 @property (nonatomic, strong) UIColor *placeholderColor;      // 占位文字颜色
 
