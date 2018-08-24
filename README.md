@@ -10,9 +10,9 @@
 - 增加播放前是否可播放判断
 - 主备接口更新及登录接口优化((自动重试及切换主备接口)
 
-## 最新版本
+#### 最新版本
 
-2.5.0 [Release](https://github.com/easefun/polyv-ios-liveplayer/releases)
+ 已发布版本： [Release](https://github.com/easefun/polyv-ios-liveplayer/releases)
 
 #### Podfile：
 
