@@ -22,15 +22,17 @@
 
 #define TOOL_BAR_HEIGHT 46.0       // 工具栏高度
 
+static NSMutableSet *forbiddenUsers;
 static NSString * const reuseChatCellIdentifier = @"ChatCell";
 
 @interface PLVChatroomController () <UITableViewDelegate,UITableViewDataSource,BCKeyBoardDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) UIButton *showLatestMessageBtn;
 @property (nonatomic, strong) BCKeyBoard *bcKeyBoard;
+@property (nonatomic, strong) UIButton *showLatestMessageBtn;
 
 @property (nonatomic, assign) NSUInteger roomId;
+@property (nonatomic, assign) PLVChatroomType type;
 @property (nonatomic, strong) NSMutableArray *chatroomObjects;
 @property (nonatomic, strong) NSMutableArray<PLVSocketChatRoomObject *> *privateChatObjects;
 
@@ -42,8 +44,52 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     BOOL _isSelfSpeak;
     BOOL _isCellInBottom;
     BOOL _moreMessage;
-    BOOL _haveloaded;
     NSUInteger _startIndex;
+}
+
++ (BOOL)havePermissionToWatchLive:(NSNumber *)roomId {
+    if (forbiddenUsers && forbiddenUsers.count) {
+        return ![forbiddenUsers containsObject:roomId];
+    }else {
+        return YES;
+    }
+}
+#pragma mark - init
++ (instancetype)chatroomWithType:(PLVChatroomType)type roomId:(NSUInteger)roomId frame:(CGRect)frame {
+    return [[PLVChatroomController alloc] initChatroomWithType:type roomId:roomId frame:frame];
+}
+
+- (instancetype)initChatroomWithType:(PLVChatroomType)type roomId:(NSUInteger)roomId frame:(CGRect)frame {
+    self = [super init];
+    if (self) {
+        self.type = type;
+        self.roomId = roomId;
+        self.view.frame = frame;
+        _moreMessage = YES;
+        _isCellInBottom = YES;
+        if (!forbiddenUsers) {
+            forbiddenUsers = [NSMutableSet set];
+        }
+    }
+    return self;
+}
+
+- (void)setPrivateChatMode:(BOOL)privateChatMode {
+    _privateChatMode = privateChatMode;
+    _type = PLVChatroomTypePrivate;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super init];
+    if (self) {
+        _moreMessage = YES;
+        _isCellInBottom = YES;
+        if (!forbiddenUsers) {
+            forbiddenUsers = [NSMutableSet set];
+        }
+        [self setupUIWithFrame:frame];
+    }
+    return self;
 }
 
 #pragma mark - LifeCycle
@@ -60,21 +106,10 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     // Dispose of any resources that can be recreated.
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    self = [super init];
-    if (self) {
-        [self setupUIWithFrame:frame];
-    }
-    return self;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 
-    _isCellInBottom = YES;
-    _moreMessage = YES;
     self.roomId = [PLVLiveManager sharedLiveManager].channelId;
     self.chatroomObjects = [PLVLiveManager sharedLiveManager].chatroomObjects;
     self.privateChatObjects = [PLVLiveManager sharedLiveManager].privateChatObjects;
@@ -82,23 +117,6 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideEmojiKeyBoard) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideEmojiKeyBoard) name:UIApplicationProtectedDataWillBecomeUnavailable object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(hideEmojiKeyBoard) name:PLVLivePlayerWillChangeToFullScreenNotification object:nil];
-}
-
-//- (void)statusBarOrientationDidChange:(NSNotification *)notification {
-//    UIInterfaceOrientation interfaceOritation = [[UIApplication sharedApplication] statusBarOrientation];
-//    if (interfaceOritation == UIInterfaceOrientationPortrait
-//        && self.bcKeyBoard.type != BCKeyBoardTypeFace) {
-//        [self.tableView setFrame:_originFrame];
-//    }
-//}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    if (!_haveloaded && !self.privateChatMode) {
-        [self setupRefresh];
-        _haveloaded = YES;
-    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -130,7 +148,9 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     self.bcKeyBoard.placeholderColor = [UIColor colorWithRed:133/255 green:133/255 blue:133/255 alpha:0.5];
     self.bcKeyBoard.backgroundColor = [UIColor clearColor];
     self.bcKeyBoard.delegate = self;
-    
+}
+
+- (void)loadSubViews {
     self.showLatestMessageBtn = [UIButton buttonWithType:UIButtonTypeSystem];
     [self.showLatestMessageBtn setTitle:@"有更多新消息，点击查看" forState:UIControlStateNormal];
     [self.showLatestMessageBtn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -147,24 +167,34 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
         make.centerX.equalTo(self.view);
         make.bottom.equalTo(self.bcKeyBoard.mas_top).offset(-10);
     }];
-}
-
-// 下拉刷新控件
-- (void)setupRefresh {
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-    [refreshControl addTarget:self action:@selector(refreshClick:) forControlEvents:UIControlEventValueChanged];
-    [self.tableView addSubview:refreshControl];
-    [self refreshClick:refreshControl]; // 主动触发一次
+    
+    if (!self.privateChatMode) {
+        UIButton *likeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.view addSubview:likeBtn];
+        likeBtn.showsTouchWhenHighlighted = YES;
+        [likeBtn setBackgroundImage:[UIImage imageNamed:@"plv_btn_praise"] forState:UIControlStateNormal];
+        [likeBtn addTarget:self action:@selector(likeButtonBeClicked:) forControlEvents:UIControlEventTouchUpInside];
+        
+        [likeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(65, 65));
+            make.right.equalTo(self.view.mas_right).offset(-10.0);
+            make.bottom.equalTo(self.bcKeyBoard.mas_top).offset(-10.0);
+        }];
+        
+        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+        [refreshControl addTarget:self action:@selector(refreshClick:) forControlEvents:UIControlEventValueChanged];
+        [self.tableView addSubview:refreshControl];
+        [self refreshClick:refreshControl]; // 主动触发一次
+    }
 }
 
 - (void)refreshClick:(UIRefreshControl *)refreshControl {
     [refreshControl endRefreshing];
-    //NSLog(@"refreshClick:");
     NSUInteger length = 20;
     if (_moreMessage) {
         __weak typeof(self)weakSelf = self;
         [PLVLiveAPI requestChatRoomHistoryWithRoomId:self.roomId startIndex:_startIndex endIndex:_startIndex+length completion:^(NSArray *historyList) {
-            NSLog(@"historyList count:%ld",historyList.count);
+            //NSLog(@"historyList count:%ld",historyList.count);
             [[PLVLiveManager sharedLiveManager] handleChatRoomHistoryMessage:historyList];
             [weakSelf.tableView reloadData];
             if (!_startIndex) {
@@ -199,6 +229,27 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     }
     //[self.tableView visibleCells];  // apple bugs.
     //[self.tableView.indexPathsForVisibleRows lastObject];
+}
+
+- (void)addNewChatroomObject:(PLVSocketChatRoomObject *)object {
+    PLVLiveManager *liveManager = [PLVLiveManager sharedLiveManager];
+    switch (object.eventType) {
+        case PLVSocketChatRoomEventType_LIKES: {
+            //if (![liveManager.login.nickName isEqualToString:object.jsonDict[@"nick"]]) {
+                [self likeAnimation];
+            //}
+        } break;
+        case PLVSocketChatRoomEventType_KICK: {
+            if ([object.jsonDict[@"user"][@"userId"] isEqualToString:liveManager.login.userId]) {
+                [forbiddenUsers addObject:@(self.roomId)];
+                if (self.delegate && [self.delegate respondsToSelector:@selector(chatroom:didOpenError:)]) {
+                    [self.delegate chatroom:self didOpenError:PLVChatroomErrorCodeBeKicked];
+                }
+            }
+        } break;
+        default:
+            break;
+    }
 }
 
 - (void)hideEmojiKeyBoard {
@@ -237,8 +288,10 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
             case PLVSocketChatRoomEventType_T_ANSWER: {
                 NSString *nickname = chatObject.jsonDict[PLVSocketIOChatRoomUserKey][PLVSocketIOChatRoomUserNickKey];
                 NSString *nickImg = chatObject.jsonDict[PLVSocketIOChatRoomUserKey][PLVSocketIOChatRoomUserPicKey];
-                if (![nickImg containsString:@"http"]) {
+                if ([nickImg hasPrefix:@"//"]) {
                     nickImg = [@"https:" stringByAppendingString:nickImg];
+                }else if ([nickImg hasPrefix:@"http:"]) {
+                    nickImg = [nickImg stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
                 }
                 [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:content position:5]];
             } break;
@@ -255,8 +308,10 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
                 }else {
                     NSString *nickname = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserNickKey];
                     NSString *nickImg = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserPicKey];
-                    if (![nickImg containsString:@"http:"]) {
+                    if ([nickImg hasPrefix:@"//"]) {
                         nickImg = [@"https:" stringByAppendingString:nickImg];
+                    }else if ([nickImg hasPrefix:@"http:"]) {
+                        nickImg = [nickImg stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
                     }
                     [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:content position:5]];
                 }
@@ -269,9 +324,6 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
             contentLB.backgroundColor = [UIColor colorWithWhite:51/255.0 alpha:0.65];
             contentLB.textAlignment = NSTextAlignmentCenter;
             contentLB.font = [UIFont systemFontOfSize:SYSTEM_FONT_SIZE weight:UIFontWeightMedium];
-            //NSAttributedString *attributedStr = [[NSAttributedString alloc] initWithData:[content dataUsingEncoding:NSUnicodeStringEncoding] options:@{ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType } documentAttributes:nil error:nil];
-            //[attributedStr addAttribute:NSFontAttributeName value:contentLB.font range:NSMakeRange(0, attributedStr.length)];
-            //contentLB.attributedText = attributedStr; // 聊天室内容和公告内容转义
             contentLB.text = content;
             contentLB.textColor = [UIColor whiteColor];
             contentLB.layer.cornerRadius = 4.0;
@@ -384,7 +436,60 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
 }
 
 #pragma mark - Private
-/// 自己发言样式
+
+- (void)likeButtonBeClicked:(UIButton *)sender {
+    [self.bcKeyBoard hideTheKeyBoard];
+    //[self likeAnimation];
+    PLVSocketObject *login = [PLVLiveManager sharedLiveManager].login;
+    PLVSocketChatRoomObject *like = [PLVSocketChatRoomObject chatRoomObjectForLikesEventTypeWithRoomId:self.roomId nickName:login.nickName];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(emitChatroomObject:withMessage:)]) {
+        [self.delegate emitChatroomObject:like withMessage:nil];
+    }
+}
+
+- (void)likeAnimation {
+    CGRect frame = self.view.frame;
+    NSArray *colors = @[UIColorFromRGB(0x9D86D2), UIColorFromRGB(0xF25268), UIColorFromRGB(0x5890FF), UIColorFromRGB(0xFCBC71)];
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"plv_img_like"]];
+    imageView.frame = CGRectMake(CGRectGetWidth(frame)-50, CGRectGetHeight(frame)-TOOL_BAR_HEIGHT-50, 40, 40);
+    imageView.backgroundColor = colors[rand()%4];
+    [imageView setContentMode:UIViewContentModeCenter];
+    imageView.clipsToBounds = YES;
+    imageView.layer.cornerRadius = 20.0;
+    [self.view addSubview:imageView];
+    
+//    [UIView animateWithDuration:0.2 animations:^{
+//        imageView.alpha = 1.0;
+//        imageView.frame = CGRectMake(CGRectGetWidth(frame)-50, CGRectGetHeight(frame)-TOOL_BAR_HEIGHT-75, 40, 40);
+//        CGAffineTransform transfrom = CGAffineTransformMakeScale(1.3, 1.3);
+//        imageView.transform = CGAffineTransformScale(transfrom, 1, 1);
+//    }];
+    
+    CGFloat finishX = CGRectGetWidth(frame) - round(random() % 130);
+    //CGFloat scale = round(random() % 2) + 0.7;
+    CGFloat speed = 1 / round(random() % 900) + 0.6;
+    NSTimeInterval duration = 4 * speed;
+    if (duration == INFINITY) duration = 2.412346;
+    
+    [UIView beginAnimations:nil context:(__bridge void *_Nullable)(imageView)];
+    [UIView setAnimationDuration:duration];
+    imageView.alpha = 0;
+    imageView.frame = CGRectMake(finishX, 50, 40, 40);
+    
+    [UIView setAnimationDidStopSelector:@selector(onAnimationComplete:finished:context:)];
+    [UIView setAnimationDelegate:self];
+    [UIView commitAnimations];
+}
+
+- (void)onAnimationComplete:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context{
+    UIImageView *imageView = (__bridge UIImageView *)(context);
+    [imageView removeFromSuperview];
+    imageView = nil;
+}
+
+#pragma mark UI
+
 - (UIView *)bubbleViewForSelfWithContent:(NSString *)content position:(int)position {
     UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
     returnView.backgroundColor = [UIColor clearColor];
@@ -416,7 +521,6 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     return returnView;
 }
 
-/// 别人发言样式
 - (UIView *)bubbleViewForOtherWithNickname:(NSString *)nickname nickImg:(NSString *)nickImg content:(NSString *)content position:(int)position {
     UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
     returnView.backgroundColor = [UIColor clearColor];
@@ -435,7 +539,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     UIImageView *avatarView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 35, 35)];
     avatarView.layer.cornerRadius = 35/2.0;
     avatarView.layer.masksToBounds = YES;
-    [avatarView sd_setImageWithURL:[NSURL URLWithString:nickImg] placeholderImage:[UIImage imageNamed:@"plv_default_user"]];
+    [avatarView sd_setImageWithURL:[NSURL URLWithString:nickImg] placeholderImage:[UIImage imageNamed:@"plv_img_defaultUser"]];
     
     // 昵称
     UILabel *nicknameLB = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, CGRectGetWidth(returnView.bounds), 20)];

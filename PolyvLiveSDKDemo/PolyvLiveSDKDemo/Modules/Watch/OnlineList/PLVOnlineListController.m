@@ -43,6 +43,8 @@ typedef NS_ENUM(NSUInteger, PLVLinkMicStatus) {
 @property (nonatomic, strong) NSString *linkMicType;            // 连麦类型
 @property (nonatomic, assign) PLVLinkMicStatus linkMicStatus;   // 当前用户连麦状态
 
+@property (nonatomic, assign) NSUInteger onlineCount;
+
 @property (nonatomic, strong) NSTimer *timer;
 
 @end
@@ -133,7 +135,7 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     self.onlineList = [NSMutableArray array];
     self.linkMicStatus = PLVLinkMicStatusNone;
     self.login = [PLVLiveManager sharedLiveManager].login;
-    self.linkMicUserId = self.login.userId;
+    self.linkMicUserId = [self.login.userId longLongValue];
     self.linkMicParams = [PLVLiveManager sharedLiveManager].linkMicParams;
 }
 
@@ -276,6 +278,7 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
         [PLVUtils showHUDWithTitle:@"连麦状态获取失败！" detail:description view:self.view];
     }];
     [PLVLiveAPI requestChatRoomListUsersWithRoomId:self.channelId completion:^(NSDictionary *listUsers) {
+        weakSelf.onlineCount =  [listUsers[@"count"] unsignedIntegerValue];
         if (weakSelf.isLinkMicOpen) {
             [PLVLiveAPI requestLinkMicOnlineListWithRoomId:self.channelId completion:^(NSArray *onlineList) {
                 weakSelf.onlineList = listUsers[@"userlist"];

@@ -21,4 +21,7 @@
 /// 聊天室用户头像
 @property (nonatomic, strong) NSString *avatar;
 
+/// 关闭当前控制器（默认为模态进来）
+- (void)shutdownViewController;
+
 @end

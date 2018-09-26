@@ -12,6 +12,8 @@ static PLVLiveManager *liveManager = nil;
 
 @interface PLVLiveManager ()
 
+@property (nonatomic, assign) NSUInteger onlineCount;
+
 @end
 
 @implementation PLVLiveManager
@@ -32,9 +34,15 @@ static PLVLiveManager *liveManager = nil;
     switch (chatroomObject.eventType) {
         // ------------------ 1.聊天室内容
         case PLVSocketChatRoomEventType_LOGIN: {    // 1.1.用户登录
+            NSNumber *onlineUserNumber = chatroomObject.jsonDict[@"onlineUserNumber"];
+            self.onlineCount = onlineUserNumber.unsignedIntegerValue;
             NSString *nickname = chatroomObject.jsonDict[PLVSocketIOChatRoom_LOGIN_userKey][PLVSocketIOChatRoomUserNickKey];
             [self.chatroomObjects addObject:[NSString stringWithFormat:@"欢迎%@加入",nickname]];
             completion(YES);
+        } break;
+        case PLVSocketChatRoomEventType_LOGOUT: {
+            NSNumber *onlineUserNumber = chatroomObject.jsonDict[@"onlineUserNumber"];
+            self.onlineCount = onlineUserNumber.unsignedIntegerValue;
         } break;
         case PLVSocketChatRoomEventType_GONGGAO: {  // 1.2.管理员发言/跑马灯公告
             NSString *content = chatroomObject.jsonDict[PLVSocketIOChatRoom_GONGGAO_content];
@@ -52,11 +60,11 @@ static PLVLiveManager *liveManager = nil;
             if (user) {     // use不存在时可能为严禁词类型；开启聊天审核后会收到自己数据
                 id userId = user[PLVSocketIOChatRoomUserUserIdKey];
                 if ([userId isKindOfClass:[NSString class]]) {
-                    if ([(NSString *)userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
+                    if ([(NSString *)userId isEqualToString:self.login.userId]) {
                         break;
                     }
                 }else if ([userId isKindOfClass:[NSNumber class]]) {
-                    if ([(NSNumber *)userId unsignedLongValue] == self.login.userId) {
+                    if ([(NSNumber *)userId unsignedLongValue] == self.login.userId.integerValue) {
                         break;
                     }
                 }
@@ -65,11 +73,11 @@ static PLVLiveManager *liveManager = nil;
                 return [chatroomObject.jsonDict[PLVSocketIOChatRoom_SPEAK_values] firstObject];
             }
         } break;
-        // ------------------  2.提问内容(私有聊天)
+        // ------------------  2.咨询提问（私有聊天）
         //case PLVSocketChatRoomEventType_S_QUESTION:
         case PLVSocketChatRoomEventType_T_ANSWER: { // 2.1.讲师发言
             NSString *userId = chatroomObject.jsonDict[PLVSocketIOChatRoom_T_ANSWER_sUserId];
-            if ([userId isEqualToString:[NSString stringWithFormat:@"%lu",self.login.userId]]) {
+            if ([userId isEqualToString:self.login.userId]) {
                 [self.privateChatObjects addObject:chatroomObject];
                 completion(NO);
             }

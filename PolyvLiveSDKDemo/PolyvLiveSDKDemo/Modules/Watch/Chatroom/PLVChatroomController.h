@@ -9,20 +9,50 @@
 #import <UIKit/UIKit.h>
 #import <PLVSocketAPI/PLVSocketAPI.h>
 
-@protocol PLVChatroomDelegate <NSObject>
+// 使用示例 UIColorFromRGB(0x0e0e10)
+#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
+/// 聊天室类型
+typedef NS_ENUM(NSInteger, PLVChatroomType) {
+    PLVChatroomTypePublic   = 1,  // 公共聊天
+    PLVChatroomTypePrivate  = 2,  // 私有聊天(咨询提问)
+};
+
+/// 聊天室错误码
+typedef NS_ENUM(NSInteger, PLVChatroomErrorCode) {
+    PLVChatroomErrorCodeBeKicked    = -100,   // 无访问权限
+    PLVChatroomErrorCodeRoomClose   = -111,   // 房间关闭
+    PLVChatroomErrorCodeBanned      = -122,   // 被禁言
+};
+
+@class PLVChatroomController;
+
+@protocol PLVChatroomDelegate <NSObject>
+@required
+- (void)chatroom:(PLVChatroomController *)chatroom didOpenError:(PLVChatroomErrorCode)code;
+
+@optional
 - (void)emitChatroomObject:(PLVSocketChatRoomObject *)chatRoomObject withMessage:(NSString *)message;
 
 @end
 
 @interface PLVChatroomController : UIViewController
-/// 代理
+
 @property (nonatomic, weak) id<PLVChatroomDelegate> delegate;
 /// 私有聊天室模式(咨询提问)
 @property (nonatomic, getter=isPrivateChatMode) BOOL privateChatMode;
 
+/// 是否有观看直播权限
++ (BOOL)havePermissionToWatchLive:(NSNumber *)roomId;
+
 - (instancetype)initWithFrame:(CGRect)frame;
 
+/// 加载子视图
+- (void)loadSubViews;
+
 - (void)updateChatroom;
+
+/// 添加新事件
+- (void)addNewChatroomObject:(PLVSocketChatRoomObject *)object;
 
 @end

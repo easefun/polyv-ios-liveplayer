@@ -15,7 +15,7 @@ NSString * const PLVLivePlayerWillChangeToFullScreenNotification = @"PLVLivePlay
 NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWillExitFullScreenNotification";
 
 #define PlayerErrorDomain @"net.polyv.live"
-#define PlayerVersion @"iOS-livePlayerSDK2.5.1+180817"
+#define PlayerVersion @"iOS-livePlayerSDK2.5.2+180926"
 
 #define PLAY_MODE @"live"   // 统计后台live/vod
 
@@ -379,7 +379,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     if (self.fullScreen) {// 当前控制器旋转至竖屏
         [self setOrientation:UIInterfaceOrientationPortrait];
     } else {
-        [self clearPlayer];
+        //[self clearPlayer];
         if (self.returnButtonClickBlock) self.returnButtonClickBlock();
     }
 }

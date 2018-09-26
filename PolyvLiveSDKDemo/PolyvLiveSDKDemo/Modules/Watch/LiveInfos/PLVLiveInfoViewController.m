@@ -64,7 +64,7 @@
     
     if ([@"desc" isEqualToString:self.menu.menuType]) {
         self.titleLabel.text = self.channelMenuInfo.name;
-        [self.avatarImgView sd_setImageWithURL:[NSURL URLWithString:self.channelMenuInfo.coverImage] placeholderImage:[UIImage imageNamed:@"plv_default_user"]];
+        [self.avatarImgView sd_setImageWithURL:[NSURL URLWithString:self.channelMenuInfo.coverImage] placeholderImage:[UIImage imageNamed:@"plv_img_defaultUser"]];
         self.hostLabel.text = self.channelMenuInfo.publisher;
         
         if (self.channelMenuInfo.likes.integerValue >= 10000) {
@@ -124,6 +124,13 @@
 - (void)webView:(WKWebView *)webView didFinishNavigation:(null_unspecified WKNavigation *)navigation; {
     self.emptyStatusView.hidden = YES;
     self.webView.hidden = NO;
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    if (navigationAction.targetFrame == nil) {
+        [[UIApplication sharedApplication] openURL:navigationAction.request.URL];
+    }
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end

@@ -24,6 +24,9 @@
 /// 连麦相关参数
 @property (nonatomic, strong) NSDictionary *linkMicParams;
 
+/// 聊天室在线人数（实时）
+@property (nonatomic, readonly) NSUInteger onlineCount;
+
 + (instancetype)sharedLiveManager;
 
 /**

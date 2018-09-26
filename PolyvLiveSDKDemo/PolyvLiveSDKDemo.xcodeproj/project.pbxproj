@@ -52,6 +52,18 @@
 		673845F420E9213100C01F53 /* PLVUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 673845F320E9213100C01F53 /* PLVUtils.m */; };
 		67386D4B210FF4B500F96656 /* PLVRestrictView.m in Sources */ = {isa = PBXBuildFile; fileRef = 67386D4A210FF4B500F96656 /* PLVRestrictView.m */; };
 		67386D4D210FF4E800F96656 /* PLVRestrictView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 67386D4C210FF4E800F96656 /* PLVRestrictView.xib */; };
+		67787E1F2159CEF50096AFDC /* plv_btn_like@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E1D2159CEF40096AFDC /* plv_btn_like@2x.png */; };
+		67787E202159CEF50096AFDC /* plv_btn_praise@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E1E2159CEF50096AFDC /* plv_btn_praise@3x.png */; };
+		67787E23215A0C360096AFDC /* plv_img_like@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E21215A0C360096AFDC /* plv_img_like@3x.png */; };
+		67787E24215A0C360096AFDC /* plv_img_like@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E22215A0C360096AFDC /* plv_img_like@2x.png */; };
+		67787E3B215A464E0096AFDC /* plv_img_camera@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E33215A464D0096AFDC /* plv_img_camera@3x.png */; };
+		67787E3C215A464E0096AFDC /* plv_img_micphone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E34215A464D0096AFDC /* plv_img_micphone@2x.png */; };
+		67787E3D215A464E0096AFDC /* plv_img_micphone@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E35215A464D0096AFDC /* plv_img_micphone@3x.png */; };
+		67787E3E215A464E0096AFDC /* plv_img_camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E36215A464D0096AFDC /* plv_img_camera@2x.png */; };
+		67787E3F215A464E0096AFDC /* plv_img_emptyStatus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E37215A464D0096AFDC /* plv_img_emptyStatus@2x.png */; };
+		67787E40215A464E0096AFDC /* plv_img_watch@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E38215A464E0096AFDC /* plv_img_watch@2x.png */; };
+		67787E41215A464E0096AFDC /* plv_img_defaultUser@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E39215A464E0096AFDC /* plv_img_defaultUser@2x.png */; };
+		67787E42215A464E0096AFDC /* plv_btn_praise@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67787E3A215A464E0096AFDC /* plv_btn_praise@2x.png */; };
 		E1228DFF0A9ED48CFE0C4FB8 /* Pods_PolyvLiveSDKDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB2574FE0795685D18BB01CC /* Pods_PolyvLiveSDKDemo.framework */; };
 /* End PBXBuildFile section */
 
@@ -140,6 +152,18 @@
 		67386D49210FF4B500F96656 /* PLVRestrictView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PLVRestrictView.h; sourceTree = "<group>"; };
 		67386D4A210FF4B500F96656 /* PLVRestrictView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PLVRestrictView.m; sourceTree = "<group>"; };
 		67386D4C210FF4E800F96656 /* PLVRestrictView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PLVRestrictView.xib; sourceTree = "<group>"; };
+		67787E1D2159CEF40096AFDC /* plv_btn_like@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_btn_like@2x.png"; sourceTree = "<group>"; };
+		67787E1E2159CEF50096AFDC /* plv_btn_praise@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_btn_praise@3x.png"; sourceTree = "<group>"; };
+		67787E21215A0C360096AFDC /* plv_img_like@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_img_like@3x.png"; sourceTree = "<group>"; };
+		67787E22215A0C360096AFDC /* plv_img_like@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_img_like@2x.png"; sourceTree = "<group>"; };
+		67787E33215A464D0096AFDC /* plv_img_camera@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_img_camera@3x.png"; sourceTree = "<group>"; };
+		67787E34215A464D0096AFDC /* plv_img_micphone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_img_micphone@2x.png"; sourceTree = "<group>"; };
+		67787E35215A464D0096AFDC /* plv_img_micphone@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_img_micphone@3x.png"; sourceTree = "<group>"; };
+		67787E36215A464D0096AFDC /* plv_img_camera@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_img_camera@2x.png"; sourceTree = "<group>"; };
+		67787E37215A464D0096AFDC /* plv_img_emptyStatus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_img_emptyStatus@2x.png"; sourceTree = "<group>"; };
+		67787E38215A464E0096AFDC /* plv_img_watch@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_img_watch@2x.png"; sourceTree = "<group>"; };
+		67787E39215A464E0096AFDC /* plv_img_defaultUser@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_img_defaultUser@2x.png"; sourceTree = "<group>"; };
+		67787E3A215A464E0096AFDC /* plv_btn_praise@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "plv_btn_praise@2x.png"; sourceTree = "<group>"; };
 		7E0E1D7F275A1DAD72549440 /* Pods-PolyvLiveSDKDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PolyvLiveSDKDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		EB2574FE0795685D18BB01CC /* Pods_PolyvLiveSDKDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PolyvLiveSDKDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -251,7 +275,8 @@
 		67308AF420B6BC6200C1F5A2 /* Watch */ = {
 			isa = PBXGroup;
 			children = (
-				6730CA6F20B7A94E002E83B9 /* ChatRoom */,
+				67787E1A2159CE820096AFDC /* Resources */,
+				6730CA6F20B7A94E002E83B9 /* Chatroom */,
 				6730CA7020B7A957002E83B9 /* OnlineList */,
 				22C5834F20FEE0500083E9D3 /* LiveInfos */,
 				6730CA6C20B7A939002E83B9 /* PLVLiveManager.h */,
@@ -371,13 +396,13 @@
 			path = views;
 			sourceTree = "<group>";
 		};
-		6730CA6F20B7A94E002E83B9 /* ChatRoom */ = {
+		6730CA6F20B7A94E002E83B9 /* Chatroom */ = {
 			isa = PBXGroup;
 			children = (
 				6730CA7220B7A969002E83B9 /* PLVChatroomController.h */,
 				6730CA7120B7A969002E83B9 /* PLVChatroomController.m */,
 			);
-			path = ChatRoom;
+			path = Chatroom;
 			sourceTree = "<group>";
 		};
 		6730CA7020B7A957002E83B9 /* OnlineList */ = {
@@ -410,6 +435,25 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		67787E1A2159CE820096AFDC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				67787E1D2159CEF40096AFDC /* plv_btn_like@2x.png */,
+				67787E1E2159CEF50096AFDC /* plv_btn_praise@3x.png */,
+				67787E3A215A464E0096AFDC /* plv_btn_praise@2x.png */,
+				67787E36215A464D0096AFDC /* plv_img_camera@2x.png */,
+				67787E33215A464D0096AFDC /* plv_img_camera@3x.png */,
+				67787E37215A464D0096AFDC /* plv_img_emptyStatus@2x.png */,
+				67787E34215A464D0096AFDC /* plv_img_micphone@2x.png */,
+				67787E35215A464D0096AFDC /* plv_img_micphone@3x.png */,
+				67787E39215A464E0096AFDC /* plv_img_defaultUser@2x.png */,
+				67787E38215A464E0096AFDC /* plv_img_watch@2x.png */,
+				67787E22215A0C360096AFDC /* plv_img_like@2x.png */,
+				67787E21215A0C360096AFDC /* plv_img_like@3x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		7B93ADFA529A1844895A6907 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -440,7 +484,6 @@
 				67308AD220B6A6E000C1F5A2 /* Resources */,
 				E1E45F245F6A3325E3556865 /* [CP] Embed Pods Frameworks */,
 				22AA03AC21008F2A00A440E3 /* Embed Frameworks */,
-				A100FB9C6B80536FEE012BFC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -491,23 +534,35 @@
 			buildActionMask = 2147483647;
 			files = (
 				6730CA5220B7A6A2002E83B9 /* chatBar_keyboardSelected.png in Resources */,
+				67787E3F215A464E0096AFDC /* plv_img_emptyStatus@2x.png in Resources */,
 				6730CA5120B7A6A2002E83B9 /* chatBar_keyboard.png in Resources */,
 				6730CA5620B7A6A2002E83B9 /* Emotions.plist in Resources */,
 				6730CA4F20B7A6A2002E83B9 /* chatBar_face.png in Resources */,
+				67787E24215A0C360096AFDC /* plv_img_like@2x.png in Resources */,
 				6730CA4C20B7A6A2002E83B9 /* faceDelete.png in Resources */,
 				6730CA5520B7A6A2002E83B9 /* chatBar_faceSelected@2x.png in Resources */,
 				67308AE420B6A6E000C1F5A2 /* LaunchScreen.storyboard in Resources */,
 				67308AE120B6A6E000C1F5A2 /* Assets.xcassets in Resources */,
 				22C5835620FEE0880083E9D3 /* PLVLiveInfoViewController.xib in Resources */,
 				6730CA6620B7A70C002E83B9 /* PLVLivePlayerSkin.bundle in Resources */,
+				67787E23215A0C360096AFDC /* plv_img_like@3x.png in Resources */,
+				67787E202159CEF50096AFDC /* plv_btn_praise@3x.png in Resources */,
+				67787E1F2159CEF50096AFDC /* plv_btn_like@2x.png in Resources */,
 				6730CA5420B7A6A2002E83B9 /* chatBar_keyboard@2x.png in Resources */,
 				6730CA5320B7A6A2002E83B9 /* chatBar_keyboardSelected@2x.png in Resources */,
+				67787E3C215A464E0096AFDC /* plv_img_micphone@2x.png in Resources */,
 				6730CA4E20B7A6A2002E83B9 /* messageToolbarBg@2x.png in Resources */,
 				6730CA4D20B7A6A2002E83B9 /* chatBar_face@2x.png in Resources */,
 				6730CA5020B7A6A2002E83B9 /* chatBar_faceSelected.png in Resources */,
+				67787E40215A464E0096AFDC /* plv_img_watch@2x.png in Resources */,
+				67787E41215A464E0096AFDC /* plv_img_defaultUser@2x.png in Resources */,
 				6730CA6020B7A6ED002E83B9 /* FTTitleViewCell.xib in Resources */,
+				67787E3D215A464E0096AFDC /* plv_img_micphone@3x.png in Resources */,
+				67787E3E215A464E0096AFDC /* plv_img_camera@2x.png in Resources */,
+				67787E42215A464E0096AFDC /* plv_btn_praise@2x.png in Resources */,
 				6730CA4B20B7A6A2002E83B9 /* faceDelete@2x.png in Resources */,
 				67386D4D210FF4E800F96656 /* PLVRestrictView.xib in Resources */,
+				67787E3B215A464E0096AFDC /* plv_img_camera@3x.png in Resources */,
 				67308AEE20B6AB7200C1F5A2 /* README.md in Resources */,
 				6730CA7B20B7A98E002E83B9 /* PLVUserTableViewCell.xib in Resources */,
 				67308ADF20B6A6E000C1F5A2 /* Main.storyboard in Resources */,
@@ -518,21 +573,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		A100FB9C6B80536FEE012BFC /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		E1E45F245F6A3325E3556865 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

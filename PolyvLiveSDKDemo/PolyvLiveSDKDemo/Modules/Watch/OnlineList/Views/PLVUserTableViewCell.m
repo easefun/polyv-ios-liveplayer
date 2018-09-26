@@ -9,9 +9,9 @@
 #import "PLVUserTableViewCell.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 
-#define CAMERA_IMAGE_PATH @"plv-camera"
-#define MICPHONE_IMAGE_PATH @"plv-micphone"
-#define USER_DEFAULT_IMAGE @"plv_default_user"
+#define CAMERA_IMAGE_PATH @"plv_img_camera"
+#define MICPHONE_IMAGE_PATH @"plv_img_micphone"
+#define USER_DEFAULT_IMAGE @"plv_img_defaultUser"
 
 @interface PLVUserTableViewCell ()
 

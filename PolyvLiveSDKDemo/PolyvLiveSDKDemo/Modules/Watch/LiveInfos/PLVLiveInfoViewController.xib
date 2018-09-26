@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -44,7 +44,7 @@
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="plv_default_user" translatesAutoresizingMaskIntoConstraints="NO" id="x5C-0d-Qve">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="plv_img_defaultUser.png" translatesAutoresizingMaskIntoConstraints="NO" id="x5C-0d-Qve">
                             <rect key="frame" x="10" y="44" width="40" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="40" id="YY9-ov-hdv"/>
@@ -68,7 +68,7 @@
                                 <constraint firstAttribute="width" constant="80" id="mff-9V-JcP"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                            <state key="normal" title="55" image="plv_like">
+                            <state key="normal" title="55" image="plv_btn_like.png">
                                 <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
                             <connections>
@@ -82,7 +82,7 @@
                                 <constraint firstAttribute="width" constant="80" id="tGN-Ab-b3a"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                            <state key="normal" title="842" image="plv_watch">
+                            <state key="normal" title="842" image="plv_img_watch.png">
                                 <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
                             <connections>
@@ -157,7 +157,7 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="plv_emptyStatus" translatesAutoresizingMaskIntoConstraints="NO" id="ilC-Tx-jVD">
+                <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="plv_img_emptyStatus.png" translatesAutoresizingMaskIntoConstraints="NO" id="ilC-Tx-jVD">
                     <rect key="frame" x="170" y="325.5" width="36" height="36"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -188,9 +188,9 @@
         </view>
     </objects>
     <resources>
-        <image name="plv_default_user" width="70" height="70"/>
-        <image name="plv_emptyStatus" width="36" height="36"/>
-        <image name="plv_like" width="16" height="16"/>
-        <image name="plv_watch" width="16" height="16"/>
+        <image name="plv_btn_like.png" width="16" height="16"/>
+        <image name="plv_img_defaultUser.png" width="35" height="35"/>
+        <image name="plv_img_emptyStatus.png" width="36" height="36"/>
+        <image name="plv_img_watch.png" width="16" height="16"/>
     </resources>
 </document>

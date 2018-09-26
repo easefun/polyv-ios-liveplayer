@@ -17,6 +17,9 @@
 
 @interface PLVOnlineListController : UIViewController
 
+/// 聊天室在线人数（定时刷新，15s）
+@property (nonatomic, readonly) NSUInteger onlineCount;
+
 @property (nonatomic, assign) NSUInteger channelId;
 
 @property (nonatomic, weak) id<PLVOnlineListDelegate> delegate;

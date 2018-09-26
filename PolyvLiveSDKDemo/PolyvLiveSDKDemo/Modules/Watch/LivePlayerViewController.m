@@ -59,12 +59,19 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor whiteColor];
     
-    [self initLocalData];
-    [self initSocketIO];
-    [self loadPlayer];
-    
-    [self setupUI];
+    // 判断是否有权限进入房间
+    if ([PLVChatroomController havePermissionToWatchLive:self.channel.channelId]) {
+        [self initLocalData];
+        [self setupUI];
+        [self initSocketIO];
+        [self loadPlayer];
+    }else {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [self showNoPermissionAlert];
+        });
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -98,6 +105,7 @@
         weakSelf.socketIO = [[PLVSocketIO alloc] initSocketIOWithConnectToken:responseDict[@"chat_token"] enableLog:NO];
         weakSelf.socketIO.delegate = weakSelf;
         [weakSelf.socketIO connect];
+        //weakSelf.socketIO.debugMode = YES;
         
         // 2.初始化一个socket登录对象（昵称和头像使用默认设置）
         self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:self.nickName avatar:self.avatar userType:PLVSocketObjectUserTypeStudent];
@@ -132,12 +140,12 @@
 }
 
 - (void)setupUI {
-    self.view.backgroundColor = [UIColor whiteColor];
     CGRect pageCtrlFrame = CGRectMake(0, CGRectGetMaxY(self.displayView.frame), SCREEN_WIDTH, SCREEN_HEIGHT-CGRectGetMaxY(self.displayView.frame));
     
     // 初始化互动聊天室
     self.chatroomController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
     self.chatroomController.delegate = self;
+    [self.chatroomController loadSubViews];
     // 在线列表控制器
     self.onlineListController = [[PLVOnlineListController alloc] init];
     self.onlineListController.channelId = self.channelId;
@@ -159,6 +167,7 @@
                 weakSelf.privateChatController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
                 weakSelf.privateChatController.privateChatMode = YES;
                 weakSelf.privateChatController.delegate = weakSelf;
+                [weakSelf.privateChatController loadSubViews];
                 [titles insertObject:@"咨询提问" atIndex:2];
                 [controllers insertObject:self.privateChatController atIndex:2];
             }
@@ -211,12 +220,7 @@
     __weak typeof(self)weakSelf = self;
     [_livePlayer setReturnButtonClickBlock:^{
         NSLog(@"返回按钮点击了...");
-        // clearController 方法需要在 socketIO disconnect前调用
-        [weakSelf.onlineListController clearController];
-        [weakSelf.socketIO disconnect];
-        [weakSelf.socketIO removeAllHandlers];
-        [[PLVLiveManager sharedLiveManager] resetData];
-        [weakSelf dismissViewControllerAnimated:YES completion:nil];
+        [weakSelf shutdownViewController];
     }];
     [_livePlayer setPlayButtonClickBlock:^{
         NSLog(@"播放按钮点击了...");
@@ -272,7 +276,29 @@
     [self.pageController.view setHidden:NO];
 }
 
+#pragma mark - Public
+
+- (void)shutdownViewController {
+    [self.livePlayer clearPlayer];
+    [self.onlineListController clearController];
+    [self.socketIO disconnect];
+    [self.socketIO removeAllHandlers];
+    [[PLVLiveManager sharedLiveManager] resetData];
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+    //[self.navigationController popViewControllerAnimated:YES]; // todo else
+}
+
 #pragma mark - Private methods
+
+- (void)showNoPermissionAlert {
+    __weak typeof(self)weakSelf = self;
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"您未被授权观看本直播" preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [weakSelf shutdownViewController];
+    }]];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
 
 - (void)setupPageControllerWithTitles:(NSArray *)titles controllers:(NSArray *)controllers frame:(CGRect)frame {
     self.pageController = [[FTPageController alloc] initWithTitles:titles controllers:controllers];
@@ -298,12 +324,6 @@
     }
 }
 
-//- (void)configDanmu {
-//    CGRect bounds = self.livePlayer.view.bounds;
-//    self.danmuLayer = [[ZJZDanMu alloc] initWithFrame:CGRectMake(0, 20, bounds.size.width, bounds.size.height-20)];
-//    [self.livePlayer insertDanmuView:self.danmuLayer];
-//}
-
 #pragma mark - <PLVSocketIODelegate>
 /// 连接成功
 - (void)socketIO:(PLVSocketIO *)socketIO didConnectWithInfo:(NSString *)info {
@@ -314,6 +334,7 @@
 /// 收到聊天室信息
 - (void)socketIO:(PLVSocketIO *)socketIO didReceiveChatMessage:(PLVSocketChatRoomObject *)chatObject {
     NSLog(@"%@--type:%lu, event:%@",NSStringFromSelector(_cmd),chatObject.eventType,chatObject.event);
+    [self.chatroomController addNewChatroomObject:chatObject];
     
     __weak typeof(self)weakSelf = self;
     NSString *message = [[PLVLiveManager sharedLiveManager] handleChatroomObject:chatObject completion:^(BOOL isChatroom) {
@@ -363,6 +384,12 @@
 }
 
 #pragma mark - <PLVChatroomDelegate>
+
+- (void)chatroom:(PLVChatroomController *)chatroom didOpenError:(PLVChatroomErrorCode)code {
+    if (code==PLVChatroomErrorCodeBeKicked) {
+        [self showNoPermissionAlert];
+    }
+}
 
 - (void)emitChatroomObject:(PLVSocketChatRoomObject *)chatRoomObject withMessage:(NSString *)message {
     int code = [self emitSocketIOMessage:chatRoomObject];
