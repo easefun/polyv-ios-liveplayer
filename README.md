@@ -4,11 +4,11 @@
 
 ## 最近更新
 
-- iPhone X 适配
-- 新增自定义 TAB 功能
-- 新增聊天室历史记录
-- 增加播放前是否可播放判断
-- 主备接口更新及登录接口优化((自动重试及切换主备接口)
+- 聊天室新增点赞、踢人功能
+- 添加获取聊天室在线人数接口
+- 升级 PolyvSocketAPI 至 0.5.0 版本
+- 观看页资源添加至同级 Resources 下
+- 修复菜单页点击URL不能跳转到 safari 的问题
 
 #### 最新版本
 
@@ -26,7 +26,7 @@ target 'IJKLivePlayer' do
   pod 'SDWebImage', '~> 4.4.0'
 
   pod 'PolyvLiveAPI', '~> 0.6.0'      # Polyv live api
-  pod 'PolyvSocketAPI', '~> 0.4.1'    # Polyv socket.io api
+  pod 'PolyvSocketAPI', '~> 0.5.0'    # Polyv socket.io api
   pod 'PolyvIJKPlayer', '~> 0.3.0'    # Polyv ijkPlayer
   pod 'AgoraRtcEngine_iOS', '~>2.0.0' # Agora rtc engine
 end
