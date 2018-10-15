@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+// 使用示例 UIColorFromRGB(0x0e0e10)
+#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 @interface PLVUtils : NSObject
 
 #pragma mark - HUD
@@ -35,5 +38,10 @@
  如果当前机器的类型是iPhone X，则返回statusBar的高度，否则返回0.0
  */
 + (CGFloat)statusBarHeight;
+
+#pragma mark - UIColor
+
+// Assumes input like "#00FF00" (#RRGGBB).
++ (nullable UIColor *)colorFromHexString:(nullable NSString *)hexString;
 
 @end

@@ -10,14 +10,13 @@
 #import "FTTitleViewCell.h"
 
 #define kWidth [UIScreen mainScreen].bounds.size.width
-//#define kHeight [UIScreen mainScreen].bounds.size.height
 
 static NSString *TitleCellIdentifier = @"PageTitleCell";
 
 @interface FTPageController () <UICollectionViewDataSource,UICollectionViewDelegateFlowLayout,UIPageViewControllerDataSource,UIPageViewControllerDelegate>
 
-@property (nonatomic, strong) NSArray *titles;
-@property (nonatomic, strong) NSArray *controllers;
+@property (nonatomic, strong) NSMutableArray *titles;
+@property (nonatomic, strong) NSMutableArray *controllers;
 
 @property (nonatomic, strong) UICollectionView *titleCollectionView;
 @property (nonatomic, strong) UIPageViewController *pageViewController;
@@ -34,13 +33,46 @@ static NSString *TitleCellIdentifier = @"PageTitleCell";
 - (instancetype)initWithTitles:(NSArray<NSString *> *)titles controllers:(NSArray<UIViewController *> *)controllers {
     self = [super init];
     if (self) {
-        self.titles = [[NSArray alloc] initWithArray:titles];
-        self.controllers = [[NSArray alloc] initWithArray:controllers];
+        self.titles = [[NSMutableArray alloc] initWithArray:titles];
+        self.controllers = [[NSMutableArray alloc] initWithArray:controllers];
         
         [self setupPageController];
         [self setupTitles];
     }
     return self;
+}
+
+- (void)addPageWithTitle:(NSString *)title controller:(UIViewController *)controller {
+    if (title && controller) {
+        [self.titles addObject:title];
+        [self.controllers addObject:controller];
+        
+        [self setTitleItemWidth];
+        [self.titleCollectionView reloadData];
+    }
+}
+
+- (void)insertPageWithTitle:(NSString *)title controller:(UIViewController *)controller atIndex:(NSUInteger)index {
+    if (title && controller) {
+        if (index > self.titles.count) {
+            index = self.titles.count;
+        }
+        [self.titles insertObject:title atIndex:index];
+        [self.controllers insertObject:controller atIndex:index];
+        
+        [self setTitleItemWidth];
+        [self.titleCollectionView reloadData];
+    }
+}
+
+- (void)removePageAtIndex:(NSUInteger)index {
+    if (index < self.titles.count) {
+        [self.titles removeObjectAtIndex:index];
+        [self.controllers removeObjectAtIndex:index];
+        
+        [self setTitleItemWidth];
+        [self.titleCollectionView reloadData];
+    }
 }
 
 #pragma mark -
@@ -59,6 +91,10 @@ static NSString *TitleCellIdentifier = @"PageTitleCell";
     
     [self.titleCollectionView registerNib:[UINib nibWithNibName:@"FTTitleViewCell" bundle:nil] forCellWithReuseIdentifier:TitleCellIdentifier];
     
+    [self setTitleItemWidth];
+}
+
+- (void)setTitleItemWidth {
     if (self.titles.count < 4) {
         _titleItemWidth = (kWidth-10)/(self.titles.count);
     }else {
@@ -83,11 +119,6 @@ static NSString *TitleCellIdentifier = @"PageTitleCell";
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
 }
-
-//-(void)viewDidAppear:(BOOL)animated{
-//    [super viewDidAppear:animated];
-//    [self selectedTitle:0];
-//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -222,15 +253,5 @@ static NSString *TitleCellIdentifier = @"PageTitleCell";
 -(NSUInteger)indexOfViewController:(UIViewController *)viewController {
     return [self.controllers indexOfObject:viewController];
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

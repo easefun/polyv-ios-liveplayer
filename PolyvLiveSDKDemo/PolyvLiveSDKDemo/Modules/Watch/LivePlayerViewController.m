@@ -142,17 +142,21 @@
 - (void)setupUI {
     CGRect pageCtrlFrame = CGRectMake(0, CGRectGetMaxY(self.displayView.frame), SCREEN_WIDTH, SCREEN_HEIGHT-CGRectGetMaxY(self.displayView.frame));
     
-    // 初始化互动聊天室
+    // init public chatroom.
     self.chatroomController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
     self.chatroomController.delegate = self;
     [self.chatroomController loadSubViews];
-    // 在线列表控制器
+    // init online list.
     self.onlineListController = [[PLVOnlineListController alloc] init];
     self.onlineListController.channelId = self.channelId;
     self.onlineListController.delegate = self;
     
-    NSMutableArray *titles = [NSMutableArray arrayWithObjects:@"互动聊天", @"在线列表", nil];
-    NSMutableArray *controllers = [NSMutableArray arrayWithObjects:self.chatroomController, self.onlineListController, nil];
+    // init page controller.
+    self.pageController = [[FTPageController alloc] initWithTitles:@[@"互动聊天", @"在线列表"] controllers:@[self.chatroomController,self.onlineListController]];
+    self.pageController.view.backgroundColor = [UIColor colorWithRed:233/255.0 green:235/255.0 blue:245/255.0 alpha:1.0];
+    self.pageController.view.frame = pageCtrlFrame;
+    [self addChildViewController:self.pageController];
+    [self.view addSubview:self.pageController.view];
 
     __weak typeof(self)weakSelf = self;
     [PLVLiveAPI getChannelMenuInfos:self.channelId completion:^(PLVChannelMenuInfo *channelMenuInfo) {
@@ -161,21 +165,17 @@
                 PLVLiveInfoViewController *liveInfoController = [[PLVLiveInfoViewController alloc] init];
                 liveInfoController.channelMenuInfo = channelMenuInfo;
                 liveInfoController.menu = menu;
-                [titles addObject:menu.name];
-                [controllers addObject:liveInfoController];
+                [weakSelf.pageController addPageWithTitle:menu.name controller:liveInfoController];
             } else if ([@"quiz" isEqualToString:menu.menuType]) {
                 weakSelf.privateChatController = [[PLVChatroomController alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(pageCtrlFrame), CGRectGetHeight(pageCtrlFrame)-topBarHeight)];
                 weakSelf.privateChatController.privateChatMode = YES;
                 weakSelf.privateChatController.delegate = weakSelf;
                 [weakSelf.privateChatController loadSubViews];
-                [titles insertObject:@"咨询提问" atIndex:2];
-                [controllers insertObject:self.privateChatController atIndex:2];
+                [weakSelf.pageController insertPageWithTitle:@"咨询提问" controller:weakSelf.privateChatController atIndex:2];
             }
         }
-        [weakSelf setupPageControllerWithTitles:titles controllers:controllers frame:pageCtrlFrame];
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
         [PLVUtils showHUDWithTitle:@"频道菜单获取失败！" detail:description view:self.view];
-        [weakSelf setupPageControllerWithTitles:titles controllers:controllers frame:pageCtrlFrame];
     }];
 }
 
@@ -300,14 +300,6 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)setupPageControllerWithTitles:(NSArray *)titles controllers:(NSArray *)controllers frame:(CGRect)frame {
-    self.pageController = [[FTPageController alloc] initWithTitles:titles controllers:controllers];
-    self.pageController.view.backgroundColor = [UIColor colorWithRed:233/255.0 green:235/255.0 blue:245/255.0 alpha:1.0];
-    self.pageController.view.frame = frame;
-    [self addChildViewController:self.pageController];
-    [self.view addSubview:self.pageController.view];
-}
-
 - (int)emitSocketIOMessage:(PLVSocketObject *)socketObject {
     if (self.socketIO) {
         //NSLog(@"socketIOState:%ld",self.socketIO.socketIOState);
@@ -342,7 +334,7 @@
             [weakSelf.chatroomController updateChatroom];
         }else {
             if (weakSelf.privateChatController) {
-              [weakSelf.privateChatController updateChatroom];
+                [weakSelf.privateChatController updateChatroom];
             }
         }
     }];

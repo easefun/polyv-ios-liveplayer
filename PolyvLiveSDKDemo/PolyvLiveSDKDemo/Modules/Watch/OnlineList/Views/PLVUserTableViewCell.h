@@ -12,7 +12,7 @@
 
 @property (weak, nonatomic) IBOutlet UIImageView *avatarView;
 @property (weak, nonatomic) IBOutlet UILabel *nicknameLB;
-@property (weak, nonatomic) IBOutlet UILabel *userTypeLB; // 用户头衔
+@property (weak, nonatomic) IBOutlet UILabel *actorLB; // 用户头衔
 
 @property (weak, nonatomic) IBOutlet UIImageView *linkMicTypeView;
 @property (weak, nonatomic) IBOutlet UILabel *linkMicStatusLB;

@@ -176,9 +176,9 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
         [likeBtn addTarget:self action:@selector(likeButtonBeClicked:) forControlEvents:UIControlEventTouchUpInside];
         
         [likeBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(65, 65));
-            make.right.equalTo(self.view.mas_right).offset(-10.0);
-            make.bottom.equalTo(self.bcKeyBoard.mas_top).offset(-10.0);
+            make.size.mas_equalTo(CGSizeMake(80, 80));
+            make.right.equalTo(self.view.mas_right).offset(-5.0);
+            make.bottom.equalTo(self.bcKeyBoard.mas_top).offset(-5.0);
         }];
         
         UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
@@ -281,20 +281,14 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
         PLVSocketChatRoomObject *chatObject = self.privateChatObjects[indexPath.row];
         NSString *content = chatObject.jsonDict[PLVSocketIOChatRoom_S_QUESTION_content];
         switch (chatObject.eventType) {
-            case PLVSocketChatRoomEventType_S_QUESTION:
-                if (chatObject.isLocalMessage) {            // 自己提交的发言信息
-                    [cell addSubview:[self bubbleViewForSelfWithContent:content position:5]];
+                case PLVSocketChatRoomEventType_S_QUESTION: {
+                    if (chatObject.isLocalMessage) {            // 自己提交的发言信息
+                        [cell addSubview:[self bubbleViewForSelfWithContent:content position:5]];
+                    }
                 } break;
-            case PLVSocketChatRoomEventType_T_ANSWER: {
-                NSString *nickname = chatObject.jsonDict[PLVSocketIOChatRoomUserKey][PLVSocketIOChatRoomUserNickKey];
-                NSString *nickImg = chatObject.jsonDict[PLVSocketIOChatRoomUserKey][PLVSocketIOChatRoomUserPicKey];
-                if ([nickImg hasPrefix:@"//"]) {
-                    nickImg = [@"https:" stringByAppendingString:nickImg];
-                }else if ([nickImg hasPrefix:@"http:"]) {
-                    nickImg = [nickImg stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
-                }
-                [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:content position:5]];
-            } break;
+                case PLVSocketChatRoomEventType_T_ANSWER: {
+                    [cell addSubview:[self bubbleViewForOtherWithUserInfo:chatObject.jsonDict[@"user"] content:content position:5]];
+                } break;
             default: break;
         }
     }else {
@@ -306,14 +300,7 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
                 if (chatroom.isLocalMessage) {
                     [cell addSubview:[self bubbleViewForSelfWithContent:content position:5]];
                 }else {
-                    NSString *nickname = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserNickKey];
-                    NSString *nickImg = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserPicKey];
-                    if ([nickImg hasPrefix:@"//"]) {
-                        nickImg = [@"https:" stringByAppendingString:nickImg];
-                    }else if ([nickImg hasPrefix:@"http:"]) {
-                        nickImg = [nickImg stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
-                    }
-                    [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:content position:5]];
+                    [cell addSubview:[self bubbleViewForOtherWithUserInfo:chatroom.jsonDict[@"user"] content:content position:5]];
                 }
             }
         }else if ([chatroomObject isKindOfClass:[NSString class]]) {
@@ -521,13 +508,21 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     return returnView;
 }
 
-- (UIView *)bubbleViewForOtherWithNickname:(NSString *)nickname nickImg:(NSString *)nickImg content:(NSString *)content position:(int)position {
+- (UIView *)bubbleViewForOtherWithUserInfo:(NSDictionary *)userInfo content:(NSString *)content position:(int)position {
     UIView *returnView = [[UIView alloc] initWithFrame:CGRectZero];
     returnView.backgroundColor = [UIColor clearColor];
     if (!content || !content.length) {
         return returnView;
     }
     
+    NSString *nickname = userInfo[PLVSocketIOChatRoomUserNickKey];
+    NSString *nickImg = userInfo[PLVSocketIOChatRoomUserPicKey];
+    if ([nickImg hasPrefix:@"//"]) {
+        nickImg = [@"https:" stringByAppendingString:nickImg];
+    }else if ([nickImg hasPrefix:@"http:"]) {
+        nickImg = [nickImg stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
+    }
+
     // 计算生成属性字符串及计算文字大小
     NSMutableAttributedString *attributedString = [[PLVEmojiModelManager sharedManager] convertTextEmotionToAttachment:content font:[UIFont systemFontOfSize:SPEAK_FONT_SIZE]];
     CGSize fontSize = [self autoCalculateWidth:SPEAK_MAX_WIDTH orHeight:MAXFLOAT attributedContent:attributedString];
@@ -535,38 +530,69 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
     
     returnView.frame = CGRectMake(position, 0, bubbleSize.width, bubbleSize.height + 20);
     
-    // 用户头像
     UIImageView *avatarView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 35, 35)];
     avatarView.layer.cornerRadius = 35/2.0;
     avatarView.layer.masksToBounds = YES;
     [avatarView sd_setImageWithURL:[NSURL URLWithString:nickImg] placeholderImage:[UIImage imageNamed:@"plv_img_defaultUser"]];
+    [returnView addSubview:avatarView];
     
-    // 昵称
-    UILabel *nicknameLB = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, CGRectGetWidth(returnView.bounds), 20)];
-    if (bubbleSize.width < 80) {
-        nicknameLB.frame = CGRectMake(40, 0, 80, 20);
-    }
+    UILabel *nicknameLB = [[UILabel alloc] init];
     nicknameLB.text = nickname;
     nicknameLB.textColor = [UIColor colorWithWhite:85/255.0 alpha:1.0];
     nicknameLB.font = [UIFont boldSystemFontOfSize:12.0];
-    nicknameLB.textAlignment = NSTextAlignmentLeft;
+    [returnView addSubview:nicknameLB];
     
-    // 聊天背景
+    // 处理自定义 actor
+    NSDictionary *authorization = userInfo[@"authorization"];
+    NSString *actor = NameStringWithUserType(userInfo[@"actor"], userInfo[@"userType"]) ;
+    if (authorization || actor) {
+        UILabel *actorLB = [[UILabel alloc] init];
+        [returnView addSubview:actorLB];
+        actorLB.layer.cornerRadius = 9.0;
+        actorLB.layer.masksToBounds = YES;
+        actorLB.font = [UIFont systemFontOfSize:10.0 weight:UIFontWeightMedium];
+        actorLB.textAlignment = NSTextAlignmentCenter;
+        
+        if (authorization) {
+            actorLB.text = [NSString stringWithFormat:@" %@      ",authorization[@"actor"]];
+            actorLB.textColor = [PLVUtils colorFromHexString:authorization[@"fColor"]];
+            actorLB.backgroundColor = [PLVUtils colorFromHexString:authorization[@"bgColor"]];
+        }else {
+            actorLB.text = [NSString stringWithFormat:@" %@      ",actor];
+            actorLB.textColor = [UIColor whiteColor];
+            actorLB.backgroundColor = UIColorFromRGB(0x2196F3);
+        }
+        
+        [actorLB mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(avatarView.mas_top);
+            make.height.mas_equalTo(@(18));
+            make.leading.equalTo(avatarView.mas_trailing).offset(10);
+        }];
+        [nicknameLB mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(avatarView.mas_top);
+            make.height.mas_equalTo(@(20));
+            make.leading.equalTo(actorLB.mas_trailing).offset(5);
+        }];
+    }else {
+        [nicknameLB mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(avatarView.mas_top);
+            make.height.mas_equalTo(@(20));
+            make.leading.equalTo(avatarView.mas_trailing).offset(10);
+        }];
+    }
+    
     UIImage *bubble = [UIImage imageNamed:@"PLVLivePlayerSkin.bundle/plv_chatfrom_other"];
     UIImageView *bubbleImageView = [[UIImageView alloc] initWithImage:[bubble stretchableImageWithLeftCapWidth:floorf(bubble.size.width/2) topCapHeight:floorf(bubble.size.height*2/3)]];
     bubbleImageView.frame = CGRectMake(30, 25, bubbleSize.width, bubbleSize.height);
     
-    // 聊天内容
     UILabel *bubbleText = [[UILabel alloc] initWithFrame:CGRectMake(20, 5, fontSize.width, fontSize.height)];
     bubbleText.backgroundColor = [UIColor clearColor];
     bubbleText.numberOfLines = 0;
     bubbleText.lineBreakMode = NSLineBreakByWordWrapping;
     bubbleText.attributedText = attributedString;
     [bubbleImageView addSubview:bubbleText];
-    
-    [returnView addSubview:avatarView];
-    [returnView addSubview:nicknameLB];
     [returnView addSubview:bubbleImageView];
+    
     return returnView;
 }
 

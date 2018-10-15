@@ -64,7 +64,9 @@
     
     if ([@"desc" isEqualToString:self.menu.menuType]) {
         self.titleLabel.text = self.channelMenuInfo.name;
-        [self.avatarImgView sd_setImageWithURL:[NSURL URLWithString:self.channelMenuInfo.coverImage] placeholderImage:[UIImage imageNamed:@"plv_img_defaultUser"]];
+        if (self.channelMenuInfo && ![self.channelMenuInfo.coverImage isKindOfClass:[NSNull class]]) {
+            [self.avatarImgView sd_setImageWithURL:[NSURL URLWithString:self.channelMenuInfo.coverImage] placeholderImage:[UIImage imageNamed:@"plv_img_defaultUser"]];
+        }
         self.hostLabel.text = self.channelMenuInfo.publisher;
         
         if (self.channelMenuInfo.likes.integerValue >= 10000) {

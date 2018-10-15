@@ -16,6 +16,26 @@ static PLVLiveManager *liveManager = nil;
 
 @end
 
+/// 返回用户头衔
+NSString *NameStringWithUserType(NSString *actor, NSString *userType) {
+    if (actor && actor.length) {
+        return actor;
+    }
+    if (userType && userType.length) {
+        if ([userType isEqualToString:@"teacher"]) {
+            return @"讲师";
+        }else if ([userType isEqualToString:@"manager"]) {
+            return @"管理员";
+        }else if ([userType isEqualToString:@"assistant"]) {
+            return @"助教";
+        }else {
+            return nil;
+        }
+    }else { // 不存在 userType 字段或为空
+        return nil;
+    }
+}
+
 @implementation PLVLiveManager
 
 + (instancetype)sharedLiveManager {
@@ -57,16 +77,15 @@ static PLVLiveManager *liveManager = nil;
         } break;
         case PLVSocketChatRoomEventType_SPEAK: {    // 1.4.用户发言
             NSDictionary *user = chatroomObject.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey];
-            if (user) {     // use不存在时可能为严禁词类型；开启聊天审核后会收到自己数据
-                id userId = user[PLVSocketIOChatRoomUserUserIdKey];
-                if ([userId isKindOfClass:[NSString class]]) {
-                    if ([(NSString *)userId isEqualToString:self.login.userId]) {
-                        break;
-                    }
-                }else if ([userId isKindOfClass:[NSNumber class]]) {
-                    if ([(NSNumber *)userId unsignedLongValue] == self.login.userId.integerValue) {
-                        break;
-                    }
+            NSString *status = chatroomObject.jsonDict[@"status"];
+            if (status) {
+                if ([status isEqualToString:@"censor"]) { // 聊天室审核
+                }else if ([status isEqualToString:@"error"]) { // 严禁词
+                }
+            }else if (user) {
+                NSString *userId = [NSString stringWithFormat:@"%@",user[PLVSocketIOChatRoomUserUserIdKey]];
+                if ([userId isEqualToString:self.login.userId]) {
+                    break;
                 }
                 [self.chatroomObjects addObject:chatroomObject];
                 completion(YES);
@@ -74,7 +93,6 @@ static PLVLiveManager *liveManager = nil;
             }
         } break;
         // ------------------  2.咨询提问（私有聊天）
-        //case PLVSocketChatRoomEventType_S_QUESTION:
         case PLVSocketChatRoomEventType_T_ANSWER: { // 2.1.讲师发言
             NSString *userId = chatroomObject.jsonDict[PLVSocketIOChatRoom_T_ANSWER_sUserId];
             if ([userId isEqualToString:self.login.userId]) {

@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <PLVSocketAPI/PLVSocketAPI.h>
 
+NSString *NameStringWithUserType(NSString *actor, NSString *userType);
+
 @interface PLVLiveManager : NSObject
 
 /// 当前房间号/频道号

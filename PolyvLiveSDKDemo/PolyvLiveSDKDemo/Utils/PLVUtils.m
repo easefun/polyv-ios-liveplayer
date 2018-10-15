@@ -156,4 +156,29 @@ NSString *NSStringFromPrivacySettingType(PrivacySettingType type) {
     }
 }
 
+#pragma mark - UIColor
++ (UIColor *)colorFromHexString:(NSString *)hexString {
+    if (!hexString || hexString.length < 6) {
+        return [UIColor whiteColor];
+    }
+    unsigned rgbValue = 0;
+    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+    if ([hexString rangeOfString:@"#"].location == 0) {
+        [scanner setScanLocation:1]; // bypass '#' character
+    }
+    [scanner scanHexInt:&rgbValue];
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+}
+
++ (UIColor *)colorWithHex:(u_int32_t)hex {
+    // >> 右移运算; & 与运算, 相同为1 不同为0, FF: 1111 1111
+    // 如:0xAABBCC:AA为red的值,BB为green的值,CC为blue的值
+    // 通过&运算和>>运算, 分别计算出 red,green,blue的值
+    int red = (hex & 0xFF0000) >> 16;
+    int green = (hex & 0x00FF00) >> 8;
+    int blue = hex & 0x0000FF;
+    
+    return [UIColor colorWithRed:red/255.0 green:green/255.0 blue:blue/255.0 alpha:1.0];
+}
+
 @end

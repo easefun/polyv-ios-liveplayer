@@ -8,6 +8,8 @@
 
 #import "PLVUserTableViewCell.h"
 #import <SDWebImage/UIImageView+WebCache.h>
+#import "PLVUtils.h"
+#import "PLVLiveManager.h"
 
 #define CAMERA_IMAGE_PATH @"plv_img_camera"
 #define MICPHONE_IMAGE_PATH @"plv_img_micphone"
@@ -16,30 +18,6 @@
 @interface PLVUserTableViewCell ()
 
 @end
-
-/// 返回用户头衔
-NSString *NameStringWithUserType(NSString *actor, NSString *userType) {
-    if (actor && actor.length) {
-        return actor;
-    }
-    if (userType && userType.length) {
-        if ([userType isEqualToString:@"teacher"]) {
-            return @"讲师";
-        }else if ([userType isEqualToString:@"manager"]) {
-            return @"管理员";
-        }else if ([userType isEqualToString:@"assistant"]) {
-            return @"助教";
-        //}else if ([userType isEqualToString:@"slice"]) {
-        //    return @"云课堂学员";
-        //}else if ([userType isEqualToString:@"student"]) {
-        //    return @"学生";
-        }else {
-            return nil;
-        }
-    }else { // 不存在 userType 字段或为空
-        return nil;
-    }
-}
 
 @implementation PLVUserTableViewCell
 
@@ -69,12 +47,24 @@ NSString *NameStringWithUserType(NSString *actor, NSString *userType) {
         [_avatarView sd_setImageWithURL:[NSURL URLWithString:avatarUrl] placeholderImage:[UIImage imageNamed:USER_DEFAULT_IMAGE]]; // use sdWebImage
         //[self updateAvatarViewWithPicStr:userInfo[@"pic"]];
         _nicknameLB.text = userInfo[@"nick"];
-        NSString *userType = NameStringWithUserType(userInfo[@"actor"],userInfo[@"userType"]);
-        if (userType) {
-            _userTypeLB.text = userType;
-            _userTypeLB.hidden = NO;
+        // 处理自定义 actor
+        NSDictionary *authorization = userInfo[@"authorization"];
+        if (authorization) {
+            _actorLB.hidden = NO;
+            _actorLB.text = [NSString stringWithFormat:@" %@      ",authorization[@"actor"]];
+            _actorLB.textColor = [PLVUtils colorFromHexString:authorization[@"fColor"]];
+            _actorLB.backgroundColor = [PLVUtils colorFromHexString:authorization[@"bgColor"]];
         }else {
-            _userTypeLB.hidden = YES;
+            NSString *actor = NameStringWithUserType(userInfo[@"actor"],userInfo[@"userType"]);
+            if (actor) {
+                _actorLB.text = [NSString stringWithFormat:@" %@      ",actor];
+                _actorLB.hidden = NO;
+                CGSize size = [_actorLB sizeThatFits:CGSizeMake(MAXFLOAT, 18)];
+                _actorLB.bounds = CGRectMake(0, 0, size.width+20, size.height);
+                [_actorLB layoutIfNeeded];
+            }else {
+                _actorLB.hidden = YES;
+            }
         }
         
         NSString *status = userInfo[@"status"];
