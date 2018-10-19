@@ -148,8 +148,10 @@ static NSString * const reuseChatCellIdentifier = @"ChatCell";
                 }else {
                     NSString *nickname = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserNickKey];
                     NSString *nickImg = chatroom.jsonDict[PLVSocketIOChatRoom_SPEAK_userKey][PLVSocketIOChatRoomUserPicKey];
-                    if (![nickImg containsString:@"http:"]) {
+                    if ([nickImg hasPrefix:@"//"]) {
                         nickImg = [@"https:" stringByAppendingString:nickImg];
+                    }else if ([nickImg hasPrefix:@"http:"]) {
+                        nickImg = [nickImg stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
                     }
                     [cell addSubview:[self bubbleViewForOtherWithNickname:nickname nickImg:nickImg content:content position:5]];
                 }

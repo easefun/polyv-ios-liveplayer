@@ -27,7 +27,7 @@ target 'IJKLivePlayer' do
 end
 ```
 
-完整可运行Pods项目：[v2.2.0-beta2](http://repo.polyv.net/ios/download/livesdk-demo/2.2.0-beat2/polyv-ios-liveplayer.zip)
+
 
 ## Features
 
