@@ -11,8 +11,9 @@ target 'PolyvLiveSDKDemo' do
   pod 'SDWebImage', '~> 4.4.0'
 
   pod 'PolyvLiveAPI', '~> 0.6.0'      # Polyv live api
-  pod 'PolyvSocketAPI', '~> 0.5.0'    # Polyv socket.io api
+  pod 'PolyvSocketAPI', '~> 0.6.0'    # Polyv socket.io api
   pod 'PolyvIJKPlayer', '~> 0.3.0'    # Polyv ijkPlayer
   pod 'AgoraRtcEngine_iOS', '~>2.0.0' # Agora rtc engine
+  #pod 'Starscream', '3.0.5'           # Xcode 10 以下添加添加此行（解注释）
 end
 

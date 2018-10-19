@@ -109,6 +109,8 @@
         
         // 2.初始化一个socket登录对象（昵称和头像使用默认设置）
         self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:self.nickName avatar:self.avatar userType:PLVSocketObjectUserTypeStudent];
+        //NSDictionary *authorization = @{@"actor":@"自定义头衔",@"bgColor":@"#000000",@"fColor":@"#ffffff"};
+        //self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:self.nickName avatar:self.avatar userId:nil authorization:authorization];
         
         // 3.数据存储
         PLVLiveManager *manager = [PLVLiveManager sharedLiveManager];
