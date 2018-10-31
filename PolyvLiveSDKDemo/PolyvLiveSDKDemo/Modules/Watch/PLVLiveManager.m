@@ -111,13 +111,14 @@ NSString *NameStringWithUserType(NSString *actor, NSString *userType) {
             NSString *msgSource = messageDict[@"msgSource"];
             if (msgSource) {    // redpaper（红包）、get_redpaper（领红包）
             } else {
-                NSString *uid = messageDict[@"user"][@"uid"];
-                if (uid.integerValue == 1 || uid.integerValue == 2) {
+                NSString *uid = [NSString stringWithFormat:@"%@",messageDict[@"user"][@"uid"]];
+                if ([uid isEqualToString:@"1"] || [uid isEqualToString:@"1"]) {
                     // uid = 1，打赏消息；uid = 2，自定义消息
                 }else { // 发言消息
                     NSMutableDictionary *speakDict = [NSMutableDictionary dictionaryWithObject:PLVSocketIOChatRoom_SPEAK_EVENT forKey:PLV_EVENT];
                     speakDict[PLVSocketIOChatRoom_SPEAK_values] = @[messageDict[@"content"]];
                     speakDict[PLVSocketIOChatRoom_SPEAK_userKey] = messageDict[PLVSocketIOChatRoom_SPEAK_userKey];
+                    speakDict[PLVSocketIOChatRoom_SPEAK_time] = messageDict[PLVSocketIOChatRoom_SPEAK_time];
                     PLVSocketChatRoomObject *chatRoomObject = [PLVSocketChatRoomObject socketObjectWithJsonDict:speakDict];
                     [self.chatroomObjects insertObject:chatRoomObject atIndex:0];
                 }

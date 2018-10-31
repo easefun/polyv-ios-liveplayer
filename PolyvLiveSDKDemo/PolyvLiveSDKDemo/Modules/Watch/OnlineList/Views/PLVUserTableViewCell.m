@@ -41,11 +41,12 @@
     _userInfo = userInfo;
     if (userInfo && [userInfo isKindOfClass:[NSDictionary class]]) {
         NSString *avatarUrl = userInfo[@"pic"];
-        if ([avatarUrl hasPrefix:@"//"]) { // 处理"//"类型开头的地址(其他非HTTPS如微信头像、static.live.polyv.net、live.polyv.cn使用原地址)
+        if ([avatarUrl hasPrefix:@"//"]) {
             avatarUrl = [@"https:" stringByAppendingString:avatarUrl];
+        }else if ([avatarUrl hasPrefix:@"http:"]) {
+            avatarUrl = [avatarUrl stringByReplacingOccurrencesOfString:@"http:" withString:@"https:"];
         }
         [_avatarView sd_setImageWithURL:[NSURL URLWithString:avatarUrl] placeholderImage:[UIImage imageNamed:USER_DEFAULT_IMAGE]]; // use sdWebImage
-        //[self updateAvatarViewWithPicStr:userInfo[@"pic"]];
         _nicknameLB.text = userInfo[@"nick"];
         // 处理自定义 actor
         NSDictionary *authorization = userInfo[@"authorization"];
@@ -60,7 +61,7 @@
                 _actorLB.text = [NSString stringWithFormat:@" %@      ",actor];
                 _actorLB.hidden = NO;
                 CGSize size = [_actorLB sizeThatFits:CGSizeMake(MAXFLOAT, 18)];
-                _actorLB.bounds = CGRectMake(0, 0, size.width+20, size.height);
+                _actorLB.bounds = CGRectMake(0, 0, size.width, 18.0);
                 [_actorLB layoutIfNeeded];
             }else {
                 _actorLB.hidden = YES;

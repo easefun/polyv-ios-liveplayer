@@ -18,33 +18,6 @@ typedef NS_ENUM(NSInteger, PrivacySettingType) {
     PrivacySettingTypeMedia
 };
 
-NSURL *URLFromPrivacySettingType(PrivacySettingType type) {
-    NSString *settingName = nil;
-    NSString *url = nil;
-    switch (type) {
-        case PrivacySettingTypeSetting:{
-            url = UIApplicationOpenSettingsURLString;
-        }break;
-        case PrivacySettingTypePhotos:{
-            settingName = @"PHOTOS";
-        }break;
-        case PrivacySettingTypeCamera:{
-            settingName = @"CAMERA";
-        }break;
-        case PrivacySettingTypeMicrophone:{
-            settingName = @"MICROPHONE";
-        }break;
-        case PrivacySettingTypeMedia:{
-            settingName = @"MEDIA";
-        }break;
-        default:{}break;
-    }
-    if (!url) {
-        url = [NSString stringWithFormat:@"App-Prefs:root=Privacy&path=%@", settingName];
-    }
-    return [NSURL URLWithString:url];
-}
-
 NSString *NSStringFromPrivacySettingType(PrivacySettingType type) {
     switch (type) {
         case PrivacySettingTypeSetting:{
@@ -126,7 +99,6 @@ NSString *NSStringFromPrivacySettingType(PrivacySettingType type) {
 
 + (void)showAlertWithType:(PrivacySettingType)type delegate:(__weak UIViewController *)viewController {
     __weak typeof(self) weakSelf = self;
-    //NSString *title = [NSString stringWithFormat:@"无法获取权限"];
     NSString *message = [NSString stringWithFormat:@"应用无法获取您的%@权限，请前往设置", NSStringFromPrivacySettingType(type)];
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
     [alertController addAction:[UIAlertAction actionWithTitle:@"去设置" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
@@ -136,7 +108,7 @@ NSString *NSStringFromPrivacySettingType(PrivacySettingType type) {
 }
 
 + (void)openSettingWithType:(PrivacySettingType)type {
-    NSURL *settingURL = URLFromPrivacySettingType(type);
+    NSURL *settingURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
     if ([[UIApplication sharedApplication] canOpenURL:settingURL]) {
         [[UIApplication sharedApplication] openURL:settingURL];
     } else {

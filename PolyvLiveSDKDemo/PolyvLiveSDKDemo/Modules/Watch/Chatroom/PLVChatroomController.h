@@ -9,9 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <PLVSocketAPI/PLVSocketAPI.h>
 
-// 使用示例 UIColorFromRGB(0x0e0e10)
-#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
-
 /// 聊天室类型
 typedef NS_ENUM(NSInteger, PLVChatroomType) {
     PLVChatroomTypePublic   = 1,  // 公共聊天
