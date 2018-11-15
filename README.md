@@ -17,7 +17,9 @@
 
 #### demo 中私有 API 上架被拒问题
 
-见 [FAQ 4.1 相关内容](https://github.com/easefun/polyv-ios-liveplayer/wiki/FAQ)
+影响版本：v2.4.0 ~ v2.5.4
+
+已受影响版本处理可参见 [FAQ 4.1 相关内容](https://github.com/easefun/polyv-ios-liveplayer/wiki/FAQ)
 
 #### Podfile：
 
