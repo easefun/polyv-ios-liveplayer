@@ -4,12 +4,11 @@
 
 ### 最近更新
 
-- 升级 PolyvLiveAPI 至 0.7.0 版本
-- 修复使用苹果私有API影响上架的问题
-- 修复聊天室历史记录可能丢失数据的问题
-- 添加【聊天室】【在线列表】自定义头衔功能
-- 聊天室新增点赞、踢人功能
-- 添加获取聊天室在线人数接口
+- 优化部分UI显示
+- 播放器上添加弹幕开关
+- 修复播放暖场后可能直播失败的问题
+- 修复【聊天室】部分聊天表情与PC观看页不同问题
+- 修复后台开启多码率时可能播放失败的问题（PolyvLiveAPI 版本更新至 0.7.1）
 
 #### 最新版本
 
@@ -32,7 +31,7 @@ target 'IJKLivePlayer' do
   pod 'MBProgressHUD', '~> 1.1.0'
   pod 'SDWebImage', '~> 4.4.0'
 
-  pod 'PolyvLiveAPI', '~> 0.7.0'      # Polyv live api
+  pod 'PolyvLiveAPI', '~> 0.7.1'      # Polyv live api
   pod 'PolyvSocketAPI', '~> 0.6.0'    # Polyv socket.io api
   pod 'PolyvIJKPlayer', '~> 0.3.0'    # Polyv ijkPlayer
   pod 'AgoraRtcEngine_iOS', '~>2.0.0' # Agora rtc engine
