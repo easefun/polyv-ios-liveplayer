@@ -34,7 +34,7 @@ typedef NS_ENUM(NSUInteger, PLVLinkMicStatus) {
 @property (nonatomic, strong) UIView *speakButtonBgView;
 @property (nonatomic, strong) UIButton *speakButton;
 
-@property (nonatomic, strong) NSMutableArray<NSDictionary *> *onlineList;
+@property (nonatomic, strong) NSMutableArray *onlineList; // NSDictionary、null
 
 @property (nonatomic, strong) PLVSocketObject *login;
 @property (nonatomic, assign) NSUInteger linkMicUserId;
@@ -49,7 +49,8 @@ typedef NS_ENUM(NSUInteger, PLVLinkMicStatus) {
 
 @end
 
-static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
+static NSString * const reuseUserCellIdentifier = @"reuseUserCellIdentifier";
+static NSString * const reuseLineCellIdentifier = @"reuseLineCellIdentifier";
 
 @implementation PLVOnlineListController
 
@@ -89,7 +90,7 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
-    //[self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:reuseChatCellIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:reuseLineCellIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:@"PLVUserTableViewCell" bundle:nil] forCellReuseIdentifier:reuseUserCellIdentifier];
     
     self.speakButtonBgView = [[UIView alloc] init];
@@ -282,6 +283,7 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
         if (weakSelf.isLinkMicOpen) {
             [PLVLiveAPI requestLinkMicOnlineListWithRoomId:self.channelId completion:^(NSArray *onlineList) {
                 weakSelf.onlineList = listUsers[@"userlist"];
+                [weakSelf.onlineList insertObject:[NSNull null] atIndex:0];  // 空值分割线
                 [weakSelf.onlineList insertObjects:onlineList atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, onlineList.count)]];
                 [weakSelf.tableView reloadData];
                 [weakSelf updateUserLinkMicStatus:onlineList];
@@ -496,17 +498,38 @@ static NSString * const reuseUserCellIdentifier = @"OnlineListCell";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    PLVUserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseUserCellIdentifier forIndexPath:indexPath];
-    cell.userInfo = self.onlineList[indexPath.row];
-    cell.linkMicType = self.linkMicType;
-    
-    return cell;
+    NSDictionary *userInfo = self.onlineList[indexPath.row];
+    if ([userInfo isKindOfClass:[NSDictionary class]]) {
+        PLVUserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseUserCellIdentifier forIndexPath:indexPath];
+        cell.userInfo = userInfo;
+        cell.linkMicType = self.linkMicType;
+        return cell;
+    }else {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseLineCellIdentifier forIndexPath:indexPath];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseLineCellIdentifier];
+        }
+        cell.backgroundColor = [UIColor clearColor];
+        UIView *lineView = [[UIView alloc] init];
+        lineView.backgroundColor = [UIColor lightGrayColor];
+        [cell addSubview:lineView];
+        [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.equalTo(cell);
+            make.size.mas_equalTo(CGSizeMake(CGRectGetWidth(cell.bounds)*3/4, 1.0));
+        }];
+        return cell;
+    }
 }
 
 #pragma mark - <UITableViewDelegate>
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 60;
+    NSDictionary *userInfo = self.onlineList[indexPath.row];
+    if ([userInfo isKindOfClass:[NSDictionary class]]) {
+        return 60.0;
+    }else {
+        return 15.0;
+    }
 }
 
 @end

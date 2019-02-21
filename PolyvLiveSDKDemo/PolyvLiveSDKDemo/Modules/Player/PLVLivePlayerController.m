@@ -14,8 +14,11 @@ NSString * const PLVLivePlayerReconnectNotification = @"PLVLivePlayerReconnectNo
 NSString * const PLVLivePlayerWillChangeToFullScreenNotification = @"PLVLivePlayerWillChangeToFullScreenNotification";
 NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWillExitFullScreenNotification";
 
+/**
+ iOS-livePlayerSDK2.5.5+181031
+ */
 #define PlayerErrorDomain @"net.polyv.live"
-#define PlayerVersion @"iOS-livePlayerSDK2.5.5+181031"
+#define PlayerVersion @"iOS-livePlayerSDK2.5.6+190221"
 
 #define PLAY_MODE @"live"   // 统计后台live/vod
 
@@ -90,7 +93,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
             [self playWithCover];
         }
     }else if (streamState == PLVLiveStreamStateLive && _streamState == PLVLiveStreamStateNoStream) {
-        //[self.playerSkin.noLiveImageView setHidden:YES];
+        [self.playerSkin.noLiveImageView setHidden:YES];
         [[NSNotificationCenter defaultCenter] postNotificationName:PLVLivePlayerReconnectNotification object:self];
     }
     _streamState = streamState;
@@ -192,8 +195,8 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 
 - (void)setupPlayerSkin {
     BOOL isMultirateEnabled = self.channel.isMultirateEnabled;
+    [self.playerSkin showDefinitionButton:isMultirateEnabled];
     if (isMultirateEnabled) {
-        [self.playerSkin.definitionButton setHidden:NO];
         [self.playerSkin setDefaultDefinition:self.channel.defaultDefinition];
         NSMutableArray *definitionArr = [NSMutableArray array];
         for (NSDictionary *dict in self.channel.definitions) {
@@ -241,6 +244,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     [self.playerSkin.pauseButton addTarget:self action:@selector(pauseButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.playerSkin.fullScreenButton addTarget:self action:@selector(fullScreenButtonClick) forControlEvents:UIControlEventTouchUpInside];
     [self.playerSkin.smallScreenButton addTarget:self action:@selector(smallScreenButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.playerSkin.danmuSwitch addTarget:self action:@selector(danmuSwitch:) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)addGestureActions {
@@ -417,6 +421,12 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
     if (self.smallScreenButtonClickBlock) self.smallScreenButtonClickBlock();
 }
 
+- (void)danmuSwitch:(UISwitch *)sender {
+    if (self.danmuEnableCallBack) {
+        self.danmuEnableCallBack(sender.isOn);
+    }
+}
+
 - (void)screenBeClicked {
     if (self.isShowCover) {
         if (self.coverImageBeClickedBlock && self.channel.coverHref) {
@@ -517,6 +527,7 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
         IJKFFOptions *options = [IJKFFOptions optionsByDefault];
         [options setPlayerOptionIntValue:0 forKey:@"loop"];
         [options setPlayerOptionIntValue:1 forKey:@"videotoolbox"];
+        [options setFormatOptionIntValue:1 forKey:@"dns_cache_clear"]; // disable dns cache.
         [options setCodecOptionIntValue:IJK_AVDISCARD_DEFAULT forKey:@"skip_frame"];
         [options setCodecOptionIntValue:IJK_AVDISCARD_DEFAULT forKey:@"skip_loop_filter"];
         self.subPlayer = [[IJKFFMoviePlayerController alloc] initWithContentURL:[NSURL URLWithString:self.channel.coverUrl] withOptions:options];

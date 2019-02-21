@@ -31,6 +31,7 @@
 @property (nonatomic, strong, readonly) UIButton *definitionButton;
 @property (nonatomic, strong, readonly) UIButton *fullScreenButton;
 @property (nonatomic, strong, readonly) UIButton *smallScreenButton;
+@property (nonatomic, strong, readonly) UISwitch *danmuSwitch;
 
 /// 无直播背景占位图
 @property (nonatomic, strong, readonly) UIImageView *noLiveImageView;
@@ -49,6 +50,8 @@
 
 - (void)changeToFullScreen;
 - (void)changeToSmallScreen;
+
+- (void)showDefinitionButton:(BOOL)show;
 
 /// 展示建议的清晰度提示
 - (void)showRecommendedDefinition:(NSString *)definition;

@@ -198,26 +198,7 @@
                 [self.delegate returnHeight:CGRectGetHeight(endFrame)+CGRectGetHeight(_originFrame)];
             }
         }
-        /* 1.0 版本（存在bug）
-        if (CGRectGetMinY(beginFrame) > CGRectGetMinY(endFrame)) {  // 键盘弹出
-            CGRect frame = self.frame;
-            frame.origin.y = CGRectGetMinY(frame) - endFrame.size.height;
-            self.frame = frame;
-            if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
-                [self.delegate returnHeight:CGRectGetHeight(endFrame)+CGRectGetHeight(_originFrame)];
-            }
-        }else {  // 键盘隐藏
-            if (!self.activeView) {
-                self.frame = _originFrame;
-                if (self.delegate && [self.delegate respondsToSelector:@selector(returnHeight:)]) {
-                    [self.delegate returnHeight:CGRectGetHeight(_originFrame)];
-                }
-            }
-        }*/
     };
-    //void(^completion)(BOOL) = ^(BOOL finished){
-    //    NSLog(@"finished:%d",finished);
-    //};
     [UIView animateWithDuration:duration delay:0.0f options:(curve << 16 | UIViewAnimationOptionBeginFromCurrentState) animations:animations completion:nil];
 }
 
@@ -322,12 +303,6 @@
     if (chatText.length > 0) {
         self.textView.text = [chatText substringToIndex:chatText.length-1];
     }
-    //if (chatText.length >= 4) {
-    //    NSString *subStr = [chatText substringFromIndex:chatText.length-4];
-    //    self.textView.text = [chatText substringToIndex:chatText.length-4];
-    //    [self textViewDidChange:self.textView];
-    //    return;
-    //}
 }
 
 #pragma mark - Dealloc

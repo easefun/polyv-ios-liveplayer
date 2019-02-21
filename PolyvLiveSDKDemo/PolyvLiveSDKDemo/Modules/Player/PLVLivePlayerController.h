@@ -36,6 +36,9 @@ extern NSString * const PLVLivePlayerWillExitFullScreenNotification;        // �
 @property (nonatomic, copy) void(^pauseButtonClickBlock)(void);
 @property (nonatomic, copy) void(^fullScreenButtonClickBlock)(void);
 @property (nonatomic, copy) void(^smallScreenButtonClickBlock)(void);
+
+/// 弹幕开关回调
+@property (nonatomic, copy) void(^danmuEnableCallBack)(BOOL danmuEnable);
 /// 暖场图片被点击的回调
 @property (nonatomic, copy) void(^coverImageBeClickedBlock)(NSString *coverHref);
 

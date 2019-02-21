@@ -26,6 +26,8 @@
 @property (nonatomic, strong) UIButton *definitionButton;
 @property (nonatomic, strong) UIButton *fullScreenButton;
 @property (nonatomic, strong) UIButton *smallScreenButton;
+@property (nonatomic, strong) UILabel *danmuLabel;
+@property (nonatomic, strong) UISwitch *danmuSwitch;
 
 @property (nonatomic, strong) UIView *definitionView;
 @property (nonatomic, strong) UIImageView *noLiveImageView;
@@ -50,8 +52,8 @@
     self = [super init];
     if (self) {
         /** 添加的先后顺序不可变*/
-        [self addSubview:self.noLiveImageView];
         [self addSubview:self.bottomBar];
+        [self addSubview:self.noLiveImageView];
         [self addSubview:self.videoInfoContainer];
         [self addSubview:self.indicatorView];
         [self addSubview:self.warningView];
@@ -64,6 +66,8 @@
         [self.bottomBar addSubview:self.playButton];
         [self.bottomBar addSubview:self.pauseButton];
         [self.bottomBar addSubview:self.definitionButton];
+        [self.bottomBar addSubview:self.danmuLabel];
+        [self.bottomBar addSubview:self.danmuSwitch];
         [self.bottomBar addSubview:self.fullScreenButton];
         [self.bottomBar addSubview:self.smallScreenButton];
         
@@ -144,6 +148,16 @@
         make.bottom.equalTo(self.bottomBar);
         make.trailing.equalTo(self.fullScreenButton.mas_leading);
     }];
+    [self.danmuSwitch mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(50.0, 30.0));
+        make.centerY.mas_equalTo(self.definitionButton.mas_centerY);
+        make.trailing.equalTo(self.definitionButton.mas_leading);
+    }];
+    [self.danmuLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(50);
+        make.bottom.equalTo(self.bottomBar);
+        make.trailing.equalTo(self.danmuSwitch.mas_leading);
+    }];
 }
 
 #pragma mark - Public
@@ -171,7 +185,6 @@
 
 - (void)changeToFullScreen {
     //[self.topBar setBackgroundColor:BACK_COLOR];
-    //NSLog(@"changeToFullScreen");
     [self.definitionButtons enumerateObjectsUsingBlock:^(UIButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [self setDefinitionBtnFullMode:YES btn:obj];
     }];
@@ -181,7 +194,6 @@
 
 - (void)changeToSmallScreen {
     //[self.topBar setBackgroundColor:[UIColor clearColor]];
-    //NSLog(@"changeToSmallScreen");
     [self.definitionButtons enumerateObjectsUsingBlock:^(UIButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         [self setDefinitionBtnFullMode:NO btn:obj];
     }];
@@ -211,6 +223,21 @@
     }];
 }
 
+- (void)showDefinitionButton:(BOOL)show {
+    [self.definitionButton setHidden:!show];
+    if (!show) {
+        [self.danmuSwitch mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(CGSizeMake(50.0, 30.0));
+            make.centerY.mas_equalTo(self.fullScreenButton.mas_centerY);
+            make.trailing.equalTo(self.fullScreenButton.mas_leading);
+        }];
+    }
+}
+
+- (void)showNoliveStatus {
+    
+}
+
 - (void)showRecommendedDefinition:(NSString *)definition {
     [self.warningView setHidden:NO];
     [self.recommendedButton setTitle:definition forState:UIControlStateNormal];
@@ -231,7 +258,7 @@
 }
 
 #pragma mark - Rewrite
-#pragma mark getter
+
 - (UIImageView *)noLiveImageView {
     if (!_noLiveImageView) {
         _noLiveImageView = [[UIImageView alloc] initWithImage:[self playerSkinImageName:NOLIVE_BG_IMAGE]];
@@ -291,13 +318,33 @@
     return _pauseButton;
 }
 
+- (UILabel *)danmuLabel {
+    if (!_danmuLabel) {
+        _danmuLabel = [UILabel new];
+        _danmuLabel.text = @"弹幕";
+        _danmuLabel.textColor = [UIColor whiteColor];
+        _danmuLabel.textAlignment = NSTextAlignmentCenter;
+    }
+    return _danmuLabel;
+}
+
+- (UISwitch *)danmuSwitch {
+    if (!_danmuSwitch) {
+        _danmuSwitch = [UISwitch new];
+        _danmuSwitch.transform = CGAffineTransformMakeScale(0.7, 0.7);
+        _danmuSwitch.tintColor = [UIColor colorWithRed:33/255.0 green:150/255.0 blue:243/255.0 alpha:1.0];
+        _danmuSwitch.onTintColor = _danmuSwitch.tintColor;
+        _danmuSwitch.on = YES;
+    }
+    return _danmuSwitch;
+}
+
 - (UIButton *)definitionButton {
     if (!_definitionButton) {
         _definitionButton = [UIButton buttonWithType:UIButtonTypeSystem];
         [_definitionButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         [_definitionButton.titleLabel setFont:[UIFont systemFontOfSize:14.0 weight:UIFontWeightMedium]];
         [_definitionButton addTarget:self action:@selector(definitionButtonBeClicked) forControlEvents:UIControlEventTouchUpInside];
-        [_definitionButton setHidden:YES];
     }
     return _definitionButton;
 }
@@ -504,7 +551,6 @@
             make.centerX.equalTo (self.definitionView);
             make.top.equalTo (button1.mas_bottom).offset (15);
         }];
-       
     }
     else if (self.definitionButtons.count == 1){
         UIButton *button1 = [self.definitionButtons objectAtIndex:0];

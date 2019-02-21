@@ -43,6 +43,8 @@
 @property (nonatomic, strong) NSString *stream;
 @property (nonatomic, assign) NSUInteger channelId;
 
+@property (nonatomic, assign) BOOL danmuEnable;
+
 @end
 
 @implementation LivePlayerViewController {
@@ -92,6 +94,7 @@
 #pragma mark - Initialize
 
 - (void)initLocalData {
+    self.danmuEnable = YES;
     self.userId = self.channel.userId;
     self.stream = self.channel.stream;
     self.channelId = self.channel.channelId.unsignedIntegerValue;
@@ -239,6 +242,10 @@
     [_livePlayer setCoverImageBeClickedBlock:^(NSString *coverHref) {
         NSLog(@"点击了暖场图片，链接：%@",coverHref);
     }];
+    [_livePlayer setDanmuEnableCallBack:^(BOOL danmuEnable) {
+        NSLog(@"弹幕开启：%d",danmuEnable);
+        weakSelf.danmuEnable = danmuEnable;
+    }];
 }
 
 #pragma mark Notifications
@@ -340,7 +347,7 @@
             }
         }
     }];
-    if (message) {
+    if (message && self.danmuEnable) {
         [self.danmuLayer insertDML:message];    // 插入弹幕信息
     }
     
@@ -387,7 +394,7 @@
 
 - (void)emitChatroomObject:(PLVSocketChatRoomObject *)chatRoomObject withMessage:(NSString *)message {
     int code = [self emitSocketIOMessage:chatRoomObject];
-    if (code && message) {
+    if (code && message && self.danmuEnable) {
         [self.danmuLayer insertDML:message];
     }
 }

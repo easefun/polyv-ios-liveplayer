@@ -3,7 +3,7 @@ PODS:
   - Masonry (1.1.0)
   - MBProgressHUD (1.1.0)
   - PolyvIJKPlayer (0.3.0)
-  - PolyvLiveAPI (0.7.0)
+  - PolyvLiveAPI (0.7.1)
   - PolyvSocketAPI (0.6.0):
     - Socket.IO-Client-Swift (~> 13.2.0)
   - SDWebImage (4.4.2):
@@ -11,17 +11,16 @@ PODS:
   - SDWebImage/Core (4.4.2)
   - Socket.IO-Client-Swift (13.2.1):
     - Starscream (~> 3.0.2)
-  - Starscream (3.0.5)
+  - Starscream (3.0.6)
 
 DEPENDENCIES:
   - AgoraRtcEngine_iOS (~> 2.0.0)
   - Masonry (~> 1.1)
   - MBProgressHUD (~> 1.1.0)
   - PolyvIJKPlayer (~> 0.3.0)
-  - PolyvLiveAPI (~> 0.7.0)
+  - PolyvLiveAPI (~> 0.7.1)
   - PolyvSocketAPI (~> 0.6.0)
   - SDWebImage (~> 4.4.0)
-  - Starscream (= 3.0.5)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -40,12 +39,12 @@ SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
   PolyvIJKPlayer: 1577e6890fdbec60c44bea6c7425f7215a58b6a0
-  PolyvLiveAPI: 008623f2706ff5b98a9b9cf2a5f5bd94a5d75234
+  PolyvLiveAPI: fd7cc3dee28ded69ef436b40396a5c5ae3bda702
   PolyvSocketAPI: 982647f43fa82eaeeb55b877166dac7afbf5143d
   SDWebImage: 624d6e296c69b244bcede364c72ae0430ac14681
   Socket.IO-Client-Swift: b94943e2fb916fe2f95244b9ed21828634002280
-  Starscream: faf918b2f2eff7d5dd21180646bf015a669673bd
+  Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
 
-PODFILE CHECKSUM: 49a29c89b52a590fa0ce588e9b106c5edbccae50
+PODFILE CHECKSUM: fff969401724fc4c48acfa868ae9cc86b628385a
 
 COCOAPODS: 1.5.3
