@@ -1,7 +1,7 @@
 # polyv-ios-liveplayer
-  
+
   新用户集成或升级建议使用新的 [云课堂SDK](https://github.com/polyv/polyv-ios-cloudClass-sdk-demo)
-  
+
   参考文档：[Wiki](https://github.com/easefun/polyv-ios-liveplayer/wiki)
 
 ### 最近更新
@@ -57,6 +57,7 @@ end
 
 手机扫码安装，密码：polyv
 
-![POLYV 直播观看](https://www.pgyer.com/app/qrcode/Cibx)
+![POLYV 直播观看](https://www.pgyer.com/app/qrcode/vYJj)
 
-[下载地址](https://www.pgyer.com/Cibx)
+[下载地址](https://www.pgyer.com/vYJj)
+
