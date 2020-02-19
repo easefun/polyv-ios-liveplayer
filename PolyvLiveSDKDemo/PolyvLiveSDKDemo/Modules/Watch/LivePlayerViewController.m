@@ -104,23 +104,28 @@
 - (void)initSocketIO {
     __weak typeof(self)weakSelf = self;
     [PLVLiveAPI requestAuthorizationForLinkingSocketWithChannelId:self.channelId Appld:[PLVLiveConfig sharedInstance].appId appSecret:[PLVLiveConfig sharedInstance].appSecret success:^(NSDictionary *responseDict) {
-        // 1.初始化 socketIO 连接对象
-        weakSelf.socketIO = [[PLVSocketIO alloc] initSocketIOWithConnectToken:responseDict[@"chat_token"] enableLog:NO];
-        weakSelf.socketIO.delegate = weakSelf;
-        [weakSelf.socketIO connect];
-        //weakSelf.socketIO.debugMode = YES;
-        
-        // 2.初始化一个socket登录对象（昵称和头像使用默认设置）
-        self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:self.nickName avatar:self.avatar userType:PLVSocketObjectUserTypeStudent];
-        //NSDictionary *authorization = @{@"actor":@"自定义头衔",@"bgColor":@"#000000",@"fColor":@"#ffffff"};
-        //self.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:self.channelId nickName:self.nickName avatar:self.avatar userId:nil authorization:authorization];
-        
-        // 3.数据存储
-        PLVLiveManager *manager = [PLVLiveManager sharedLiveManager];
-        manager.login = self.login;
-        manager.linkMicParams = responseDict;
+        NSString *chatDomain = responseDict[@"chatDomain"];
+        if (chatDomain && [chatDomain isKindOfClass:NSString.class]) {
+            // 1.初始化 socketIO 连接对象
+            weakSelf.socketIO = [[PLVSocketIO alloc] initSocketIOWithConnectToken:responseDict[@"chat_token"] url:chatDomain enableLog:NO];
+            weakSelf.socketIO.delegate = weakSelf;
+            [weakSelf.socketIO connect];
+            //weakSelf.socketIO.debugMode = YES;
+            
+            // 2.初始化一个socket登录对象（昵称和头像使用默认设置）
+            weakSelf.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:weakSelf.channelId nickName:weakSelf.nickName avatar:weakSelf.avatar userType:PLVSocketObjectUserTypeStudent];
+            //NSDictionary *authorization = @{@"actor":@"自定义头衔",@"bgColor":@"#000000",@"fColor":@"#ffffff"};
+            //weakSelf.login = [PLVSocketObject socketObjectForLoginEventWithRoomId:weakSelf.channelId nickName:weakSelf.nickName avatar:weakSelf.avatar userId:nil authorization:authorization];
+            
+            // 3.数据存储
+            PLVLiveManager *manager = [PLVLiveManager sharedLiveManager];
+            manager.login = weakSelf.login;
+            manager.linkMicParams = responseDict;
+        } else {
+            [PLVUtils showHUDWithTitle:@"聊天室连接失败！" detail:@"chatDomain不存在" view:[UIApplication sharedApplication].delegate.window];
+        }
     } failure:^(PLVLiveErrorCode errorCode, NSString *description) {
-        [PLVUtils showHUDWithTitle:@"聊天室连接失败！" detail:[NSString stringWithFormat:@"错误码:%ld, 信息:%@",errorCode,description] view:self.view];
+        [PLVUtils showHUDWithTitle:@"聊天室连接失败！" detail:[NSString stringWithFormat:@"错误码:%ld, 信息:%@",errorCode,description] view:[UIApplication sharedApplication].delegate.window];
     }];
 }
 

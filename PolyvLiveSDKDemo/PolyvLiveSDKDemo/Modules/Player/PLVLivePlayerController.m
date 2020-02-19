@@ -16,9 +16,10 @@ NSString * const PLVLivePlayerWillExitFullScreenNotification = @"PLVLivePlayerWi
 
 /**
  iOS-livePlayerSDK2.5.5+181031
+ iOS-livePlayerSDK2.5.6+190221
  */
 #define PlayerErrorDomain @"net.polyv.live"
-#define PlayerVersion @"iOS-livePlayerSDK2.5.6+190221"
+#define PlayerVersion @"iOS-livePlayerSDK2.5.7+200219"
 
 #define PLAY_MODE @"live"   // 统计后台live/vod
 

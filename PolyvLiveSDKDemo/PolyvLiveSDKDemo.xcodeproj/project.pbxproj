@@ -579,7 +579,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
@@ -596,7 +596,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PolyvLiveSDKDemo/Pods-PolyvLiveSDKDemo-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F7D2F517E46CF85A9661035E /* [CP] Check Pods Manifest.lock */ = {
@@ -794,6 +794,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.polyv.PolyvIJKLivePlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -817,6 +818,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = net.polyv.PolyvIJKLivePlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
