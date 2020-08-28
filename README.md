@@ -1,16 +1,17 @@
 # polyv-ios-liveplayer
 
-  新用户集成或升级建议使用新的 [云课堂SDK](https://github.com/polyv/polyv-ios-cloudClass-sdk-demo)
+文档说明：[Wiki](https://github.com/easefun/polyv-ios-liveplayer/wiki)
 
-  参考文档：[Wiki](https://github.com/easefun/polyv-ios-liveplayer/wiki)
+####注意⚠️
+
+该 sdk-demo 目前已不做常规功能维护，为了您的更好使用体验，请移步至 [云课堂SDK](https://github.com/polyv/polyv-ios-cloudClass-sdk-demo)（含普通直播模式）
 
 ### 最近更新
 
-- 优化部分UI显示
-- 播放器上添加弹幕开关
-- 修复播放暖场后可能直播失败的问题
-- 修复【聊天室】部分聊天表情与PC观看页不同问题
-- 修复后台开启多码率时可能播放失败的问题（PolyvLiveAPI 版本更新至 0.7.1）
+- 文件结构调整，结构更清晰
+- 更新聊天室登录逻辑和获取chattoken接口
+- PolyvLiveAPI 升级至 0.7.5，修复Qos参数过长问题
+- 移除 PolyvSocketAPI 库，更新为 PolyvBusinessSDK
 
 #### 最新版本
 
@@ -28,15 +29,17 @@
 platform :ios, "9.0"
 use_frameworks!
 
-target 'IJKLivePlayer' do
+target 'PolyvLiveSDKDemo' do
+  # Pods for PolyvLiveSDKDemo
   pod 'Masonry', '~> 1.1'
   pod 'MBProgressHUD', '~> 1.1.0'
   pod 'SDWebImage', '~> 4.4.0'
 
-  pod 'PolyvLiveAPI', '~> 0.7.1'      # Polyv live api
-  pod 'PolyvSocketAPI', '~> 0.6.0'    # Polyv socket.io api
-  pod 'PolyvIJKPlayer', '~> 0.3.0'    # Polyv ijkPlayer
-  pod 'AgoraRtcEngine_iOS', '~>2.0.0' # Agora rtc engine
+  # PolyvLiveSDK 依赖库
+  pod 'PolyvLiveAPI', '~> 0.7.5'
+  pod 'PolyvBusinessSDK', '~> 0.15.0'
+  pod 'PolyvIJKPlayer', '~> 0.4.0'
+  pod 'AgoraRtcEngine_iOS', '~>2.0.0'
 end
 ```
 
